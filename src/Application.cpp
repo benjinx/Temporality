@@ -58,6 +58,11 @@ void Application::Start()
 	// Display OpenGL info
 	OpenGLInfo();
 
+	// Load Engine Shaders
+	AddShader("axis", new Shader({
+		"shaders/axis.vert",
+		"shaders/axis.frag" }));
+
 	// Setup Scene
 	_mCurrentScene->Start();
 
@@ -155,6 +160,21 @@ void Application::Screenshot()
 	stbi_flip_vertically_on_write(true);
 
 	stbi_write_png("Screenshot.png", GetWindow()->GetWidth(), GetWindow()->GetHeight(), 3, pixels.data(), 3 * GetWindow()->GetWidth());
+}
+
+void Application::AddShader(std::string name, Shader* shader)
+{
+	_mShaders[name] = shader;
+}
+
+Shader* Application::GetShader(std::string name)
+{
+	if (_mShaders.find(name) == _mShaders.end())
+	{
+		return nullptr;
+	}
+
+	return _mShaders[name];
 }
 
 void Application::HandleInput(float dt)
