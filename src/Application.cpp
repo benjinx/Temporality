@@ -26,6 +26,8 @@ Application::~Application() {
 	Camera::Delete();
 	
     ImGui_ImplGlfwGL3_Shutdown();
+
+	DeleteShaders();
 }
 
 void Application::Run()
@@ -177,6 +179,16 @@ Shader* Application::GetShader(std::string name)
 	return _mShaders[name];
 }
 
+void Application::DeleteShaders()
+{
+	// Destroy the shaders
+	for (auto& shader : _mShaders)
+		shader.second->Destroy();
+
+	// Clear shader vector
+	_mShaders.clear();
+}
+
 void Application::HandleInput(float dt)
 {
 	if (_mInputMap[GLFW_KEY_W])
@@ -211,8 +223,8 @@ void Application::HandleGLFWKey(GLFWwindow* window, int key, int scancode, int a
 			{
 				std::cout << "\nReloading shaders!\n";
 				
-				_mCurrentScene->DeleteShaders();
-				_mCurrentScene->SetupShaders();
+				//_mCurrentScene->DeleteShaders();
+				//_mCurrentScene->SetupShaders();
 
 				break;
 			}

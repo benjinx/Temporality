@@ -23,16 +23,17 @@ void GameScene::Start()
 	// Shaders
 	printf("\nLoading Shaders\n");
 
-	Application::Inst()->AddShader("passThru", new Shader({
+	Application* app = Application::Inst();
+	app->AddShader("passThru", new Shader({
 		"shaders/passThru.vert",
 		"shaders/passThru.frag" }));
 
-	Application::Inst()->AddShader("advLighting", new Shader({
+	app->AddShader("advLighting", new Shader({
 		"shaders/advLighting.vert",
 		"shaders/advLighting.frag" }));
 
-	_mGameObjects["Light"]->SetShader(Application::Inst()->GetShader("passThru"));
-	_mGameObjects["Cube"]->SetShader(Application::Inst()->GetShader("advLighting"));
+	_mGameObjects["Light"]->SetShader(app->GetShader("passThru"));
+	_mGameObjects["Cube"]->SetShader(app->GetShader("advLighting"));
 
 	// Clear Window
 	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
@@ -60,9 +61,6 @@ void GameScene::Start()
 	// Load lua script
 	//_mScriptHost.Load();
 
-	// Set default to lighting
-	_mProg = 1;
-
 	// Physics
 	PhysicsStart();
 }
@@ -82,47 +80,25 @@ void GameScene::PhysicsUpdate(float dt)
 	//_mScene.GetGameObjects()["Sphere"]->Update(dt);
 }
 
-void GameScene::DeleteShaders()
-{
-	for (auto& shader : _mShaders)
-		shader->Destroy();
-
-	_mShaders.clear();
-}
-
 void GameScene::Update(float dt)
 {
-	//// Set Light Color
+	// Get the application for ease.
+	Application* app = Application::Inst();
 
-	//_mShaders[1]->Use();
-	//glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-	//_mShaders[1]->SetVec3("passColor", lightColor);
+	// Get reference to each shader
+	Shader* passThru = app->GetShader("passThru");
+	Shader* advLighting = app->GetShader("advLighting");
 
-	//// Set Light Position
-	//_mShaders[2]->Use();
-
-	//_mShaders[2]->SetVec3("lightColor", lightColor);
-
-	//glm::vec4 lightPos = glm::vec4(_mGameObjects["Light"]->GetPosition(), 1.0f);
-	//_mShaders[2]->SetVec4("lightVec", lightPos);
-
-	auto app = Application::Inst();
-
-	auto pt = app->GetShader("passThru");
-	auto al = app->GetShader("advLighting");
-
-	pt->Use();
+	passThru->Use();
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
-	pt->SetVec3("passColor", lightColor);
+	passThru->SetVec3("passColor", lightColor);
 
-	al->Use();
+	advLighting->Use();
 
-	al->SetVec3("lightColor", lightColor);
+	advLighting->SetVec3("lightColor", lightColor);
 
 	glm::vec4 lightPos = glm::vec4(_mGameObjects["Light"]->GetPosition(), 1.0f);
-	al->SetVec3("lightVec", lightPos);
-
-
+	advLighting->SetVec3("lightVec", lightPos);
 
 
 	Camera::Inst().Update(dt);

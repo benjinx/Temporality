@@ -41,6 +41,7 @@ public:
 
 	void AddShader(std::string name, Shader* shader);
 	Shader* GetShader(std::string name);
+	void DeleteShaders();
 
 private:
 
