@@ -7,7 +7,6 @@ class GameScene : public Scene
 {
 public:
 	GameScene() {};
-	~GameScene() {};
 
 	void Start() override;
 	void Update(float dt) override;
