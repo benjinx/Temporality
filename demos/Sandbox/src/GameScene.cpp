@@ -52,6 +52,12 @@ void GameScene::Start()
 
 	// Physics
 	PhysicsStart();
+
+
+	// Test 2D Mesh
+	glm::vec4 screencord = { 0, app->GetWindow()->GetWidth(), 0, app->GetWindow()->GetHeight() };
+	glm::vec4 tc = {0, 1, 0, 1};
+	Mesh* mesh = Utils::Get2DMeshData(screencord, tc);
 }
 
 void GameScene::PhysicsStart()
