@@ -55,9 +55,13 @@ void GameScene::Start()
 
 
 	// Test 2D Mesh
-	glm::vec4 screencord = { 0, app->GetWindow()->GetWidth(), 0, app->GetWindow()->GetHeight() };
-	glm::vec4 tc = {0, 1, 0, 1};
-	Mesh* mesh = Utils::Get2DMeshData(screencord, tc);
+	mesh = Utils::Get2DMesh(
+		{ 0, app->GetWindow()->GetWidth(), 0, app->GetWindow()->GetHeight() },
+		{ 0, 1, 0, 1 });
+
+	app->AddShader("ui", new Shader({
+		"shaders/ui.vert",
+		"shaders/ui.frag" }));
 }
 
 void GameScene::PhysicsStart()
@@ -98,6 +102,19 @@ void GameScene::Update(float dt)
 	advLighting->SetVec3("lightVec", lightPos);
 
 	Camera::Inst().Update(dt);
-
+	
 	//PhysicsUpdate(dt);
+}
+
+void GameScene::Render()
+{
+	Scene::Render();
+
+
+	glClear(GL_DEPTH_BUFFER_BIT);
+	//test mesh2d
+	App* app = App::Inst();
+	Shader* ui = app->GetShader("ui");
+	mesh->SetMaterial(nullptr);
+	mesh->Render(ui, glm::mat4(1));
 }

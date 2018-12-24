@@ -93,7 +93,7 @@ namespace Utils
 		return std::string();
 	}
 
-	Mesh* Get2DMeshData(glm::vec4 screenCords, glm::vec4 textureCords)
+	Mesh* Get2DMesh(glm::vec4 screenCords, glm::vec4 textureCords)
 	{
 		return new Mesh(
 			{
