@@ -56,12 +56,20 @@ void GameScene::Start()
 
 	// Test 2D Mesh
 	mesh = Utils::Get2DMesh(
-		{ 0, app->GetWindow()->GetWidth(), 0, app->GetWindow()->GetHeight() },
-		{ 0, 1, 0, 1 });
+		{ 0, 0, app->GetWindow()->GetWidth(), app->GetWindow()->GetHeight() },
+		{ 0, 1, 1, 0 });
 
 	app->AddShader("ui", new Shader({
 		"shaders/ui.vert",
 		"shaders/ui.frag" }));
+
+
+	//test mesh2d
+	Shader* ui = app->GetShader("ui");
+	ui->Use();
+	glm::mat4 proj2d = glm::ortho(0.f, (float)app->GetWindow()->GetWidth(),
+		0.f, (float)app->GetWindow()->GetHeight());
+	app->GetShader("ui")->SetMat4("proj", proj2d);
 }
 
 void GameScene::PhysicsStart()
@@ -115,6 +123,5 @@ void GameScene::Render()
 	//test mesh2d
 	App* app = App::Inst();
 	Shader* ui = app->GetShader("ui");
-	mesh->SetMaterial(nullptr);
 	mesh->Render(ui, glm::mat4(1));
 }
