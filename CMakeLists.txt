@@ -82,10 +82,6 @@ SET(NETWORK_SRC
 
 # Physics src
 SET(PHYSICS_SRC
-	src/Collision.cpp
-	src/Collision.hpp
-	src/Rigidbody.cpp
-	src/Rigidbody.hpp
 )
 
 # Scripting src

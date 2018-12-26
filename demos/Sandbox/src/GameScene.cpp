@@ -124,4 +124,5 @@ void GameScene::Render()
 	App* app = App::Inst();
 	Shader* ui = app->GetShader("ui");
 	mesh->Render(ui, glm::mat4(1));
+
 }
