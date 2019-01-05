@@ -66,6 +66,8 @@ SET(GRAPHICS_SRC
 	src/Material.hpp
 	src/Mesh.cpp
 	src/Mesh.hpp
+	src/Model.cpp
+	src/Model.hpp
 	src/Shader.cpp
 	src/Shader.hpp
 	src/Texture.cpp

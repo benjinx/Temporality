@@ -1,20 +1,13 @@
-#ifndef GAMEOBJECT_H
-#define GAMEOBJECT_H
+#ifndef GAMEOBJECT_HPP
+#define GAMEOBJECT_HPP
 
-//#include <Temporality.hpp>
 #include "Config.hpp"
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
-#include "assimp/Importer.hpp"
-#include "assimp/scene.h"
-#include "assimp/postprocess.h"
 
 class Mesh;
 class Shader;
-struct aiNode;
-struct aiMesh;
-struct aiScene;
-struct aiMaterial;
+class Model;
 
 // Need to make sure to use transform data for modelMatrix.
 struct Transform
@@ -34,11 +27,6 @@ public:
 
 	void Update(const float dt);
 	void Render();
-	
-	void AddMesh(Mesh* mesh) { _mMeshes.push_back(mesh); }
-
-	Mesh* GetMesh(int index = 0) { return _mMeshes[index]; }
-	unsigned int GetNumMeshes() { return (unsigned int)_mMeshes.size(); }
 
 	Transform GetTransform() { return _mTransform; }
 	void SetTransform(Transform transform) { _mTransform = transform; }
@@ -97,9 +85,6 @@ protected:
 	// Transform
 	Transform _mTransform;
 
-	// Mesh
-	std::vector<Mesh*> _mMeshes;
-
 	// Model
 	glm::mat4 _mModelMatrix;
 
@@ -113,13 +98,10 @@ protected:
 	// Gobjs Shader
 	Shader* _mShader;
 
-	// Object loading
-	void LoadObj(std::string filename);
-	void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Mesh*>& meshes, std::string dirname);
-	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene, std::vector<Mesh*>& meshes, std::string dirname);
-	std::string GetMaterialTextureName(aiMaterial* material, aiTextureType type, std::string dirname);
+	// Model
+	Model* _mModel;
 };
 
 // GameObject needs to know which components are attached to each gameobject.
 
-#endif // GAMEOBJECT_H
+#endif // GAMEOBJECT_HPP
