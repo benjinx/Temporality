@@ -36,12 +36,6 @@ private:
 	// Object Loading
 	bool Load(std::string filename);
 
-	// Object loading (old)
-	void LoadObj(std::string filename);
-	void ProcessNode(aiNode* node, const aiScene* scene, std::vector<Mesh*>& meshes, std::string dirname);
-	Mesh* ProcessMesh(aiMesh* mesh, const aiScene* scene, std::vector<Mesh*>& meshes, std::string dirname);
-	std::string GetMaterialTextureName(aiMaterial* material, aiTextureType type, std::string dirname);
-
 	// Mesh
 	std::vector<Mesh*> _mMeshes;
 

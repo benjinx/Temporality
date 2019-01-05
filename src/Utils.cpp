@@ -36,7 +36,7 @@ namespace Utils
 			: path.substr(pivot + 1));
 	}
 
-	Mesh* Get2DMesh(glm::vec4 screenCords, glm::vec4 textureCords)
+	/*Mesh* Get2DMesh(glm::vec4 screenCords, glm::vec4 textureCords)
 	{
 		return new Mesh(
 			{
@@ -55,5 +55,5 @@ namespace Utils
 				{textureCords[0], textureCords[1]},
 				{textureCords[0], textureCords[3]} },
 			{}, {});
-	}
+	}*/
 }

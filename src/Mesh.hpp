@@ -3,15 +3,10 @@
 
 #include "Config.hpp"
 #include "Light.hpp"
+#include <memory>
 
 class Shader;
 class Material;
-
-struct Vertex {
-	glm::vec3 position;
-	glm::vec3 normal;
-	glm::vec3 texCoords;
-};
 
 class Mesh
 {
@@ -21,7 +16,7 @@ public:
 
 	void Render(Shader * shader, glm::mat4 modelMat);
 
-    void SetMaterial(Material* material) { _mMaterial = material; }
+    //void SetMaterial(Material* material) { _mMaterial = material; }
 
     GLuint GetVAO() { return _mVAO; }
 

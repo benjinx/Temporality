@@ -5,9 +5,13 @@
 #include "Material.hpp"
 
 Mesh::Mesh(GLuint vao, GLenum mode, GLsizei count, GLenum type, GLsizei offset, std::shared_ptr<Material> material)
-{
-
-}
+	: _mVAO(vao)
+	, _mMode(mode)
+	, _mCount(count)
+	, _mType(type)
+	, _mOffset(offset)
+	, _mMaterial(material)
+{ }
 
 void Mesh::Render(Shader * shader, glm::mat4 modelMat)
 {
@@ -33,6 +37,7 @@ void Mesh::Render(Shader * shader, glm::mat4 modelMat)
 	}
 
     glBindVertexArray(_mVAO);
-    glDrawArrays(GL_TRIANGLES, 0, _mCount);
+    //glDrawArrays(GL_TRIANGLES, 0, _mCount);
+	glDrawElements(_mMode, _mCount, _mType, (char *)0 + _mOffset);
     glBindVertexArray(0);
 }
