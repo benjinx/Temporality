@@ -12,65 +12,53 @@ class Material
 {
 public:
 
-    enum TextureID {
-        AMBIENT = 0,
-        DIFFUSE = 1,
-        SPECULAR = 2,
-        NORMAL = 3,
-        ALPHA = 4,
-        DISPLACEMENT = 5,
-        METALLIC_ROUGHNESS = 6,
-        SHEEN = 7,
-        EMISSIVE = 8,
-    };
+	enum TextureID {
+		DIFFUSE = 0,
+		METALLIC_ROUGHNESS = 1,
+		NORMAL = 2,
+		EMISSIVE = 3,
+		OCCLUSION = 4,
+	};
 
-    Material(glm::vec3 ambient,
-             glm::vec3 diffuse,
-             glm::vec3 specular,
-             float shininess,
-             std::shared_ptr<Texture> ambientMap,
-             std::shared_ptr<Texture> diffuseMap,
-             std::shared_ptr<Texture> specularMap,
-             std::shared_ptr<Texture> normalMap);
-    virtual ~Material() = default;
+	Material() = default;
+	virtual ~Material() = default;
 
-    void Bind(Shader* shader);
+	void Bind(Shader* shader);
 
-    bool AmbientMapExists() { return (_mAmbientMap != nullptr); }
+	void SetDiffuse(glm::vec4 value) { _mDiffuse = glm::vec3(value); }
+	void SetEmissive(glm::vec3 value) { _mEmissive = value; }
+
+	void SetRoughness(float value) { _mRoughness = value; }
+	void SetMetallic(float value) { _mMetallic = value; }
+	void SetNormalScale(float value) { _mNormalScale = value; }
+	void SetOcclusionStrength(float value) { _mOcclusionStrength = value; }
+
+	void SetDiffuseMap(std::shared_ptr<Texture> texture) { _mDiffuseMap = texture; }
+	void SetMetallicRoughnessMap(std::shared_ptr<Texture> texture) { _mMetallicRoughnessMap = texture; }
+	void SetNormalMap(std::shared_ptr<Texture> texture) { _mNormalMap = texture; }
+	void SetEmissiveMap(std::shared_ptr<Texture> texture) { _mEmissiveMap = texture; }
+	void SetOcclusionMap(std::shared_ptr<Texture> texture) { _mOcclusionMap = texture; }
+
     bool DiffuseMapExists() { return (_mDiffuseMap != nullptr); }
-    bool SpecularMapExists() { return (_mSpecularMap != nullptr); }
     bool NormalMapExists() { return (_mNormalMap != nullptr); }
-    bool AlphaMapExists() { return (_mAlphaMap != nullptr); }
-    bool DisplacementMapExists() { return (_mDisplacementMap != nullptr); }
     bool MetallicRoughnessMapExists() { return (_mMetallicRoughnessMap != nullptr); }
-    bool SheenMapExists() { return (_mSheenMap != nullptr); }
     bool EmissiveMapExists() { return (_mEmissiveMap != nullptr); }
+	bool OcclusionMapExists() { return (_mOcclusionMap != nullptr); }
 
 private:
-    glm::vec3   _mAmbient = glm::vec3(0),
-                _mDiffuse = glm::vec3(0),
-                _mSpecular = glm::vec3(0),
+    glm::vec3   _mDiffuse = glm::vec3(0),
                 _mEmissive = glm::vec3(0);
 
-    float       _mRoughness = 0.0f,
-                _mMetallic = 0.0f,
-                _mShininess = 1.0f,
-                _mDissolve = 1.0f,
-                _mSheen = 0.0f,
-                _mClearcoatThickness = 0.0f,
-                _mClearcoatRoughness = 0.0f,
-                _mAnisotropy = 0.0f,
-                _mAnisotropyRotation = 0.0f;
+    float       _mMetallic = 0.0f, 
+				_mRoughness = 0.0f,
+				_mNormalScale = 0.0f,
+				_mOcclusionStrength = 0.0f;
 
-    std::shared_ptr<Texture>    _mAmbientMap,
-                                _mDiffuseMap,
-                                _mSpecularMap,
+    std::shared_ptr<Texture>    _mDiffuseMap,
+								_mMetallicRoughnessMap,
                                 _mNormalMap,
-                                _mAlphaMap,
-                                _mDisplacementMap,
-                                _mMetallicRoughnessMap,
-                                _mSheenMap,
-                                _mEmissiveMap;
+                                _mEmissiveMap,
+								_mOcclusionMap;
 };
 
 #endif // MATERIAL_H

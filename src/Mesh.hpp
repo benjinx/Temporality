@@ -16,18 +16,8 @@ struct Vertex {
 class Mesh
 {
 public:
-
-    enum Attrib {
-        POSITION = 0,
-        NORMAL = 2,
-        COLOR = 3,
-        TEXCOORD = 8,
-        TANGENT = 10,
-        BITANGENT = 11,
-    };
-
     /* Functions */
-    Mesh(std::vector<glm::vec3> vertices, std::vector<glm::vec3> normals, std::vector<glm::vec2> texCoords, std::vector<glm::vec3> tangents, std::vector<glm::vec3> bitangents);
+    Mesh(GLuint vao, GLenum mode, GLsizei count, GLenum type, GLsizei offset, std::shared_ptr<Material> material);
 
 	void Render(Shader * shader, glm::mat4 modelMat);
 
@@ -36,13 +26,13 @@ public:
     GLuint GetVAO() { return _mVAO; }
 
 private:
-
-	Material * _mMaterial = nullptr;
-
     /* Render Data */
-    GLuint       _mVAO, _mVBOs[5];
-    unsigned int _mVertCount;
-
+	GLuint _mVAO;
+	GLenum	_mMode;
+	GLsizei _mCount;
+	GLenum _mType;
+	GLsizei _mOffset;
+	std::shared_ptr<Material> _mMaterial = nullptr;
 };
 
 #endif // MESH_H

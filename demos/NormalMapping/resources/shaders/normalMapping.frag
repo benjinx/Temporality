@@ -5,19 +5,18 @@ struct Material {
 	vec3 diffuse;
 	vec3 specular;
 	float shininess;
+	sampler2D ambientMap;
 	sampler2D diffuseMap;
 	sampler2D specularMap;
 	sampler2D normalMap;
+	bool hasAmbient;
+	bool hasDiffuse;
+	bool hasSpecular;
+	bool hasNormal;
 };
 
 // Uniforms
-uniform bool hasDiffuse;
-uniform bool hasSpecular;
-uniform bool hasNormal;
-
 uniform Material material;
-
-
 uniform vec3 lightColor;
 
 // Varyings
@@ -46,32 +45,32 @@ void main()
   	
     // diffuse 
 	vec3 N;
-	//if (hasNormal)
+	if (material.hasNormal)
 		N = normalize(texture(material.normalMap, pass.texCoords).rgb * 2.0 - 1.0);
-	//else
-	//	N = normalize(pass.normal);
+	else
+		N = normalize(pass.normal);
 
     float diff = max(dot(N, L), 0.0);
 
     vec3 diffuse;
-	//if (hasDiffuse)
+	if (material.hasDiffuse)
 		diffuse = diff * objectColor;
-	//else
-	//	diffuse = diff * material.diffuse * lightColor;
+	else
+		diffuse = diff * material.diffuse * lightColor;
 
     // specular
 	float shininess = material.shininess;
-	//if (shininess <= 1.0)
+	if (shininess <= 1.0)
 		shininess = 32.0;
 
 	vec3 halfwayDir = normalize(L + V);
     float spec = pow(max(dot(N, halfwayDir), 0.0), shininess);
 
 	vec3 specular;
-	//if (hasSpecular)
+	if (material.hasSpecular)
 		specular = texture(material.specularMap, pass.texCoords).rgb * spec;
-	//else
-	//	specular = spec * material.specularVal * lightColor;
+	else
+		specular = spec * material.specular * lightColor;
         
     vec3 result = (ambient + diffuse + specular);
 	fragColor = vec4(result, 1.0);
