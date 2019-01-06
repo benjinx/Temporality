@@ -239,40 +239,6 @@ ENDIF()
 
 ADD_DEPENDENCIES(${PROJECT_NAME} depend-glfw)
 
-# assimp
-ExternalProject_Add(depend-assimp
-    GIT_REPOSITORY  "https://github.com/assimp/assimp"
-    GIT_TAG         "master"
-    GIT_SHALLOW     TRUE
-    SOURCE_DIR      "${CMAKE_BINARY_DIR}/depend/assimp"
-    BINARY_DIR      "${CMAKE_BINARY_DIR}/depend/build/assimp"
-    CMAKE_ARGS      -DASSIMP_BUILD_ASSIMP_TOOLS=OFF
-                    -DASSIMP_BUILD_SAMPLES=OFF
-                    -DASSIMP_BUILD_TESTS=OFF
-                    -DASSIMP_BUILD_ZLIB=${TRUE_WHEN_WIN32}
-                    -DCMAKE_ARCHIVE_OUTPUT_DIRECTORY=${CMAKE_BINARY_DIR}
-                    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${CMAKE_BINARY_DIR}
-                    -DCMAKE_LIBRARY_OUTPUT_DIRECTORY=${CMAKE_BINARY_DIR}
-    UPDATE_COMMAND  ""
-    INSTALL_COMMAND ""
-    TEST_COMMAND    ""
-)
-
-INCLUDE_DIRECTORIES(
-    "${CMAKE_BINARY_DIR}/depend/assimp/code"
-    "${CMAKE_BINARY_DIR}/depend/assimp/include"
-    "${CMAKE_BINARY_DIR}/depend/build/assimp/include"
-)
-
-IF(WIN32)
-    LIST(APPEND _DEPEND_LIBRARIES_DEBUG "assimp-${MSVC_PREFIX}-mt.lib;IrrXML.lib;zlibstaticd.lib")
-    LIST(APPEND _DEPEND_LIBRARIES_RELEASE "assimp-${MSVC_PREFIX}-mt.lib;IrrXML.lib;zlibstatic.lib")
-ELSE()
-    LIST(APPEND _DEPEND_LIBRARIES "libassimp.so")
-ENDIF()
-
-ADD_DEPENDENCIES(${PROJECT_NAME} depend-assimp)
-
 # Link all libraries
 FOREACH(lib IN ITEMS ${_DEPEND_LIBRARIES})
     TARGET_LINK_LIBRARIES(${PROJECT_NAME} "${CMAKE_BINARY_DIR}/${lib}")

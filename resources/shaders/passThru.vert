@@ -8,7 +8,7 @@
 
 // attributes
 layout (location = 0) in vec4 position;
-layout (location = 8) in vec2 texCoords;
+layout (location = 2) in vec2 texCoords;
 
 // uniforms
 uniform mat4 mvp;

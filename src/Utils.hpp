@@ -2,9 +2,6 @@
 #define UTILITIES_H
 
 #include "Config.hpp"
-#include "assimp/Importer.hpp"
-#include "assimp/scene.h"
-#include "assimp/postprocess.h"
 
 class GameObject;
 struct aiNode;
