@@ -11,7 +11,6 @@
 #include <tinygltf/stb_image.h>
 #include <tinygltf/tiny_gltf.h>
 
-
 Model::Model(std::string filename)
 {
 	//LoadObj(filename);
@@ -108,7 +107,7 @@ bool Model::Load(std::string filename)
 		it = vals.find("baseColorTexture");
 		if (it != vals.end())
 		{
-			mat->SetDiffuseMap(std::make_shared<Texture>(textures[it->second.TextureIndex()]));
+			mat->SetDiffuseMap(textures[it->second.TextureIndex()]);
 		}
 
 		it = vals.find("metallicFactor");
@@ -126,13 +125,13 @@ bool Model::Load(std::string filename)
 		it = vals.find("metallicRoughnessTexture");
 		if (it != vals.end())
 		{
-			mat->SetMetallicRoughnessMap(std::make_shared<Texture>(textures[it->second.TextureIndex()]));
+			mat->SetMetallicRoughnessMap(textures[it->second.TextureIndex()]);
 		}
 
 		addIt = addVals.find("normalTexture");
 		if (addIt != addVals.end())
 		{
-			mat->SetNormalMap(std::make_shared<Texture>(textures[it->second.TextureIndex()]));
+			mat->SetNormalMap(textures[it->second.TextureIndex()]);
 			mat->SetNormalScale(addIt->second.Factor());
 		}
 
@@ -146,13 +145,13 @@ bool Model::Load(std::string filename)
 		addIt = addVals.find("emissiveTexture");
 		if (addIt != addVals.end())
 		{
-			mat->SetEmissiveMap(std::make_shared<Texture>(textures[it->second.TextureIndex()]));
+			mat->SetEmissiveMap(textures[it->second.TextureIndex()]);
 		}
 
 		addIt = addVals.find("occlusionTexture");
 		if (addIt != addVals.end())
 		{
-			mat->SetOcclusionMap(std::make_shared<Texture>(textures[it->second.TextureIndex()]));
+			mat->SetOcclusionMap(textures[it->second.TextureIndex()]);
 			mat->SetOcclusionStrength(addIt->second.Factor());
 		}
 

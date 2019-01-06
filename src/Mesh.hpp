@@ -11,6 +11,8 @@ class Material;
 class Mesh
 {
 public:
+	Mesh() = default;
+
     /* Functions */
     Mesh(GLuint vao, GLenum mode, GLsizei count, GLenum type, GLsizei offset, std::shared_ptr<Material> material);
 

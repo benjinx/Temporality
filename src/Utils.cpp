@@ -28,7 +28,7 @@ namespace Utils
 		return std::string();
 	}
 
-	std::string GetExtension(std::string path)
+	std::string GetExtension(const std::string& path)
 	{
 		size_t pivot = path.find_last_of('.');
 		return (pivot == std::string::npos
@@ -36,8 +36,10 @@ namespace Utils
 			: path.substr(pivot + 1));
 	}
 
-	/*Mesh* Get2DMesh(glm::vec4 screenCords, glm::vec4 textureCords)
+	Mesh* Get2DMesh(glm::vec4 screenCords, glm::vec4 textureCords)
 	{
+		return new Mesh();
+		/*
 		return new Mesh(
 			{
 				{screenCords[2], screenCords[1], 0},
@@ -55,5 +57,6 @@ namespace Utils
 				{textureCords[0], textureCords[1]},
 				{textureCords[0], textureCords[3]} },
 			{}, {});
-	}*/
+		*/
+	}
 }
