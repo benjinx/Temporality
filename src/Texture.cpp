@@ -1,4 +1,7 @@
 #include "Texture.hpp"
+
+#include <stb/stb_image.h>
+
 //#include "Utils.hpp"
 //#include <iostream>
 //#include "Log.hpp"
