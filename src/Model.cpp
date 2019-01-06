@@ -6,9 +6,11 @@
 #include "Mesh.hpp"
 #include "Material.hpp"
 
+#include <nlohmann/json.hpp>
+
+#include <stb/stb_image.h>
+
 #define TINYGLTF_NO_STB_IMAGE_WRITE
-#include <tinygltf/json.hpp>
-#include <tinygltf/stb_image.h>
 #include <tinygltf/tiny_gltf.h>
 
 Model::Model(std::string filename)
