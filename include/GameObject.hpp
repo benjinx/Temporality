@@ -1,11 +1,10 @@
 #ifndef GAMEOBJECT_HPP
 #define GAMEOBJECT_HPP
 
-#include "Config.hpp"
-#include "glm/glm.hpp"
-#include "glm/gtc/matrix_transform.hpp"
+#include <Config.hpp>
 
-class Mesh;
+#include <unordered_map>
+
 class Shader;
 class Model;
 

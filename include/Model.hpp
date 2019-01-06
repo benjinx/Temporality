@@ -3,6 +3,7 @@
 
 #include <Config.hpp>
 
+#include <vector>
 
 enum AttributeID : GLint
 {

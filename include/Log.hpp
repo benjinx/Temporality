@@ -1,13 +1,14 @@
 #ifndef LOG_HPP
 #define LOG_HPP
 
+#include <Config.hpp>
+#include <Utils.hpp>
+
 #include <cstdio> // for printf, vsnprintf
 
 #if defined(WIN32)
 #include <windows.h>
 #endif
-
-#include "Utils.hpp"
 
 /// Start Benchmark
 

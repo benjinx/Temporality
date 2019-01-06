@@ -1,7 +1,7 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "Config.hpp"
+#include <Config.hpp>
 
 enum Direction
 {

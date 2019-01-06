@@ -1,10 +1,9 @@
 #include "Utils.hpp"
 
-#include "Mesh.hpp"
-#include "GameObject.hpp"
-#include "Material.hpp"
+#include <Log.hpp>
+#include <Mesh.hpp>
+
 #include <sstream>
-#include "Log.hpp"
 
 namespace Utils
 {

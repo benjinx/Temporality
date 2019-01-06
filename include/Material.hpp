@@ -1,7 +1,7 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "Config.hpp"
+#include <Config.hpp>
 
 #include <memory>
 

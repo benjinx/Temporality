@@ -1,7 +1,7 @@
 #include "Material.hpp"
-#include <Temporality.hpp>
-#include "Shader.hpp"
-#include "Texture.hpp"
+
+#include <Shader.hpp>
+#include <Texture.hpp>
 
 void Material::Bind(Shader* shader)
 {

@@ -1,20 +1,11 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include <Temporality.hpp>
+#include <Config.hpp>
+#include <Scene.hpp>
+#include <Window.hpp>
 
-#include "Config.hpp"
-
-#include "Camera.hpp"
-#include "Window.hpp"
-#include "Mesh.hpp"
-#include "Material.hpp"
-#include "Shader.hpp"
-#include "UI.hpp"
-#include "Utils.hpp"
-#include "Scene.hpp"
-#include "DevUI.hpp"
-#include "Cube.hpp"
+class Shader;
 
 class App
 {

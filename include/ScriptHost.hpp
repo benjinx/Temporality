@@ -1,9 +1,11 @@
 #ifndef SCRIPT_HOST_H
 #define SCRIPT_HOST_H
 
+#include <Config.hpp>
+
+#include <iostream>
 #include <string>
 #include <vector>
-#include <iostream>
 
 //extern "C" {
 //	#include "lua.h"

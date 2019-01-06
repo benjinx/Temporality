@@ -1,12 +1,12 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include "Config.hpp"
-#include "Light.hpp"
+#include <Config.hpp>
+
 #include <memory>
 
-class Shader;
 class Material;
+class Shader;
 
 class Mesh
 {

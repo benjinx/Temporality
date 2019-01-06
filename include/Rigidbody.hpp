@@ -1,7 +1,7 @@
 #ifndef RIGIDBODY_H
 #define RIGIDBODY_H
 
-#include "glm/glm.hpp"
+#include <Config.hpp>
 
 class GameObject;
 

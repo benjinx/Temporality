@@ -1,8 +1,7 @@
 #ifndef TEXTURE_HPP
 #define TEXTURE_HPP
-#include "Utils.hpp"
-#include <iostream>
-#include "Log.hpp"
+
+#include <Config.hpp>
 
 class Texture
 {

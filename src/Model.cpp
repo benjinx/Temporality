@@ -1,10 +1,10 @@
 #include "Model.hpp"
 
-#include "Utils.hpp"
-#include "Log.hpp"
-#include "Texture.hpp"
-#include "Mesh.hpp"
-#include "Material.hpp"
+#include <Log.hpp>
+#include <Material.hpp>
+#include <Mesh.hpp>
+#include <Texture.hpp>
+#include <Utils.hpp>
 
 #include <nlohmann/json.hpp>
 

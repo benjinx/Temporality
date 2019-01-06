@@ -1,7 +1,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-#include "Config.hpp"
+#include <Config.hpp>
 
 struct GLFWwindow;
 

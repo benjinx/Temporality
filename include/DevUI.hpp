@@ -1,9 +1,8 @@
 #ifndef DEVUI_H
 #define DEVUI_H
 
-#include "Config.hpp"
+#include <Config.hpp>
 
-#include <vector>
 #include <functional>
 
 namespace DevUI

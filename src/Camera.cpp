@@ -1,7 +1,7 @@
 #include "Camera.hpp"
 
-#include "Window.hpp"
-#include "App.hpp"
+#include <App.hpp>
+#include <Window.hpp>
 
 Camera * Camera::_sInst = nullptr;
 

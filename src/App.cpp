@@ -1,8 +1,14 @@
 ﻿#include "App.hpp"
-#include "Config.hpp"
 
-#include "imgui/imgui.h"
-#include "imgui/imgui_impl_glfw_gl3.h"
+#include <Camera.hpp>
+#include <DevUI.hpp>
+#include <Log.hpp>
+#include <Shader.hpp>
+
+#include <iostream>
+
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_glfw_gl3.h>
 
 #define TINYGLTF_IMPLEMENTATION
 #define TINYGLTF_NO_STB_IMAGE_WRITE

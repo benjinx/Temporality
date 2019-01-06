@@ -1,8 +1,8 @@
 #include "Mesh.hpp"
 
-#include "Camera.hpp"
-#include "Shader.hpp"
-#include "Material.hpp"
+#include <Camera.hpp>
+#include <Material.hpp>
+#include <Shader.hpp>
 
 Mesh::Mesh(GLuint vao, GLenum mode, GLsizei count, GLenum type, GLsizei offset, std::shared_ptr<Material> material)
 	: _mVAO(vao)

@@ -1,7 +1,9 @@
 #ifndef CUBE_H
 #define CUBE_H
-#include "GameObject.hpp"
-#include "Rigidbody.hpp"
+
+#include <Config.hpp>
+#include <GameObject.hpp>
+#include <Rigidbody.hpp>
 
 class Cube : public GameObject
 {

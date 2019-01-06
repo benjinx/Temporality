@@ -1,13 +1,11 @@
 #ifndef UTILITIES_H
 #define UTILITIES_H
 
-#include "Config.hpp"
+#include <Config.hpp>
 
-class GameObject;
-struct aiNode;
-struct aiMesh;
-struct aiScene;
-struct aiMaterial;
+#include <sstream>
+#include <vector>
+
 class Mesh;
 
 namespace Utils

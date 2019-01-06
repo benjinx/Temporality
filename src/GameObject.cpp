@@ -1,13 +1,9 @@
 #include "GameObject.hpp"
 
-#include "App.hpp"
-#include "Mesh.hpp"
-#include "Shader.hpp"
-#include "Camera.hpp"
-#include "Log.hpp"
-#include "Texture.hpp"
-#include "Model.hpp"
-#include <memory>
+#include <App.hpp>
+#include <Camera.hpp>
+#include <Model.hpp>
+#include <Shader.hpp>
 
 GameObject::GameObject()
 {

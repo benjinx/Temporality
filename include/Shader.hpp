@@ -1,11 +1,9 @@
 #ifndef SHADER_H
 #define SHADER_H
-//#include <Temporality.hpp>
 
-#include "Config.hpp"
-#include "Log.hpp"
+#include <Config.hpp>
 
-class Window;
+#include <unordered_map>
 
 class Shader
 {

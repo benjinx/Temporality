@@ -1,7 +1,7 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
-#include "Config.hpp"
+#include <Config.hpp>
 
 class Light
 {

@@ -1,7 +1,9 @@
 #ifndef COLLISION_H
 #define COLLISION_H
+
+#include <Config.hpp>
+
 #include <vector>
-#include "glm/glm.hpp"
 
 // SHAPES
 struct Circle
