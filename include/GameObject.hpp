@@ -47,29 +47,22 @@ public:
 		_mTransform.position = position;
 	}
 
-	glm::vec3 GetPosition() { return _mTransform.position; }
+	glm::vec3 GetPosition() const { return _mTransform.position; }
 
 	// Remember matrix order is Translate (Position), Rotate, Scale
 	void SetRotation(glm::quat rotation) { 
 		_mTransform.rotation = rotation;
 	}
-	glm::quat GetRotation() { return _mTransform.rotation; }
+	glm::quat GetRotation() const { return _mTransform.rotation; }
 
 	// Remember matrix order is Translate (Position), Rotate, Scale
 	void SetScale(glm::vec3 scale) { 
 		_mTransform.scale = scale;
 	}
-	glm::vec3 GetScale() { return _mTransform.scale; }
+	glm::vec3 GetScale() const { return _mTransform.scale; }
 
 	// World Transform
-	Transform GetWorldTransform() { return _mWorldTransform; }
-	void SetWorldTransform(Transform transform) { _mWorldTransform = transform; }
-	void SetWorldTransform(glm::vec3 position, glm::quat rotation, glm::vec3 scale)
-	{
-		_mWorldTransform.position = position;
-		_mWorldTransform.rotation = rotation;
-		_mWorldTransform.scale = scale;
-	}
+	Transform GetWorldTransform() { return _mTransform; }
 
 	// Remember matrix order is Translate (Position), Rotate, Scale
 	void SetWorldPosition(glm::vec3 position)
@@ -122,8 +115,7 @@ public:
 	
 protected:
 	// Transform
-	Transform _mTransform,
-			  _mWorldTransform;
+	Transform _mTransform;
 
 	// Model
 	glm::mat4 _mModelMatrix = glm::mat4();

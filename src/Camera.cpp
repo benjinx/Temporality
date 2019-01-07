@@ -9,7 +9,7 @@ Camera::Camera()
 {
 	const glm::ivec2& size = glm::ivec2(App::Inst()->GetWindow()->GetWidth(),
 										App::Inst()->GetWindow()->GetHeight());
-	//SetAspect(size);
+	SetAspect(size);
 	//SetViewport(0.0f, size.x, size.y, 0.0f);
 }
 
@@ -17,7 +17,7 @@ glm::mat4 Camera::GetView() const
 {
 	if (_mMode == Mode::Perspective)
 	{
-		return glm::lookAt(GetWorldPosition(), GetWorldPosition() + GetForward(), _mUp);
+		return glm::lookAt(GetPosition(), GetPosition() + GetForward(), _mUp);
 	}
 	else if (_mMode == Mode::Orthographic)
 	{

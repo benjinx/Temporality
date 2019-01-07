@@ -115,7 +115,7 @@ void GameScene::Update(float dt)
 
 	
 
-	_mGameObjects["helmet"]->SetRotation(_mGameObjects["helmet"]->GetRotation() * glm::angleAxis(glm::radians(0.001f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	_mGameObjects["helmet"]->SetRotation(_mGameObjects["helmet"]->GetRotation() * glm::angleAxis(glm::radians(0.0001f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	//_mGameObjects["helmet"]->SetRotation(glm::angleAxis(glm::radians(170.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
 	//LogInfo("Scale: %f, %f, %f\n", _mGameObjects["helmet"]->GetScale().x, _mGameObjects["helmet"]->GetScale().y, _mGameObjects["helmet"]->GetScale().z);
 

@@ -66,7 +66,7 @@ private:
 
 	Mode _mMode = Mode::Perspective;
 
-	glm::vec2 _mClip = glm::vec2(0.00001f, 10000.0f);
+	glm::vec2 _mClip = glm::vec2(0.1f, 10000.0f);
 
 	glm::vec3 _mUp = glm::vec3(0.0f, 1.0f, 0.0f);
 

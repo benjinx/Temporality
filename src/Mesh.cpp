@@ -15,6 +15,10 @@ Mesh::Mesh(GLuint vao, GLenum mode, GLsizei count, GLenum type, GLsizei offset, 
 
 void Mesh::Render(Shader * shader, glm::mat4 modelMat)
 {
+	if (!shader || !App::Inst()->GetCurrentCamera()) {
+		return;
+	}
+
 	shader->Use();
 
 	const auto& view = App::Inst()->GetCurrentCamera()->GetView();//Camera::Inst().GetViewMat();
