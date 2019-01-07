@@ -2,6 +2,8 @@
 #define TEXTURE_HPP
 
 #include <Config.hpp>
+#include <Math.hpp>
+#include <OpenGL.hpp>
 
 class Texture
 {

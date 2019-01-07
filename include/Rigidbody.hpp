@@ -2,6 +2,7 @@
 #define RIGIDBODY_H
 
 #include <Config.hpp>
+#include <Math.hpp>
 
 class GameObject;
 

@@ -2,6 +2,7 @@
 #define CAMERA_H
 
 #include <Config.hpp>
+#include <Math.hpp>
 
 enum Direction
 {

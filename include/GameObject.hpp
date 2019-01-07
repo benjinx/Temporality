@@ -2,6 +2,8 @@
 #define GAMEOBJECT_HPP
 
 #include <Config.hpp>
+#include <Math.hpp>
+#include <OpenGL.hpp>
 
 #include <unordered_map>
 

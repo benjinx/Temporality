@@ -2,6 +2,7 @@
 #define MATERIAL_H
 
 #include <Config.hpp>
+#include <Math.hpp>
 
 #include <memory>
 

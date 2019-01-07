@@ -2,6 +2,7 @@
 #define COLLISION_H
 
 #include <Config.hpp>
+#include <Math.hpp>
 
 #include <vector>
 

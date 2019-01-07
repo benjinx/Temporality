@@ -2,6 +2,7 @@
 #define LIGHT_H
 
 #include <Config.hpp>
+#include <Math.hpp>
 
 class Light
 {

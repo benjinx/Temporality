@@ -2,6 +2,8 @@
 #define MODEL_HPP
 
 #include <Config.hpp>
+#include <Math.hpp>
+#include <OpenGL.hpp>
 
 #include <vector>
 

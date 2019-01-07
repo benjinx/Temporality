@@ -2,6 +2,7 @@
 #define UTILITIES_H
 
 #include <Config.hpp>
+#include <Math.hpp>
 
 #include <sstream>
 #include <vector>

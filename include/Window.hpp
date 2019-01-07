@@ -2,6 +2,7 @@
 #define WINDOW_H
 
 #include <Config.hpp>
+#include <OpenGL.hpp>
 
 struct GLFWwindow;
 
