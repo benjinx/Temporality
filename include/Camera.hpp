@@ -74,8 +74,6 @@ private:
 
 	glm::vec3 _mUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	glm::vec3 _mRight = glm::normalize(glm::cross(_mUp, GetForward()));
-
 	float _mYaw = -90.0f,
 		_mPitch = 0.0f;
 

@@ -91,6 +91,8 @@ void Camera::HandleMovement(Direction dir, float dt)
 	float movementSpeed = 0.25f;
 	float velocity = movementSpeed * dt;
 
+	glm::vec3 right = glm::normalize(glm::cross(_mUp, GetForward()));
+
 	switch (dir)
 	{
 	case FORWARD:
@@ -106,10 +108,10 @@ void Camera::HandleMovement(Direction dir, float dt)
 		SetPosition(GetPosition() + (glm::normalize(glm::cross(GetForward(), _mUp)) * velocity));
 		break;
 	case UP:
-		SetPosition(GetPosition() + (glm::normalize(glm::cross(GetForward(), _mRight)) * velocity));
+		SetPosition(GetPosition() + (glm::normalize(glm::cross(GetForward(), right)) * velocity));
 		break;
 	case DOWN:
-		SetPosition(GetPosition() - (glm::normalize(glm::cross(GetForward(), _mRight)) * velocity));
+		SetPosition(GetPosition() - (glm::normalize(glm::cross(GetForward(), right)) * velocity));
 		break;
 	default:
 		break;
@@ -136,8 +138,9 @@ void Camera::HandleRotation(float xoffset, float yoffset)
 	front.y = sin(glm::radians(_mPitch));
 	front.z = cos(glm::radians(_mPitch)) * sin(glm::radians(_mYaw));
 	SetForward(glm::normalize(front));
-	_mRight = glm::normalize(glm::cross(GetForward(), _mUp));
-	_mUp = glm::normalize(glm::cross(_mRight, GetForward()));
+
+	glm::vec3 right = glm::normalize(glm::cross(GetForward(), _mUp));
+	_mUp = glm::normalize(glm::cross(right, GetForward()));
 }
 
 /*void Camera::Init(glm::vec3 cameraPos, glm::vec3 cameraTarget)
