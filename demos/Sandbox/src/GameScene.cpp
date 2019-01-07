@@ -14,9 +14,8 @@ void GameScene::Start()
 	// Camera
 	auto camera = new Camera();
 	_mGameObjects.emplace("Camera", camera);
-	App::Inst()->SetCurrentCamera(camera);
-
 	_mGameObjects["Camera"]->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+	App::Inst()->SetCurrentCamera(camera);
 
 	// Object setup
 	printf("\nLoading Materials\n");
@@ -28,6 +27,7 @@ void GameScene::Start()
 	_mGameObjects.emplace("helmet", new GameObject("/models/DamagedHelmet.glb"));
 
 	// Initialize Objs
+	_mGameObjects["helmet"]->SetRotation(glm::angleAxis(glm::radians(60.0f), glm::vec3(1.0f, 1.0f, 0.0f)));
 	//_mGameObjects["Light"]->SetScale(glm::vec3(0.3f, 0.3f, 0.3f));
 
 	//_mGameObjects["Cube"]->SetPosition(glm::vec3(-1.5f, -1.0f, 0.0f));
@@ -115,8 +115,8 @@ void GameScene::Update(float dt)
 
 	
 
-	_mGameObjects["helmet"]->SetRotation(_mGameObjects["helmet"]->GetRotation() * glm::angleAxis(glm::radians(0.0005f), glm::vec3(0.0f, 1.0f, 0.0f)));
-	//_mGameObjects["helmet"]->SetRotation(glm::angleAxis(glm::radians(170.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	//_mGameObjects["helmet"]->SetRotation(_mGameObjects["helmet"]->GetRotation() * glm::angleAxis(glm::radians(0.0005f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	//_mGameObjects["helmet"]->SetRotation(glm::angleAxis(glm::radians(170.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 	//LogInfo("Scale: %f, %f, %f\n", _mGameObjects["helmet"]->GetScale().x, _mGameObjects["helmet"]->GetScale().y, _mGameObjects["helmet"]->GetScale().z);
 
 	// Get the application for ease.
