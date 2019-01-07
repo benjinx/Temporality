@@ -2,25 +2,83 @@
 #define CAMERA_H
 
 #include <Config.hpp>
+#include <GameObject.hpp>
 #include <Math.hpp>
 
-enum Direction
-{
-	FORWARD = 0,
-	BACKWARD,
-	LEFT,
-	RIGHT,
-	UP,
-	DOWN,
-};
+//enum Direction
+//{
+//	FORWARD = 0,
+//	BACKWARD,
+//	LEFT,
+//	RIGHT,
+//	UP,
+//	DOWN,
+//};
 
 class Window;
 
-class Camera
+class Camera : public GameObject
 {
 public:
+
+	enum Mode {
+		Perspective,
+		Orthographic,
+	};
+
+	//DISALLOW_COPY_AND_ASSIGN(Camera);
+	
+	Camera();
+
+	virtual ~Camera() = default;
+
+	glm::mat4 GetView() const;
+
+	glm::mat4 GetProjection() const;
+
+	void SetMode(Mode mode);
+
+	Mode GetMode() const { return _mMode; }
+
+	void SetAspect(float aspect);
+
+	void SetAspect(const glm::vec2& size);
+
+	inline float GetAspect() const { return _mAspect; }
+
+	void SetViewport(float left, float right, float bottom, float top);
+
+	void SetViewport(const glm::vec4& viewport);
+
+	void SetClip(const glm::vec2& clip);
+
+	inline glm::vec2 GetClip() const { return _mClip; }
+
+	void SetForward(const glm::vec3& forward);
+
+	glm::vec3 GetForward() const;
+
+	void SetLookAt(const glm::vec3& point);
+
+	//virtual void Update(const float dt) override;
+
+private:
+
+	Mode _mMode = Mode::Perspective;
+
+	glm::vec2 _mClip = glm::vec2(0.00001f, 10000.0f);
+
+	glm::vec3 _mUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	// Perspective
+	float _mFov = glm::radians(45.0f);
+
+	float _mAspect = 16.0f / 9.0f; // 16:9
+
+	// Orthographic
+	glm::vec4 _mViewport = glm::vec4(0.0f, 1280.0f, 720.0f, 0.0f);
     
-	static Camera& Inst()
+	/*static Camera& Inst()
     {
 		if (!_sInst) {
 			_sInst = new Camera();
@@ -36,6 +94,8 @@ public:
 	}
 
     ~Camera() = default;
+
+	Camera();
 
     void Init(glm::vec3 cameraPos, glm::vec3 cameraTarget);
 
@@ -53,9 +113,6 @@ public:
 	void HandleRotation(float x, float y);
 	void HandleMovement(Direction dir, float dt);
 	void HandleFoV(float xoffset, float yoffset);
-	void AddForce(glm::vec3 force);
-	void UpdateAcceleration();
-	void UpdateFirstOrder(float dt);
 
 private:
 
@@ -81,7 +138,7 @@ private:
 	      _mPitch = 0.0f;
 	float _mMovementSpeed = 2.5f;
 	bool  _mFirstMouse;
-
+	*/
 };
 
 #endif // CAMERA_H

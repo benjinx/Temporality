@@ -1,6 +1,6 @@
 #include "Mesh.hpp"
 
-#include <Camera.hpp>
+#include <App.hpp>
 #include <Material.hpp>
 #include <Shader.hpp>
 
@@ -17,8 +17,8 @@ void Mesh::Render(Shader * shader, glm::mat4 modelMat)
 {
 	shader->Use();
 
-    const auto& view = Camera::Inst().GetViewMat();
-    const auto& proj = Camera::Inst().GetProjectionMat();
+	const auto& view = App::Inst()->GetCurrentCamera()->GetView();//Camera::Inst().GetViewMat();
+    const auto& proj = App::Inst()->GetCurrentCamera()->GetProjection();//Camera::Inst().GetProjectionMat();
 
 	shader->SetMat4("modelMat", modelMat);
 	shader->SetMat4("viewMat", view);
@@ -27,7 +27,7 @@ void Mesh::Render(Shader * shader, glm::mat4 modelMat)
 	glm::mat4 mvp = proj * view * modelMat;
 	shader->SetMat4("mvp", mvp);
 
-    glm::vec3 camPos = Camera::Inst().GetCameraPos();
+	glm::vec3 camPos = App::Inst()->GetCurrentCamera()->GetPosition();//Camera::Inst().GetCameraPos();
 	glm::vec4 eyePos = glm::vec4(camPos.x, camPos.y, camPos.z, 1.0f);
 	shader->SetVec4("eyePos", eyePos);
 

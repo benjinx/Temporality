@@ -11,6 +11,13 @@ void GameScene::Start()
 	LogVerbose("Verb\n");
 	LogLoad("Load\n");
 
+	// Camera
+	auto camera = new Camera();
+	_mGameObjects.emplace("Camera", camera);
+	App::Inst()->SetCurrentCamera(camera);
+
+	_mGameObjects["Camera"]->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+
 	// Object setup
 	printf("\nLoading Materials\n");
 
@@ -57,10 +64,10 @@ void GameScene::Start()
 	
 
 	// Camera
-	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
-	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+	//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
+	//glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 
-	Camera::Inst().Init(cameraPos, cameraTarget);
+	//Camera::Inst().Init(cameraPos, cameraTarget);
 
 	// Load lua script
 	//_mScriptHost.Load();
@@ -106,6 +113,12 @@ void GameScene::Update(float dt)
 {
 	Scene::Update(dt);
 
+	
+
+	_mGameObjects["helmet"]->SetRotation(_mGameObjects["helmet"]->GetRotation() * glm::angleAxis(glm::radians(0.001f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	//_mGameObjects["helmet"]->SetRotation(glm::angleAxis(glm::radians(170.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	//LogInfo("Scale: %f, %f, %f\n", _mGameObjects["helmet"]->GetScale().x, _mGameObjects["helmet"]->GetScale().y, _mGameObjects["helmet"]->GetScale().z);
+
 	// Get the application for ease.
 	App* app = App::Inst();
 
@@ -124,7 +137,7 @@ void GameScene::Update(float dt)
 	//glm::vec4 lightPos = glm::vec4(_mGameObjects["Light"]->GetPosition(), 1.0f);
 	//advLighting->SetVec3("lightVec", lightPos);
 
-	Camera::Inst().Update(dt);
+	//Camera::Inst().Update(dt);
 	
 	//PhysicsUpdate(dt);
 }

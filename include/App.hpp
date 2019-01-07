@@ -2,6 +2,7 @@
 #define APPLICATION_H
 
 #include <Config.hpp>
+#include <Camera.hpp>
 #include <Scene.hpp>
 #include <Window.hpp>
 
@@ -37,6 +38,10 @@ public:
 	void DeleteShaders();
 	void ReloadShaders();
 
+	void SetCurrentCamera(Camera* camera) { _mCurrentCamera = camera; }
+	
+	Camera* GetCurrentCamera() { return _mCurrentCamera; }
+
 private:
 
     static App* _sInst;
@@ -57,6 +62,8 @@ private:
     
 	float _mLastMX = -1, 
           _mLastMY = -1;
+
+	Camera* _mCurrentCamera = nullptr;
 };
 
 #endif // APPLICATION_H

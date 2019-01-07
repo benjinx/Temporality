@@ -30,7 +30,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mode)
 void mouse_pos_callback(GLFWwindow* window, double x, double y);
 
 App::~App() {
-	Camera::Delete();
+	//Camera::Delete();
 
 	DeleteShaders();
 
@@ -227,18 +227,18 @@ void App::ReloadShaders()
 
 void App::HandleInput(float dt)
 {
-	if (_mInputMap[GLFW_KEY_W])
-		Camera::Inst().HandleMovement(Direction::FORWARD, dt);
-	if (_mInputMap[GLFW_KEY_S])
-		Camera::Inst().HandleMovement(Direction::BACKWARD, dt);
-	if (_mInputMap[GLFW_KEY_A])
-		Camera::Inst().HandleMovement(Direction::LEFT, dt);
-	if (_mInputMap[GLFW_KEY_D])
-		Camera::Inst().HandleMovement(Direction::RIGHT, dt);
-	if (_mInputMap[GLFW_KEY_Q])
-		Camera::Inst().HandleMovement(Direction::UP, dt);
-	if (_mInputMap[GLFW_KEY_E])
-		Camera::Inst().HandleMovement(Direction::DOWN, dt);
+	//if (_mInputMap[GLFW_KEY_W])
+	//	Camera::Inst().HandleMovement(Direction::FORWARD, dt);
+	//if (_mInputMap[GLFW_KEY_S])
+	//	Camera::Inst().HandleMovement(Direction::BACKWARD, dt);
+	//if (_mInputMap[GLFW_KEY_A])
+	//	Camera::Inst().HandleMovement(Direction::LEFT, dt);
+	//if (_mInputMap[GLFW_KEY_D])
+	//	Camera::Inst().HandleMovement(Direction::RIGHT, dt);
+	//if (_mInputMap[GLFW_KEY_Q])
+	//	Camera::Inst().HandleMovement(Direction::UP, dt);
+	//if (_mInputMap[GLFW_KEY_E])
+	//	Camera::Inst().HandleMovement(Direction::DOWN, dt);
 }
 
 void App::HandleGLFWKey(GLFWwindow* window, int key, int scancode, int action, int mode)
@@ -297,7 +297,7 @@ void App::HandleGLFWMouseButton(GLFWwindow* window, int button, int action, int 
 
 void App::HandleGLFWScroll(GLFWwindow* window, double xoffset, double yoffset)
 {
-	Camera::Inst().HandleFoV((float)xoffset, (float)yoffset);
+	//Camera::Inst().HandleFoV((float)xoffset, (float)yoffset);
 
     // scroll
     ImGui_ImplGlfw_ScrollCallback(window, xoffset, yoffset);
@@ -318,7 +318,7 @@ void App::HandleGLFWMousePos(GLFWwindow* window, double x, double y)
 
     // handle mouse pos
 	if (_mInputMap[GLFW_MOUSE_BUTTON_RIGHT]) {
-		Camera::Inst().HandleRotation(xoffset, yoffset);
+		//Camera::Inst().HandleRotation(xoffset, yoffset);
 	}
 }
 
