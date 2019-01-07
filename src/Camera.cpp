@@ -86,6 +86,38 @@ void Camera::SetLookAt(const glm::vec3& point)
 	SetForward(point - GetPosition());
 }
 
+void Camera::HandleMovement(Direction dir, float dt)
+{
+	float movementSpeed = 0.25f;
+	float velocity = movementSpeed * dt;
+
+	switch (dir)
+	{
+	case FORWARD:
+		SetPosition(GetPosition() + (GetForward() * velocity));
+		break;
+	case BACKWARD:
+		SetPosition(GetPosition() - (GetForward() * velocity));
+		break;
+	case LEFT:
+		SetPosition(GetPosition() - (glm::normalize(glm::cross(GetForward(), _mUp)) * velocity));
+		break;
+	case RIGHT:
+		SetPosition(GetPosition() + (glm::normalize(glm::cross(GetForward(), _mUp)) * velocity));
+		break;
+	case UP:
+		SetPosition(GetPosition() + (glm::normalize(glm::cross(GetForward(), _mRight)) * velocity));
+		//_mPosition += glm::normalize(glm::cross(_mForward, _mRight)) * velocity;
+		break;
+	case DOWN:
+		SetPosition(GetPosition() - (glm::normalize(glm::cross(GetForward(), _mRight)) * velocity));
+		//_mPosition -= glm::normalize(glm::cross(_mForward, _mRight)) * velocity;
+		break;
+	default:
+		break;
+	}
+}
+
 /*void Camera::Init(glm::vec3 cameraPos, glm::vec3 cameraTarget)
 {
     _mPosition = cameraPos;

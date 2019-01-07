@@ -227,18 +227,18 @@ void App::ReloadShaders()
 
 void App::HandleInput(float dt)
 {
-	//if (_mInputMap[GLFW_KEY_W])
-	//	Camera::Inst().HandleMovement(Direction::FORWARD, dt);
-	//if (_mInputMap[GLFW_KEY_S])
-	//	Camera::Inst().HandleMovement(Direction::BACKWARD, dt);
-	//if (_mInputMap[GLFW_KEY_A])
-	//	Camera::Inst().HandleMovement(Direction::LEFT, dt);
-	//if (_mInputMap[GLFW_KEY_D])
-	//	Camera::Inst().HandleMovement(Direction::RIGHT, dt);
-	//if (_mInputMap[GLFW_KEY_Q])
-	//	Camera::Inst().HandleMovement(Direction::UP, dt);
-	//if (_mInputMap[GLFW_KEY_E])
-	//	Camera::Inst().HandleMovement(Direction::DOWN, dt);
+	if (_mInputMap[GLFW_KEY_W])
+		_mCurrentCamera->HandleMovement(Direction::FORWARD, dt);
+	if (_mInputMap[GLFW_KEY_S])
+		_mCurrentCamera->HandleMovement(Direction::BACKWARD, dt);
+	if (_mInputMap[GLFW_KEY_A])
+		_mCurrentCamera->HandleMovement(Direction::LEFT, dt);
+	if (_mInputMap[GLFW_KEY_D])
+		_mCurrentCamera->HandleMovement(Direction::RIGHT, dt);
+	if (_mInputMap[GLFW_KEY_Q])
+		_mCurrentCamera->HandleMovement(Direction::UP, dt);
+	if (_mInputMap[GLFW_KEY_E])
+		_mCurrentCamera->HandleMovement(Direction::DOWN, dt);
 }
 
 void App::HandleGLFWKey(GLFWwindow* window, int key, int scancode, int action, int mode)

@@ -5,15 +5,15 @@
 #include <GameObject.hpp>
 #include <Math.hpp>
 
-//enum Direction
-//{
-//	FORWARD = 0,
-//	BACKWARD,
-//	LEFT,
-//	RIGHT,
-//	UP,
-//	DOWN,
-//};
+enum Direction
+{
+	FORWARD = 0,
+	BACKWARD,
+	LEFT,
+	RIGHT,
+	UP,
+	DOWN,
+};
 
 class Window;
 
@@ -60,6 +60,8 @@ public:
 
 	void SetLookAt(const glm::vec3& point);
 
+	void HandleMovement(Direction dir, float dt);
+
 	//virtual void Update(const float dt) override;
 
 private:
@@ -69,6 +71,8 @@ private:
 	glm::vec2 _mClip = glm::vec2(0.1f, 10000.0f);
 
 	glm::vec3 _mUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	glm::vec3 _mRight = glm::normalize(glm::cross(_mUp, GetForward()));
 
 	// Perspective
 	float _mFov = glm::radians(45.0f);
