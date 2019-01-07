@@ -258,9 +258,6 @@ void App::HandleGLFWKey(GLFWwindow* window, int key, int scancode, int action, i
 			case GLFW_KEY_F5: // Reloads shaders
 			{
 				std::cout << "\nReloading shaders!\n";
-				
-				//_mCurrentScene->DeleteShaders();
-				//_mCurrentScene->SetupShaders();
 				ReloadShaders();
 				break;
 			}
@@ -318,7 +315,7 @@ void App::HandleGLFWMousePos(GLFWwindow* window, double x, double y)
 
     // handle mouse pos
 	if (_mInputMap[GLFW_MOUSE_BUTTON_RIGHT]) {
-		//Camera::Inst().HandleRotation(xoffset, yoffset);
+		_mCurrentCamera->HandleRotation(xoffset, yoffset);
 	}
 }
 

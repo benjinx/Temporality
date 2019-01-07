@@ -107,15 +107,37 @@ void Camera::HandleMovement(Direction dir, float dt)
 		break;
 	case UP:
 		SetPosition(GetPosition() + (glm::normalize(glm::cross(GetForward(), _mRight)) * velocity));
-		//_mPosition += glm::normalize(glm::cross(_mForward, _mRight)) * velocity;
 		break;
 	case DOWN:
 		SetPosition(GetPosition() - (glm::normalize(glm::cross(GetForward(), _mRight)) * velocity));
-		//_mPosition -= glm::normalize(glm::cross(_mForward, _mRight)) * velocity;
 		break;
 	default:
 		break;
 	}
+}
+
+void Camera::HandleRotation(float xoffset, float yoffset)
+{
+	float sensitivity = 0.05f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	_mYaw += xoffset;
+	_mPitch += yoffset;
+
+	// make sure that when pitch is out of bounds, screen doesn't get flipped
+	if (_mPitch > 89.0f)
+		_mPitch = 89.0f;
+	if (_mPitch < -89.0f)
+		_mPitch = -89.0f;
+
+	glm::vec3 front;
+	front.x = cos(glm::radians(_mPitch)) * cos(glm::radians(_mYaw));
+	front.y = sin(glm::radians(_mPitch));
+	front.z = cos(glm::radians(_mPitch)) * sin(glm::radians(_mYaw));
+	SetForward(glm::normalize(front));
+	_mRight = glm::normalize(glm::cross(GetForward(), _mUp));
+	_mUp = glm::normalize(glm::cross(_mRight, GetForward()));
 }
 
 /*void Camera::Init(glm::vec3 cameraPos, glm::vec3 cameraTarget)

@@ -62,6 +62,8 @@ public:
 
 	void HandleMovement(Direction dir, float dt);
 
+	void HandleRotation(float xoffset, float yoffset);
+
 	//virtual void Update(const float dt) override;
 
 private:
@@ -74,6 +76,9 @@ private:
 
 	glm::vec3 _mRight = glm::normalize(glm::cross(_mUp, GetForward()));
 
+	float _mYaw = -90.0f,
+		_mPitch = 0.0f;
+
 	// Perspective
 	float _mFov = glm::radians(45.0f);
 
@@ -81,7 +86,7 @@ private:
 
 	// Orthographic
 	glm::vec4 _mViewport = glm::vec4(0.0f, 1280.0f, 720.0f, 0.0f);
-    
+
 	/*static Camera& Inst()
     {
 		if (!_sInst) {
