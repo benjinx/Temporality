@@ -28,7 +28,7 @@ public:
 	GameObject(std::string filename);
 	virtual ~GameObject();
 
-	void Update(const float dt);
+	virtual void Update(const float dt);
 	void Render();
 
 

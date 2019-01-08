@@ -27,6 +27,7 @@ void GameScene::Start()
 	_mGameObjects.emplace("helmet", new GameObject("/models/DamagedHelmet.glb"));
 
 	// Initialize Objs
+	_mGameObjects["helmet"]->SetPosition(glm::vec3(-3.0f, 0.0f, 0.0f));
 	_mGameObjects["helmet"]->SetRotation(glm::angleAxis(glm::radians(60.0f), glm::vec3(1.0f, 1.0f, 0.0f)));
 	//_mGameObjects["Light"]->SetScale(glm::vec3(0.3f, 0.3f, 0.3f));
 
@@ -51,7 +52,7 @@ void GameScene::Start()
 	//_mGameObjects["Light"]->SetShader(app->GetShader("passThru"));
 	//_mGameObjects["Cube"]->SetShader(app->GetShader("advLighting"));
 	//_mGameObjects["bulbs"]->SetShader(app->GetShader("advLighting"));
-	_mGameObjects["helmet"]->SetShader(app->GetShader("passThru"));
+	_mGameObjects["helmet"]->SetShader(app->GetShader("advLighting"));
 
 	// UI
 	DevUI::Start();
@@ -135,7 +136,7 @@ void GameScene::Update(float dt)
 	advLighting->SetVec3("lightColor", lightColor);
 
 	//glm::vec4 lightPos = glm::vec4(_mGameObjects["Light"]->GetPosition(), 1.0f);
-	//advLighting->SetVec3("lightVec", lightPos);
+	advLighting->SetVec3("lightVec", glm::vec3(-2.0f, 0.0f, 2.0f));
 
 	//Camera::Inst().Update(dt);
 	

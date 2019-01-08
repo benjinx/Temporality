@@ -64,7 +64,12 @@ public:
 
 	void HandleRotation(float xoffset, float yoffset);
 
-	//virtual void Update(const float dt) override;
+	glm::vec3 GetWorldUp() const { return _mWorldUp; }
+
+	void SetUp(glm::vec3 up) { _mUp = up; }
+	glm::vec3 GetUp() { return _mUp; }
+
+	glm::vec3 GetRight() { return glm::normalize(glm::cross(GetForward(), GetUp())); }
 
 private:
 
@@ -84,6 +89,13 @@ private:
 
 	// Orthographic
 	glm::vec4 _mViewport = glm::vec4(0.0f, 1280.0f, 720.0f, 0.0f);
+
+	float _mMovementSpeed = 0.25f;
+	float _mRotateSpeed = 0.001f;
+
+	glm::vec3 _mWorldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	bool _mInverse = false;
 
 	/*static Camera& Inst()
     {
