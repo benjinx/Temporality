@@ -2,10 +2,9 @@
 
 // Attributes
 layout (location = 0) in vec4 position;
-layout (location = 2) in vec4 normal;
-layout (location = 8) in vec2 texCoords;
-layout (location = 10) in vec4 tangent;
-layout (location = 11) in vec4 bitangent;
+layout (location = 1) in vec4 normal;
+layout (location = 2) in vec2 texCoords;
+layout (location = 3) in vec4 tangent;
 
 // Uniforms
 uniform mat4 mvp;
@@ -44,6 +43,7 @@ void main()
 
 	pass.lightDir = normalize(tangentLightPos - tangentFragPos);
 	pass.eyeDir = normalize(tangentEyePos - tangentFragPos);
+	pass.normal = N;
 
 	gl_Position =  projMat * viewMat * modelMat * vec4(position.xyz, 1.0);
 }

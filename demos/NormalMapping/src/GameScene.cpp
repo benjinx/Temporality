@@ -7,40 +7,50 @@ void GameScene::Start()
 	// Object setup
 	printf("\nLoading Models/Materials\n");
 
+	// Camera
+	auto camera = new Camera();
+	_mGameObjects.emplace("Camera", camera);
+	_mGameObjects["Camera"]->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+	App::Inst()->SetCurrentCamera(camera);
+
 	// Light Source
-	_mGameObjects.emplace("Light", new GameObject("models/Primitives/pSphere.obj"));
+	_mGameObjects.emplace("Light", new GameObject("/models/Primitives/pSphere.glb"));
 
 	_mGameObjects["Light"]->SetPosition(glm::vec3(-2.0f, -0.5f, 1.0f));
 	_mGameObjects["Light"]->SetScale(glm::vec3(0.3f, 0.3f, 0.3f));
 	_mGameObjects["Light"]->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	// Initialize Objs
-	_mGameObjects.emplace("Earth", new GameObject("models/earth.obj"));
-	_mGameObjects.emplace("Moon", new GameObject("models/moon.obj"));
+	//_mGameObjects.emplace("Earth", new GameObject("/models/earth.glb"));
+	_mGameObjects.emplace("Moon", new GameObject("/models/moon.glb"));
 
-	_mGameObjects["Earth"]->SetPosition(glm::vec3(1.0f, 0.0f, 0.0f));
-	_mGameObjects["Earth"]->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
-	_mGameObjects["Earth"]->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+	//_mGameObjects["Earth"]->SetPosition(glm::vec3(1.0f, 0.0f, 0.0f));
+	//_mGameObjects["Earth"]->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+	//_mGameObjects["Earth"]->SetRotation(glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	_mGameObjects["Moon"]->SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 	_mGameObjects["Moon"]->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-	_mGameObjects["Moon"]->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+	_mGameObjects["Moon"]->SetRotation(glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+
+	_mGameObjects.emplace("helm", new GameObject("/models/DamagedHelmet.glb"));
+	_mGameObjects["helm"]->SetPosition(glm::vec3(1.0f, 1.0f, 1.0f));
 
 	// Shaders
 	printf("\nLoading Shaders\n");
 
 	App* app = App::Inst();
 	app->AddShader("passThru", new Shader({
-		"shaders/passThru.vert",
-		"shaders/passThru.frag" }));
+		"shaders/passThruColor.vert",
+		"shaders/passThruColor.frag" }));
 
 	app->AddShader("normalMapping", new Shader({
 		"shaders/normalMapping.vert",
 		"shaders/normalMapping.frag" }));
 
 	_mGameObjects["Light"]->SetShader(app->GetShader("passThru"));
-	_mGameObjects["Earth"]->SetShader(app->GetShader("normalMapping"));
+	//_mGameObjects["Earth"]->SetShader(app->GetShader("normalMapping"));
 	_mGameObjects["Moon"]->SetShader(app->GetShader("normalMapping"));
+	_mGameObjects["helm"]->SetShader(app->GetShader("normalMapping"));
 
 	// UI
 	DevUI::Start();
@@ -48,8 +58,6 @@ void GameScene::Start()
 	// Camera
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-
-	Camera::Inst().Init(cameraPos, cameraTarget);
 }
 
 void GameScene::Update(float dt)
@@ -77,14 +85,11 @@ void GameScene::Update(float dt)
 	glm::vec4 lightPos = glm::vec4(_mGameObjects["Light"]->GetPosition(), 1.0f);
 	normalMapping->SetVec4("lightPos", lightPos);
 
-	// Update Camera
-	Camera::Inst().Update(dt);
-
 	// Rotate objects
-	_mGameObjects["Earth"]->SetRotation(_mGameObjects["Earth"]->GetRotation() + glm::vec3(0.0f, 0.25f * dt, 0.0f));
-	_mGameObjects["Moon"]->SetRotation(_mGameObjects["Moon"]->GetRotation() + glm::vec3(0.0f, 0.5f * dt, 0.0f));
+	//_mGameObjects["Earth"]->SetRotation(_mGameObjects["Earth"]->GetRotation() + glm::vec3(0.0f, 0.25f * dt, 0.0f));
+	//_mGameObjects["Moon"]->SetRotation(_mGameObjects["Moon"]->GetRotation() + glm::vec3(0.0f, 0.5f * dt, 0.0f));
 
-	const auto& earthPos = _mGameObjects["Earth"]->GetPosition();
+	/*const auto& earthPos = _mGameObjects["Earth"]->GetPosition();
 	const auto& moonPos = _mGameObjects["Moon"]->GetPosition();
 
 	_mAngle += 0.5f * dt;
@@ -101,5 +106,5 @@ void GameScene::Update(float dt)
 
 	glm::vec3 newPos = glm::vec3(x, 0.0f, -z);
 	
-	_mGameObjects["Moon"]->SetPosition(newPos);
+	_mGameObjects["Moon"]->SetPosition(newPos);*/
 }

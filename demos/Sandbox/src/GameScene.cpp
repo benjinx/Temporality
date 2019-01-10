@@ -21,37 +21,32 @@ void GameScene::Start()
 	printf("\nLoading Materials\n");
 
 	// Scene Objs
-	//_mGameObjects.emplace("Light", new GameObject("models/Primitives/pCube.obj"));
-	//_mGameObjects.emplace("Cube", new GameObject("models/Primitives/pCube.obj"));
-	//_mGameObjects.emplace("bulbs", new GameObject("models/bulbasaur.obj"));
+	_mGameObjects.emplace("Light", new GameObject("/models/Primitives/pCube.glb"));
 	_mGameObjects.emplace("helmet", new GameObject("/models/DamagedHelmet.glb"));
 
+	_mGameObjects["helmet"]->SetParent(_mGameObjects["Light"]);
+	_mGameObjects["Light"]->AddChild(_mGameObjects["helmet"]);
+
 	// Initialize Objs
-	_mGameObjects["helmet"]->SetPosition(glm::vec3(-3.0f, 0.0f, 0.0f));
+	_mGameObjects["Light"]->SetPosition(glm::vec3(-3.0f, 0.0f, 0.0f));
+	_mGameObjects["Light"]->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+
+	_mGameObjects["helmet"]->SetPosition(glm::vec3(3.0f, 0.0f, 0.0f));
 	_mGameObjects["helmet"]->SetRotation(glm::angleAxis(glm::radians(60.0f), glm::vec3(1.0f, 1.0f, 0.0f)));
-	//_mGameObjects["Light"]->SetScale(glm::vec3(0.3f, 0.3f, 0.3f));
-
-	//_mGameObjects["Cube"]->SetPosition(glm::vec3(-1.5f, -1.0f, 0.0f));
-	//_mGameObjects["Cube"]->SetRotation(glm::vec3(20.0f, 0.0f, 20.0f));
-
-	//_mGameObjects["bulbs"]->SetPosition(glm::vec3(0.5f, 0.5f, 0.5f));
-	//_mGameObjects["bulbs"]->SetRotation(glm::vec3(0.0f, -90.0f, 0.0f));
 
 	// Shaders
 	printf("\nLoading Shaders\n");
 
 	App* app = App::Inst();
 	app->AddShader("passThru", new Shader({
-		"shaders/passThru.vert",
-		"shaders/passThru.frag" }));
+		"shaders/passThruColor.vert",
+		"shaders/passThruColor.frag" }));
 
 	app->AddShader("advLighting", new Shader({
 		"shaders/advLighting.vert",
 		"shaders/advLighting.frag" }));
 
-	//_mGameObjects["Light"]->SetShader(app->GetShader("passThru"));
-	//_mGameObjects["Cube"]->SetShader(app->GetShader("advLighting"));
-	//_mGameObjects["bulbs"]->SetShader(app->GetShader("advLighting"));
+	_mGameObjects["Light"]->SetShader(app->GetShader("passThru"));
 	_mGameObjects["helmet"]->SetShader(app->GetShader("advLighting"));
 
 	// UI

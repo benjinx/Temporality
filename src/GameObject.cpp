@@ -34,7 +34,7 @@ void GameObject::Render()
 {
 	if (_mShader != nullptr && _mModel != nullptr)
 	{
-		_mModel->Render(_mShader, GetModelMatrix());
+		_mModel->Render(_mShader, GetWorldTransform());
 	}
 }
 
@@ -86,17 +86,9 @@ void GameObject::DrawAxis()
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glUseProgram(shader->GetShaderID());
 
-	const auto& view = App::Inst()->GetCurrentCamera()->GetView();//Camera::Inst().GetViewMat();
-	const auto& proj = App::Inst()->GetCurrentCamera()->GetProjection();//Camera::Inst().GetProjectionMat();
-	const auto& model = _mModelMatrix;
-
-	//model = glm::mat4(1);
-	//model = glm::translate(model, _mTransform.position);
-	//model = glm::rotate(model, glm::radians(_mTransform.rotation.x), glm::vec3(1.0f, 0.0f, 0.0f));
-	//model = glm::rotate(model, glm::radians(_mTransform.rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-	//model = glm::rotate(model, glm::radians(_mTransform.rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-
-	
+	const auto& view = App::Inst()->GetCurrentCamera()->GetView();
+	const auto& proj = App::Inst()->GetCurrentCamera()->GetProjection();
+	const auto& model = GetTransform();	
 
 	glUniformMatrix4fv(glGetUniformLocation(shader->GetShaderID(), "modelMat"), 1, false, (GLfloat*)&model);
 	glUniformMatrix4fv(glGetUniformLocation(shader->GetShaderID(), "viewMat"), 1, false, (GLfloat*)&view);

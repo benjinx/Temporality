@@ -5,6 +5,8 @@
 #include <Math.hpp>
 #include <OpenGL.hpp>
 
+#include <unordered_map>
+
 class Shader;
 class Model;
 
@@ -26,18 +28,9 @@ public:
 	void SetShader(Shader* shader);
 
 	void SetParent(GameObject* parent) { _mParent = parent; }
-	GameObject* GetParent() { return _mParent; }
+	GameObject* GetParent() const { return _mParent; }
 	void AddChild(GameObject* child) { _mChildren.push_back(child); }
-
-	// Build Model Matrix
-	glm::mat4 GetModelMatrix()
-	{
-		_mModelMatrix = glm::mat4(1);
-		_mModelMatrix = glm::translate(_mModelMatrix, _mPosition);
-		_mModelMatrix *= glm::mat4_cast(_mRotation);
-		_mModelMatrix = glm::scale(_mModelMatrix, _mScale);
-		return _mModelMatrix;
-	}
+	std::vector<GameObject*> GetChildren() { return _mChildren; }
 
 	//// LOCAL
 	// Local Transform
@@ -48,7 +41,14 @@ public:
 		_mScale = scale;
 	}
 
-	glm::mat4 GetTransform() { return GetModelMatrix(); }
+	glm::mat4 GetTransform() const
+	{ 
+		glm::mat4 transform = glm::mat4(1);
+		transform = glm::translate(transform, _mPosition);
+		transform *= glm::mat4_cast(_mRotation);
+		transform = glm::scale(transform, _mScale);
+		return transform;
+	}
 
 	// Remember matrix order is Translate (Position), Rotate, Scale
 	void SetPosition(glm::vec3 position) {
@@ -74,41 +74,41 @@ public:
 
 	//// WORLD
 	// World Transform
-	glm::mat4 GetWorldTransform()
+	glm::mat4 GetWorldTransform() const
 	{
 		if (GetParent())
 		{
-			return (GetParent()->GetTransform() * GetTransform());
+			return GetParent()->GetTransform() * GetTransform();
 		}
 
 		return GetTransform();
 	}
 
-	glm::vec3 GetWorldPosition()
+	glm::vec3 GetWorldPosition() const
 	{
 		if (GetParent())
 		{
-			return (GetParent()->GetPosition() + GetPosition());
+			return GetParent()->GetPosition() + GetPosition();
 		}
 
 		return GetPosition();
 	}
 
-	glm::quat GetWorldRotation()
+	glm::quat GetWorldRotation() const
 	{
 		if (GetParent())
 		{
-			return (GetParent()->GetRotation() * GetRotation());
+			return GetParent()->GetRotation() * GetRotation();
 		}
 
 		return GetRotation();
 	}
 
-	glm::vec3 GetWorldScale()
+	glm::vec3 GetWorldScale() const
 	{
 		if (GetParent())
 		{
-			return (GetParent()->GetScale() * GetScale());
+			return GetParent()->GetScale() * GetScale();
 		}
 
 		return GetScale();
@@ -116,11 +116,7 @@ public:
 	//// END WORLD
 	
 protected:
-
-	// Model
-	glm::mat4 _mModelMatrix = glm::mat4();
-
-	// 
+	// Pos, rot, scale
 	glm::vec3 _mPosition = glm::vec3(0.0f),
 			  _mScale = glm::vec3(1.0f);
 	glm::quat _mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);

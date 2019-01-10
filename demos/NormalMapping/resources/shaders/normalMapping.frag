@@ -1,17 +1,16 @@
 #version 330 core
 
 struct Material {
-	vec3 ambient;
+	//vec3 ambient;
 	vec3 diffuse;
-	vec3 specular;
-	float shininess;
-	sampler2D ambientMap;
+	//vec3 specular;
+	//sampler2D ambientMap;
 	sampler2D diffuseMap;
 	sampler2D specularMap;
 	sampler2D normalMap;
-	bool hasAmbient;
+	//bool hasAmbient;
 	bool hasDiffuse;
-	bool hasSpecular;
+	//bool hasSpecular;
 	bool hasNormal;
 };
 
@@ -41,37 +40,35 @@ void main()
 
 	// ambient
     float ambientStrength = 0.1;
-	vec3 ambient = ambientStrength * objectColor;
+	vec3 ambient = ambientStrength * lightColor;
   	
     // diffuse 
 	vec3 N;
 	if (material.hasNormal)
 		N = normalize(texture(material.normalMap, pass.texCoords).rgb * 2.0 - 1.0);
-	else
-		N = normalize(pass.normal);
+	//else
+		//N = normalize(pass.normal);
 
     float diff = max(dot(N, L), 0.0);
 
     vec3 diffuse;
 	if (material.hasDiffuse)
-		diffuse = diff * objectColor;
-	else
-		diffuse = diff * material.diffuse * lightColor;
+		diffuse = diff * lightColor;
+	//else
+	//	diffuse = diff * material.diffuse * lightColor;
 
     // specular
-	float shininess = material.shininess;
-	if (shininess <= 1.0)
-		shininess = 32.0;
-
+	float specularStrength = 0.5;
 	vec3 halfwayDir = normalize(L + V);
-    float spec = pow(max(dot(N, halfwayDir), 0.0), shininess);
+    float spec = pow(max(dot(N, halfwayDir), 0.0), 32.0);
 
 	vec3 specular;
-	if (material.hasSpecular)
-		specular = texture(material.specularMap, pass.texCoords).rgb * spec;
-	else
-		specular = spec * material.specular * lightColor;
+	//if (material.hasSpecular)
+	//	specular = texture(material.specularMap, pass.texCoords).rgb * spec;
+	//else
+		//specular = spec * material.specular * lightColor;
+		specular = spec * lightColor;
         
-    vec3 result = (ambient + diffuse + specular);
+    vec3 result = (specular) * objectColor;//(ambient + diffuse + specular) * objectColor;
 	fragColor = vec4(result, 1.0);
 }
