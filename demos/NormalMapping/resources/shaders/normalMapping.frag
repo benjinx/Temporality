@@ -9,9 +9,9 @@ struct Material {
 	sampler2D specularMap;
 	sampler2D normalMap;
 	//bool hasAmbient;
-	bool hasDiffuse;
+	bool hasDiffuseMap;
 	//bool hasSpecular;
-	bool hasNormal;
+	bool hasNormalMap;
 };
 
 // Uniforms
@@ -44,7 +44,7 @@ void main()
   	
     // diffuse 
 	vec3 N;
-	if (material.hasNormal)
+	if (material.hasNormalMap)
 		N = normalize(texture(material.normalMap, pass.texCoords).rgb * 2.0 - 1.0);
 	//else
 		//N = normalize(pass.normal);
@@ -52,7 +52,7 @@ void main()
     float diff = max(dot(N, L), 0.0);
 
     vec3 diffuse;
-	if (material.hasDiffuse)
+	if (material.hasDiffuseMap)
 		diffuse = diff * lightColor;
 	//else
 	//	diffuse = diff * material.diffuse * lightColor;
@@ -69,6 +69,6 @@ void main()
 		//specular = spec * material.specular * lightColor;
 		specular = spec * lightColor;
         
-    vec3 result = (specular) * objectColor;//(ambient + diffuse + specular) * objectColor;
+    vec3 result = N;//(ambient + diffuse + specular) * objectColor;
 	fragColor = vec4(result, 1.0);
 }

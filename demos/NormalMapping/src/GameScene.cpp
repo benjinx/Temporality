@@ -21,19 +21,19 @@ void GameScene::Start()
 	_mGameObjects["Light"]->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	// Initialize Objs
-	//_mGameObjects.emplace("Earth", new GameObject("/models/earth.glb"));
+	_mGameObjects.emplace("Earth", new GameObject("/models/earth.glb"));
 	_mGameObjects.emplace("Moon", new GameObject("/models/moon.glb"));
 
-	//_mGameObjects["Earth"]->SetPosition(glm::vec3(1.0f, 0.0f, 0.0f));
-	//_mGameObjects["Earth"]->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
-	//_mGameObjects["Earth"]->SetRotation(glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+	_mGameObjects["Earth"]->SetPosition(glm::vec3(1.0f, 0.0f, 0.0f));
+	_mGameObjects["Earth"]->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+	_mGameObjects["Earth"]->SetRotation(glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	_mGameObjects["Moon"]->SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 	_mGameObjects["Moon"]->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 	_mGameObjects["Moon"]->SetRotation(glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	_mGameObjects.emplace("helm", new GameObject("/models/DamagedHelmet.glb"));
-	_mGameObjects["helm"]->SetPosition(glm::vec3(1.0f, 1.0f, 1.0f));
+	_mGameObjects["helm"]->SetPosition(glm::vec3(2.0f, 2.0f, 2.0f));
 
 	// Shaders
 	printf("\nLoading Shaders\n");
@@ -48,7 +48,7 @@ void GameScene::Start()
 		"shaders/normalMapping.frag" }));
 
 	_mGameObjects["Light"]->SetShader(app->GetShader("passThru"));
-	//_mGameObjects["Earth"]->SetShader(app->GetShader("normalMapping"));
+	_mGameObjects["Earth"]->SetShader(app->GetShader("normalMapping"));
 	_mGameObjects["Moon"]->SetShader(app->GetShader("normalMapping"));
 	_mGameObjects["helm"]->SetShader(app->GetShader("normalMapping"));
 
