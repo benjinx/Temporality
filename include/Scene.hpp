@@ -4,6 +4,8 @@
 #include <Config.hpp>
 #include <GameObject.hpp>
 
+#include <unordered_map>
+
 class Scene //: public GameObject
 {
 public:
