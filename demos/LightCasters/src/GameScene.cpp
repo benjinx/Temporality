@@ -7,24 +7,30 @@ void GameScene::Start()
 	// Object setup
 	printf("\nLoading Models/Materials\n");
 
+	// Camera
+	auto camera = new Camera();
+	_mGameObjects.emplace("Camera", camera);
+	_mGameObjects["Camera"]->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+	App::Inst()->SetCurrentCamera(camera);
+
 	// Light Source
-	_mGameObjects.emplace("Light", new GameObject("models/Primitives/pCube.obj"));
+	_mGameObjects.emplace("Light", new GameObject("/models/Primitives/pCube.glb"));
 
 	_mGameObjects["Light"]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	_mGameObjects["Light"]->SetScale(glm::vec3(0.3f, 0.3f, 0.3f));
 
 	// Scene Objs
-	_mGameObjects.emplace("Plane", new GameObject("models/Primitives/pPlane.obj"));
-	_mGameObjects.emplace("Sphere", new GameObject("models/Primitives/pSphere.obj"));
-	_mGameObjects.emplace("Cube", new GameObject("models/Primitives/pCube.obj"));
-	_mGameObjects.emplace("Torus", new GameObject("models/Primitives/pTorus.obj"));
-	_mGameObjects.emplace("Torus2", new GameObject("models/Primitives/pTorus.obj"));
-	_mGameObjects.emplace("Torus3", new GameObject("models/Primitives/pTorus.obj"));
+	_mGameObjects.emplace("Plane", new GameObject("/models/Primitives/pPlane.glb"));
+	_mGameObjects.emplace("Sphere", new GameObject("/models/Primitives/pSphere.glb"));
+	_mGameObjects.emplace("Cube", new GameObject("/models/Primitives/pCube.glb"));
+	_mGameObjects.emplace("Torus", new GameObject("/models/Primitives/pTorus.glb"));
+	_mGameObjects.emplace("Torus2", new GameObject("/models/Primitives/pTorus.glb"));
+	_mGameObjects.emplace("Torus3", new GameObject("/models/Primitives/pTorus.glb"));
 
 	// Initialize Objs
 
 	_mGameObjects["Plane"]->SetPosition(glm::vec3(0.0f, -2.5f, 0.0f));
-	_mGameObjects["Plane"]->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
+	//_mGameObjects["Plane"]->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
 	_mGameObjects["Plane"]->SetScale(glm::vec3(5.0f, 5.0f, 5.0f));
 
 	_mGameObjects["Sphere"]->SetPosition(glm::vec3(1.5f, 0.0f, 2.0f));
@@ -52,8 +58,8 @@ void GameScene::Start()
 
 	App* app = App::Inst();
 	app->AddShader("passThru", new Shader({
-		"shaders/passThru.vert",
-		"shaders/passThru.frag" }));
+		"shaders/passThruColor.vert",
+		"shaders/passThruColor.frag" }));
 
 	app->AddShader("lightCasters", new Shader({
 		"shaders/lightCasters.vert",
@@ -78,8 +84,6 @@ void GameScene::Start()
 	// Camera
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-
-	Camera::Inst().Init(cameraPos, cameraTarget);
 }
 
 void GameScene::Update(float dt)
@@ -141,10 +145,10 @@ void GameScene::Update(float dt)
 	if (_mSpotLight)
 	{
 		lightCasters->SetBool("lightCheck.Spot", true);
-		lightCasters->SetVec3("spotlight.position", Camera::Inst().GetCameraPos());
+		lightCasters->SetVec3("spotlight.position", App::Inst()->GetCurrentCamera()->GetPosition());
 
 		// Change 0.0f to 1.0f to just enable spotlight
-		glm::vec4 camFront = glm::vec4(Camera::Inst().GetCameraForward(), 1.0f);
+		glm::vec4 camFront = glm::vec4(App::Inst()->GetCurrentCamera()->GetForward(), 1.0f);
 		lightCasters->SetVec4("spotlight.direction", camFront);
 
 		lightCasters->SetFloat("spotlight.cutoff", glm::cos(glm::radians(12.5f)));
@@ -153,11 +157,8 @@ void GameScene::Update(float dt)
 	else
 		lightCasters->SetBool("lightCheck.Spot", false);
 
-	// Update Camera
-	Camera::Inst().Update(dt);
-
 	// Rotate objects
-	_mGameObjects["Sphere"]->SetRotation(_mGameObjects["Sphere"]->GetRotation() + glm::vec3(0.0f, 0.25f * dt, 0.0f));
-	_mGameObjects["Cube"]->SetRotation(_mGameObjects["Cube"]->GetRotation() + glm::vec3(0.0f, 0.25f * dt, 0.0f));
-	_mGameObjects["Torus"]->SetRotation(_mGameObjects["Torus"]->GetRotation() + glm::vec3(0.0f, 0.0f, 0.25f * dt));
+	//_mGameObjects["Sphere"]->SetRotation(_mGameObjects["Sphere"]->GetRotation() + glm::vec3(0.0f, 0.25f * dt, 0.0f));
+	//_mGameObjects["Cube"]->SetRotation(_mGameObjects["Cube"]->GetRotation() + glm::vec3(0.0f, 0.25f * dt, 0.0f));
+	//_mGameObjects["Torus"]->SetRotation(_mGameObjects["Torus"]->GetRotation() + glm::vec3(0.0f, 0.0f, 0.25f * dt));
 }

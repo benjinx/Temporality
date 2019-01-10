@@ -91,9 +91,19 @@ void GameScene::Update(float dt)
 	glm::vec4 lightPos = glm::vec4(_mGameObjects["Light"]->GetPosition(), 1.0f);
 	advLighting->SetVec4("lightVec", lightPos);
 
-
+	
 	// Rotate objects
-	//_mGameObjects["Sphere"]->SetRotation(_mGameObjects["Sphere"]->GetRotation() + glm::vec3(0.0f, 0.25f * dt, 0.0f));
-	//_mGameObjects["Cube"]->SetRotation(_mGameObjects["Cube"]->GetRotation() + glm::vec3(0.0f, 0.25f * dt, 0.0f));
-	//_mGameObjects["Torus"]->SetRotation(_mGameObjects["Torus"]->GetRotation() + glm::vec3(0.0f, 0.0f, 0.25f * dt));
+	_mGameObjects["Sphere"]->SetRotation(_mGameObjects["Sphere"]->GetRotation() *
+										 (dt * 
+										 glm::angleAxis(glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f))
+										 ));
+	_mGameObjects["Cube"]->SetRotation(_mGameObjects["Cube"]->GetRotation() *
+									   (dt *
+									   glm::angleAxis(glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f))
+									   ));
+	_mGameObjects["Torus"]->SetRotation(_mGameObjects["Torus"]->GetRotation() *
+										(dt *
+										glm::angleAxis(glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f))
+										));
+	//LogInfo("dt: %f \n", dt);
 }
