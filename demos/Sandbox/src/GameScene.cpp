@@ -22,7 +22,8 @@ void GameScene::Start()
 
 	// Scene Objs
 	_mGameObjects.emplace("Light", new GameObject("/models/Primitives/pCube.glb"));
-	_mGameObjects.emplace("helmet", new GameObject("/models/DamagedHelmet.glb"));
+	_mGameObjects.emplace("helmet", new GameObject("/models/DamagedHelm.glb"));
+	//_mGameObjects.emplace("cube", new GameObject("/models/testCube.glb"));
 
 	_mGameObjects["helmet"]->SetParent(_mGameObjects["Light"]);
 	_mGameObjects["Light"]->AddChild(_mGameObjects["helmet"]);
@@ -33,6 +34,8 @@ void GameScene::Start()
 
 	_mGameObjects["helmet"]->SetPosition(glm::vec3(3.0f, 0.0f, 0.0f));
 	_mGameObjects["helmet"]->SetRotation(glm::angleAxis(glm::radians(60.0f), glm::vec3(1.0f, 1.0f, 0.0f)));
+
+	//_mGameObjects["cube"]->SetPosition(glm::vec3(-3.0f, 0.0f, 0.0f));
 
 	// Shaders
 	printf("\nLoading Shaders\n");
@@ -46,8 +49,13 @@ void GameScene::Start()
 		"shaders/advLighting.vert",
 		"shaders/advLighting.frag" }));
 
+	app->AddShader("normalMapping", new Shader({
+		"shaders/normalMapping.vert",
+		"shaders/normalMapping.frag" }));
+
 	_mGameObjects["Light"]->SetShader(app->GetShader("passThru"));
-	_mGameObjects["helmet"]->SetShader(app->GetShader("advLighting"));
+	_mGameObjects["helmet"]->SetShader(app->GetShader("normalMapping"));
+	//_mGameObjects["cube"]->SetShader(app->GetShader("normalMapping"));
 
 	// UI
 	DevUI::Start();
@@ -121,6 +129,7 @@ void GameScene::Update(float dt)
 	// Get reference to each shader
 	Shader* passThru = app->GetShader("passThru");
 	Shader* advLighting = app->GetShader("advLighting");
+	Shader* normalMapping = app->GetShader("normalMapping");
 
 	passThru->Use();
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -133,9 +142,16 @@ void GameScene::Update(float dt)
 	//glm::vec4 lightPos = glm::vec4(_mGameObjects["Light"]->GetPosition(), 1.0f);
 	advLighting->SetVec3("lightVec", glm::vec3(-2.0f, 0.0f, 2.0f));
 
-	//Camera::Inst().Update(dt);
-	
-	//PhysicsUpdate(dt);
+	// Set Light Position
+	normalMapping->Use();
+
+	normalMapping->SetVec3("lightColor", lightColor);
+	glm::vec4 lightPos = glm::vec4(_mGameObjects["Light"]->GetPosition(), 1.0f);
+	normalMapping->SetVec4("lightPos", lightPos);
+
+	glm::vec3 camPos = App::Inst()->GetCurrentCamera()->GetPosition();
+	glm::vec4 eyePos = glm::vec4(camPos.x, camPos.y, camPos.z, 1.0f);
+	normalMapping->SetVec4("eyePos", eyePos);
 }
 
 void GameScene::Render()

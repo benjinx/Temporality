@@ -26,14 +26,11 @@ void GameScene::Start()
 
 	_mGameObjects["Earth"]->SetPosition(glm::vec3(1.0f, 0.0f, 0.0f));
 	_mGameObjects["Earth"]->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
-	_mGameObjects["Earth"]->SetRotation(glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+	_mGameObjects["Earth"]->SetRotation(glm::angleAxis(glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	_mGameObjects["Moon"]->SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 	_mGameObjects["Moon"]->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-	_mGameObjects["Moon"]->SetRotation(glm::angleAxis(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-
-	_mGameObjects.emplace("helm", new GameObject("/models/DamagedHelmet.glb"));
-	_mGameObjects["helm"]->SetPosition(glm::vec3(2.0f, 2.0f, 2.0f));
+	_mGameObjects["Moon"]->SetRotation(glm::angleAxis(glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	// Shaders
 	printf("\nLoading Shaders\n");
@@ -50,7 +47,6 @@ void GameScene::Start()
 	_mGameObjects["Light"]->SetShader(app->GetShader("passThru"));
 	_mGameObjects["Earth"]->SetShader(app->GetShader("normalMapping"));
 	_mGameObjects["Moon"]->SetShader(app->GetShader("normalMapping"));
-	_mGameObjects["helm"]->SetShader(app->GetShader("normalMapping"));
 
 	// UI
 	DevUI::Start();
@@ -85,11 +81,18 @@ void GameScene::Update(float dt)
 	glm::vec4 lightPos = glm::vec4(_mGameObjects["Light"]->GetPosition(), 1.0f);
 	normalMapping->SetVec4("lightPos", lightPos);
 
-	// Rotate objects
-	//_mGameObjects["Earth"]->SetRotation(_mGameObjects["Earth"]->GetRotation() + glm::vec3(0.0f, 0.25f * dt, 0.0f));
-	//_mGameObjects["Moon"]->SetRotation(_mGameObjects["Moon"]->GetRotation() + glm::vec3(0.0f, 0.5f * dt, 0.0f));
+	glm::vec3 camPos = App::Inst()->GetCurrentCamera()->GetPosition();
+	glm::vec4 eyePos = glm::vec4(camPos.x, camPos.y, camPos.z, 1.0f);
+	normalMapping->SetVec4("eyePos", eyePos);
 
-	/*const auto& earthPos = _mGameObjects["Earth"]->GetPosition();
+	// Rotate objects
+	_mGameObjects["Earth"]->SetRotation(_mGameObjects["Earth"]->GetRotation()
+		* glm::angleAxis(glm::radians(-0.25f) * dt, glm::vec3(0.0f, 1.0f, 0.0f)));
+	
+	_mGameObjects["Moon"]->SetRotation(_mGameObjects["Moon"]->GetRotation() 
+		* glm::angleAxis(glm::radians(-0.5f) * dt, glm::vec3(0.0f, 1.0f, 0.0f)));
+
+	const auto& earthPos = _mGameObjects["Earth"]->GetPosition();
 	const auto& moonPos = _mGameObjects["Moon"]->GetPosition();
 
 	_mAngle += 0.5f * dt;
@@ -106,5 +109,5 @@ void GameScene::Update(float dt)
 
 	glm::vec3 newPos = glm::vec3(x, 0.0f, -z);
 	
-	_mGameObjects["Moon"]->SetPosition(newPos);*/
+	_mGameObjects["Moon"]->SetPosition(newPos);
 }

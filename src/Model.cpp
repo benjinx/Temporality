@@ -134,7 +134,7 @@ bool Model::Load(std::string filename)
 		addIt = addVals.find("normalTexture");
 		if (addIt != addVals.end())
 		{
-			mat->SetNormalMap(textures[it->second.TextureIndex()]);
+			mat->SetNormalMap(textures[addIt->second.TextureIndex()]);
 			mat->SetNormalScale(addIt->second.Factor());
 		}
 
@@ -142,19 +142,19 @@ bool Model::Load(std::string filename)
 		if (it != vals.end() && !it->second.number_array.empty())
 		{
 			const auto& c = it->second.ColorFactor();
-			mat->SetEmissive(glm::make_vec3(it->second.ColorFactor().data()));
+			mat->SetEmissive(glm::make_vec3(addIt->second.ColorFactor().data()));
 		}
 
 		addIt = addVals.find("emissiveTexture");
 		if (addIt != addVals.end())
 		{
-			mat->SetEmissiveMap(textures[it->second.TextureIndex()]);
+			mat->SetEmissiveMap(textures[addIt->second.TextureIndex()]);
 		}
 
 		addIt = addVals.find("occlusionTexture");
 		if (addIt != addVals.end())
 		{
-			mat->SetOcclusionMap(textures[it->second.TextureIndex()]);
+			mat->SetOcclusionMap(textures[addIt->second.TextureIndex()]);
 			mat->SetOcclusionStrength(addIt->second.Factor());
 		}
 

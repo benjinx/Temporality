@@ -91,6 +91,10 @@ void GameScene::Update(float dt)
 	glm::vec4 lightPos = glm::vec4(_mGameObjects["Light"]->GetPosition(), 1.0f);
 	advLighting->SetVec4("lightVec", lightPos);
 
+	glm::vec3 camPos = App::Inst()->GetCurrentCamera()->GetPosition();
+	glm::vec4 eyePos = glm::vec4(camPos.x, camPos.y, camPos.z, 1.0f);
+	advLighting->SetVec4("eyePos", eyePos);
+
 	
 	// Rotate objects
 	_mGameObjects["Sphere"]->SetRotation(_mGameObjects["Sphere"]->GetRotation() *
