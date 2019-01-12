@@ -10,32 +10,24 @@ Camera::Camera()
 	const glm::ivec2& size = glm::ivec2(App::Inst()->GetWindow()->GetWidth(),
 										App::Inst()->GetWindow()->GetHeight());
 	SetAspect(size);
-	//SetViewport(0.0f, size.x, size.y, 0.0f);
+	SetViewportSize(_mViewportSize);
 }
 
 glm::mat4 Camera::GetView() const
 {
-	if (_mMode == Mode::Perspective)
-	{
-		return glm::lookAt(GetPosition(), GetPosition() + GetForward(), _mUp);
-	}
-	else if (_mMode == Mode::Orthographic)
-	{
-		return glm::mat4(1.0f);
-	}
-
-	return glm::mat4(1.0f);
+	return glm::lookAt(GetWorldPosition(), GetWorldPosition() + GetForward(), _mUp);
 }
 
 glm::mat4 Camera::GetProjection() const
 {
 	if (_mMode == Mode::Perspective)
 	{
-		return glm::perspective(_mFov, _mAspect, _mClip.x, _mClip.y);
+		return glm::perspective(_mFovX, _mAspect, _mClip[0], _mClip[1]);
 	}
 	else if (_mMode == Mode::Orthographic)
 	{
-		return glm::ortho(_mViewport[0], _mViewport[1], _mViewport[2], _mViewport[3], _mClip.x, _mClip.y);
+		const auto& view = GetViewport();
+		return glm::ortho(view[0], view[1], view[2], view[3], _mClip[0], _mClip[1]);
 	}
 
 	return glm::mat4(1.0f);
@@ -56,14 +48,62 @@ void Camera::SetAspect(const glm::vec2& size)
 	_mAspect = size.x / size.y;
 }
 
-void Camera::SetViewport(float left, float right, float bottom, float top)
+void Camera::SetFOVX(float fovx)
 {
-	_mViewport = glm::vec4(left, right, bottom, top);
+	_mFovX = fovx;
 }
 
-void Camera::SetViewport(const glm::vec4& viewport)
+void Camera::SetFOVY(float fovy)
 {
-	_mViewport = viewport;
+	_mFovX = 2.0f * atanf(tanf(fovy * 0.5f) * _mAspect);
+}
+
+void Camera::SetViewportScale(float left, float right, float bottom, float top)
+{
+	_mViewportScale = glm::vec4(left, right, bottom, top);
+}
+
+void Camera::SetViewportScale(const glm::vec4& viewScale)
+{
+	_mViewportScale = viewScale;
+}
+
+void Camera::SetViewportSize(float width, float height)
+{
+	_mViewportSize.x = width;
+	_mViewportSize.y = height;
+}
+
+void Camera::SetViewportSize(const glm::vec2& viewSize)
+{
+	_mViewportSize = viewSize;
+}
+
+glm::vec4 Camera::GetViewport() const
+{
+	glm::vec4 scale = GetViewportScale();
+	glm::vec2 size = GetViewportSize();
+
+	if (_mAspect > 1.0f)
+	{
+		size.y /= _mAspect;
+	}
+	else
+	{
+		size.x *= _mAspect;
+	}
+
+	return glm::vec4(
+		size.x * scale[0],
+		size.x * scale[1],
+		size.y * scale[2],
+		size.y * scale[3]);
+}
+
+void Camera::SetClip(float near, float far)
+{
+	_mClip.x = near;
+	_mClip.y = far;
 }
 
 void Camera::SetClip(const glm::vec2& clip)
@@ -71,19 +111,36 @@ void Camera::SetClip(const glm::vec2& clip)
 	_mClip = clip;
 }
 
+void Camera::SetUp(const glm::vec3& up)
+{
+	_mUp = up;
+}
+
 void Camera::SetForward(const glm::vec3& forward)
 {
-	SetRotation(glm::quatLookAt(glm::normalize(forward), _mUp));
+	if ((normalize(forward) + _mUp) == glm::vec3(0.0f))
+	{
+		SetRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+	}
+	else
+	{
+		SetRotation(glm::quatLookAt(glm::normalize(forward), _mUp));
+	}
 }
 
 glm::vec3 Camera::GetForward() const
 {
-	return glm::rotate(GetWorldRotation(), glm::vec3(0.0f, 0.0f, -1.0f));
+	return glm::rotate(GetWorldRotation(), GetWorldForward());
 }
 
 void Camera::SetLookAt(const glm::vec3& point)
 {
 	SetForward(point - GetPosition());
+}
+
+void Camera::SetAutoResize(bool autoResize)
+{
+	_mAutoResize = autoResize;
 }
 
 void Camera::HandleMovement(Direction dir, float dt)

@@ -28,7 +28,7 @@ void GameScene::Start()
 	_mGameObjects["Light"]->AddChild(_mGameObjects["helmet"]);
 
 	// Initialize Objs
-	_mGameObjects["Light"]->SetPosition(glm::vec3(-3.0f, 0.0f, 0.0f));
+	_mGameObjects["Light"]->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 	_mGameObjects["Light"]->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
 
 	_mGameObjects["helmet"]->SetPosition(glm::vec3(3.0f, 0.0f, 0.0f));
@@ -111,7 +111,7 @@ void GameScene::Update(float dt)
 
 	
 
-	//_mGameObjects["helmet"]->SetRotation(_mGameObjects["helmet"]->GetRotation() * glm::angleAxis(glm::radians(0.0005f), glm::vec3(0.0f, 1.0f, 0.0f)));
+	_mGameObjects["helmet"]->SetRotation(_mGameObjects["helmet"]->GetRotation() * glm::angleAxis(glm::radians(0.5f) * dt, glm::vec3(0.0f, 0.0f, 1.0f)));
 	//_mGameObjects["helmet"]->SetRotation(glm::angleAxis(glm::radians(170.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 	//LogInfo("Scale: %f, %f, %f\n", _mGameObjects["helmet"]->GetScale().x, _mGameObjects["helmet"]->GetScale().y, _mGameObjects["helmet"]->GetScale().z);
 
