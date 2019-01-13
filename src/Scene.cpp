@@ -4,6 +4,11 @@
 
 bool Scene::_sShowAxis = false;
 
+Scene::Scene()
+{
+	//_mSceneAxis = new Axis();
+}
+
 Scene::~Scene() {
     for (auto& go : _mGameObjects) {
         delete go.second;
@@ -31,6 +36,7 @@ void Scene::Render()
 		for (auto& gameObject : _mGameObjects)
 		{
 			gameObject.second->DrawAxis();
+			//_mSceneAxis->Render(gameObject.second->GetWorldTransform());
 		}
 	}
 }

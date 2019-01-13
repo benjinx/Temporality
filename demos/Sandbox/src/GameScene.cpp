@@ -23,7 +23,6 @@ void GameScene::Start()
 	// Scene Objs
 	_mGameObjects.emplace("Light", new GameObject("/models/Primitives/pCube.glb"));
 	_mGameObjects.emplace("helmet", new GameObject("/models/DamagedHelm.glb"));
-	//_mGameObjects.emplace("cube", new GameObject("/models/testCube.glb"));
 
 	_mGameObjects["helmet"]->SetParent(_mGameObjects["Light"]);
 	_mGameObjects["Light"]->AddChild(_mGameObjects["helmet"]);
@@ -34,8 +33,6 @@ void GameScene::Start()
 
 	_mGameObjects["helmet"]->SetPosition(glm::vec3(3.0f, 0.0f, 0.0f));
 	_mGameObjects["helmet"]->SetRotation(glm::angleAxis(glm::radians(60.0f), glm::vec3(1.0f, 1.0f, 0.0f)));
-
-	//_mGameObjects["cube"]->SetPosition(glm::vec3(-3.0f, 0.0f, 0.0f));
 
 	// Shaders
 	printf("\nLoading Shaders\n");
@@ -55,7 +52,6 @@ void GameScene::Start()
 
 	_mGameObjects["Light"]->SetShader(app->GetShader("passThru"));
 	_mGameObjects["helmet"]->SetShader(app->GetShader("normalMapping"));
-	//_mGameObjects["cube"]->SetShader(app->GetShader("normalMapping"));
 
 	// UI
 	DevUI::Start();
@@ -65,20 +61,11 @@ void GameScene::Start()
 		ImGui::Checkbox("Enable Spot Light", &_mSpotLight);
 	});
 
-	
-
-	// Camera
-	//glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
-	//glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-
-	//Camera::Inst().Init(cameraPos, cameraTarget);
-
 	// Load lua script
 	//_mScriptHost.Load();
 
 	// Physics
 	PhysicsStart();
-
 
 	// Test 2D Mesh
 	mesh = Utils::Get2DMesh(

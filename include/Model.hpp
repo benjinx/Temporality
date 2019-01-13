@@ -14,6 +14,7 @@ enum AttributeID : GLint
 	TEXCOORD = 2,
 	TANGENT = 3,
 	BITANGENT = 4,
+	COLOR = 5,
 };
 
 class Shader;

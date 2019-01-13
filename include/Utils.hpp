@@ -32,7 +32,6 @@ namespace Utils
 	std::string GetExtension(const std::string& path);
 
 	Mesh* Get2DMesh(glm::vec4 screenCords, glm::vec4 textureCords);
-
 }
 
 #endif // UTILITIES_H

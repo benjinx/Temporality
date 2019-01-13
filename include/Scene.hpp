@@ -1,6 +1,7 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include <Axis.hpp>
 #include <Config.hpp>
 #include <GameObject.hpp>
 
@@ -12,7 +13,7 @@ public:
 
 	typedef std::unordered_map<std::string, GameObject*> GameObjectMap;
 
-	Scene() = default;
+	Scene();
 	virtual ~Scene();
 	
 	virtual void Start() { }
@@ -34,6 +35,8 @@ protected:
 	static bool _sShowAxis;
 
 	GameObjectMap _mGameObjects;
+
+	Axis* _mSceneAxis;
 };
 
 #endif // SCENE_H
