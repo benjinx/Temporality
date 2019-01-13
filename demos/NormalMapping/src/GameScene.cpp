@@ -23,6 +23,7 @@ void GameScene::Start()
 	// Initialize Objs
 	_mGameObjects.emplace("Earth", new GameObject("/models/earth.glb"));
 	_mGameObjects.emplace("Moon", new GameObject("/models/moon.glb"));
+	_mGameObjects.emplace("Mars", new GameObject("/models/mars.glb"));
 
 	_mGameObjects["Earth"]->SetPosition(glm::vec3(1.0f, 0.0f, 0.0f));
 	_mGameObjects["Earth"]->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
@@ -31,6 +32,10 @@ void GameScene::Start()
 	_mGameObjects["Moon"]->SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 	_mGameObjects["Moon"]->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
 	_mGameObjects["Moon"]->SetRotation(glm::angleAxis(glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+
+	_mGameObjects["Mars"]->SetPosition(glm::vec3(10.0f, 0.0f, 0.0f));
+	_mGameObjects["Mars"]->SetScale(glm::vec3(1.2f, 1.2f, 1.2f));
+	_mGameObjects["Mars"]->SetRotation(glm::angleAxis(glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	// Shaders
 	printf("\nLoading Shaders\n");
@@ -47,6 +52,7 @@ void GameScene::Start()
 	_mGameObjects["Light"]->SetShader(app->GetShader("passThru"));
 	_mGameObjects["Earth"]->SetShader(app->GetShader("normalMapping"));
 	_mGameObjects["Moon"]->SetShader(app->GetShader("normalMapping"));
+	_mGameObjects["Mars"]->SetShader(app->GetShader("normalMapping"));
 
 	// UI
 	DevUI::Start();
@@ -94,6 +100,7 @@ void GameScene::Update(float dt)
 
 	const auto& earthPos = _mGameObjects["Earth"]->GetPosition();
 	const auto& moonPos = _mGameObjects["Moon"]->GetPosition();
+	const auto& marsPos = _mGameObjects["Mars"]->GetPosition();
 
 	_mAngle += 0.5f * dt;
 
@@ -110,4 +117,21 @@ void GameScene::Update(float dt)
 	glm::vec3 newPos = glm::vec3(x, 0.0f, -z);
 	
 	_mGameObjects["Moon"]->SetPosition(newPos);
+
+
+	_mMarsAngle += 0.5f * dt;
+
+	if (_mMarsAngle > 360.0f)
+		_mMarsAngle = 0.0f;
+
+	float marsRadian = glm::radians(_mMarsAngle);
+
+	float marsRadius = glm::distance(marsPos, glm::vec3(lightPos.x, lightPos.y, lightPos.z));
+
+	float marsX = lightPos.x + (marsRadius * cosf(marsRadian));
+	float marsZ = lightPos.z + (marsRadius * sinf(marsRadian));
+
+	glm::vec3 newMarsPos = glm::vec3(marsX, 0.0f, -marsZ);
+
+	//_mGameObjects["Mars"]->SetPosition(newMarsPos);
 }

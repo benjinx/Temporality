@@ -78,15 +78,8 @@ bool Model::Load(std::string filename)
 	for (auto& texture : model.textures)
 	{
 		tinygltf::Image& image = model.images[texture.source];
-		if (texture.sampler <= 0)
-		{
-			LogVerbose("Loading Texture from buffer (%d, %d, %d)", image.width, image.height, image.component);
-			textures.push_back(std::make_shared<Texture>(image.image.data(), glm::ivec2(image.width, image.height), image.component));
-		}
-		else
-		{
-			textures.push_back(std::make_shared<Texture>(std::move((GLuint)texture.sampler), glm::ivec2(image.width, image.height)));
-		}
+		LogVerbose("Loading Texture from buffer (%d, %d, %d)", image.width, image.height, image.component);
+		textures.push_back(std::make_shared<Texture>(image.image.data(), glm::ivec2(image.width, image.height), image.component));
 	}
 
 	std::vector<std::shared_ptr<Material>> materials;
