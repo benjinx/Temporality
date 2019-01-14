@@ -29,15 +29,12 @@ void GameScene::Start()
 
 	_mGameObjects["Earth"]->SetPosition(glm::vec3(1.0f, 0.0f, 0.0f));
 	_mGameObjects["Earth"]->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
-	_mGameObjects["Earth"]->SetRotation(glm::angleAxis(glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	_mGameObjects["Moon"]->SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
 	_mGameObjects["Moon"]->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-	_mGameObjects["Moon"]->SetRotation(glm::angleAxis(glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	_mGameObjects["Mars"]->SetPosition(glm::vec3(10.0f, 0.0f, 0.0f));
 	_mGameObjects["Mars"]->SetScale(glm::vec3(1.2f, 1.2f, 1.2f));
-	_mGameObjects["Mars"]->SetRotation(glm::angleAxis(glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
 	// Shaders
 	printf("\nLoading Shaders\n");

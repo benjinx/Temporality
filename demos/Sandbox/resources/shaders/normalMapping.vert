@@ -27,7 +27,7 @@ out vertexData
 void main()
 {
 	pass.fragPos = vec3(modelMat * vec4(position.xyz, 1.0));
-	pass.texCoords = texCoords;
+	pass.texCoords = vec2(texCoords.x, 1.0 - texCoords.y);
 
 	mat3 worldSpaceMatrix = transpose(inverse(mat3(modelMat)));
 	vec3 T = normalize(worldSpaceMatrix * tangent.xyz);
