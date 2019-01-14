@@ -45,12 +45,12 @@ Axis::Axis()
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(position), position, GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glVertexAttribPointer(AttributeID::POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 		glEnableVertexAttribArray(AttributeID::POSITION);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbos[2]);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
-		glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+		glVertexAttribPointer(AttributeID::COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 		glEnableVertexAttribArray(AttributeID::COLOR);
 
 		glBindVertexArray(0);
