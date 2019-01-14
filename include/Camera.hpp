@@ -34,9 +34,6 @@ public:
 
 	// Methods
 
-	glm::vec3 GetWorldUp() const { return glm::vec3(0.0f, 1.0f, 0.0f); }
-	glm::vec3 GetWorldForward() const { return glm::vec3(0.0f, 0.0f, -1.0f); }
-
 	glm::mat4 GetView() const;
 	glm::mat4 GetProjection() const;
 

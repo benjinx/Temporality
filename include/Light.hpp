@@ -2,67 +2,60 @@
 #define LIGHT_H
 
 #include <Config.hpp>
+#include <GameObject.hpp>
 #include <Math.hpp>
 
-class Light
+class Light : public GameObject
 {
 public:
-	Light();
-	~Light();
-
-	void SetPosition(glm::vec3 pos) { _mPosition = pos; }
-	glm::vec3 GetPosition() { return _mPosition; }
-
-private:
-	glm::vec3 _mPosition; // No longer necessery when using directional lights.
+	Light() = default;
+	virtual ~Light() = default;
 };
 
-
-// Directional Light
-struct DirectionalLight : public Light
+class DirectionalLight : public Light
 {
 public:
-	void SetDirection(glm::vec3 dir) { _mDirection = dir; }
-	glm::vec3 GetDirection() { return _mDirection; }
+	DirectionalLight(glm::vec3 direction);
 
-private:
-	glm::vec3 _mDirection;
+	void SetDirection(glm::vec3 direction);
+	glm::vec3 GetDirection();
 };
 
-
-// Point Light
-struct PointLight : public Light
+class PointLight : public Light
 {
 public:
-	void SetConstant(float con) { _mConstant = con; }
-	void SetLinear(float lin) { _mLinear = lin; }
-	void SetQuadratic(float quad) { _mQuadratic = quad; }
+	PointLight(glm::vec3 position, float constant, float linear, float quadratic);
+
+	void SetConstant(float constant);
+	void SetLinear(float linear);
+	void SetQuadratic(float quadratic);
 
 	float GetConstant() { return _mConstant; }
 	float GetLinear() { return _mLinear; }
 	float GetQuadratic() { return _mQuadratic; }
 
 private:
-	// Point Light
-	float _mConstant;
-	float _mLinear;
-	float _mQuadratic;
+	float _mConstant,
+		  _mLinear,
+		  _mQuadratic;
 };
 
-
-// Spot Light
-struct SpotLight : public Light
+class SpotLight : public Light
 {
 public:
-	void SetDirection(glm::vec3 dir) { _mDirection = dir; }
-	glm::vec3 GetDirection() { return _mDirection; }
-	void SetCutOff(float co) { _mCutOff = co; }
+	SpotLight(glm::vec3 position, glm::vec3 direction, float cutoff, float outerCutoff);
+
+	void SetDirection(glm::vec3 direction);
+	void SetCutOff(float cutOff);
+	void SetOuterCutOff(float outerCutOff);
+
+	glm::vec3 GetDirection();
 	float GetCutOff() { return _mCutOff; }
+	float GetOuterCutOff() { return _mOuterCutOff; }
 
 private:
-	// Spot Light
-	glm::vec3 _mDirection;
-	float _mCutOff;
+	float _mCutOff,
+		  _mOuterCutOff;
 };
 
 #endif // LIGHT_H

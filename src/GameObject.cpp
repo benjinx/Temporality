@@ -52,7 +52,7 @@ void GameObject::InitAxis()
 					  0, 0, 0,
 				   	  0, 0.5f, 0,
 					  0, 0, 0,
-					  0, 0, 0 + 0.5f };
+					  0, 0, 0.5f };
 
 	GLfloat color[] = { 1.0f, 0, 0,
 						1.0f, 0, 0,

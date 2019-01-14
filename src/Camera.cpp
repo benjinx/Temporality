@@ -1,6 +1,7 @@
 #include "Camera.hpp"
 
 #include <App.hpp>
+#include <Utils.hpp>
 #include <Window.hpp>
 
 //Camera * Camera::_sInst = nullptr;
@@ -130,7 +131,7 @@ void Camera::SetForward(const glm::vec3& forward)
 
 glm::vec3 Camera::GetForward() const
 {
-	return glm::rotate(GetWorldRotation(), GetWorldForward());
+	return glm::rotate(GetWorldRotation(), Utils::GetWorldForward());
 }
 
 void Camera::SetLookAt(const glm::vec3& point)
@@ -185,7 +186,7 @@ void Camera::HandleRotation(float xoffset, float yoffset)
 		delta.y *= -1.0f;
 
 	glm::vec3 forward = GetForward();
-	glm::vec3 right = glm::normalize(glm::cross(GetWorldUp(), forward));
+	glm::vec3 right = glm::normalize(glm::cross(Utils::GetWorldUp(), forward));
 	SetUp(glm::cross(forward, right));
 
 	glm::quat rotation = GetRotation();

@@ -37,7 +37,6 @@ void Mesh::Render(Shader * shader, glm::mat4 modelMat)
 	}
 
     glBindVertexArray(_mVAO);
-    //glDrawArrays(GL_TRIANGLES, 0, _mCount);
 	glDrawElements(_mMode, _mCount, _mType, (char *)0 + _mOffset);
     glBindVertexArray(0);
 }

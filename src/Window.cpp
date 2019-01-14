@@ -25,7 +25,7 @@ Window::Window(int width, int height)
 
     glfwMakeContextCurrent(_mWindow);
 
-    //glfwSwapInterval(1);
+    glfwSwapInterval(0);
 
 	gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 

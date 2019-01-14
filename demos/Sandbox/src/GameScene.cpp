@@ -2,6 +2,8 @@
 
 void GameScene::Start()
 {
+	Scene::Start();
+
 	// Log Test
 	printf("\n");
 	LogInfo("Info\n");

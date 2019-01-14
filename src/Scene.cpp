@@ -4,16 +4,18 @@
 
 bool Scene::_sShowAxis = false;
 
-Scene::Scene()
-{
-	//_mSceneAxis = new Axis();
-}
-
 Scene::~Scene() {
+	delete _mSceneAxis;
+
     for (auto& go : _mGameObjects) {
         delete go.second;
     }
     _mGameObjects.clear();
+}
+
+void Scene::Start()
+{
+	_mSceneAxis = new Axis();
 }
 
 void Scene::Update(float dt)
@@ -35,8 +37,8 @@ void Scene::Render()
 	{
 		for (auto& gameObject : _mGameObjects)
 		{
-			gameObject.second->DrawAxis();
-			//_mSceneAxis->Render(gameObject.second->GetWorldTransform());
+			//gameObject.second->DrawAxis();
+			_mSceneAxis->Render(gameObject.second->GetWorldTransform());
 		}
 	}
 }

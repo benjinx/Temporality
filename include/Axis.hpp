@@ -17,6 +17,7 @@ public:
 	void Render(glm::mat4 transform);
 private:
 	std::shared_ptr<Mesh> _mMesh = nullptr;
+
 };
 
 #endif // AXIS_HPP

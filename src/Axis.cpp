@@ -21,11 +21,11 @@ Axis::Axis()
 
 		GLfloat position[] = {
 			0.0f, 0.0f, 0.0f,
-			1.0f, 0.0f, 0.0f,
+			0.5f, 0.0f, 0.0f,
 			0.0f, 0.0f, 0.0f,
-			0.0f, 1.0f, 0.0f,
+			0.0f, 0.5f, 0.0f,
 			0.0f, 0.0f, 0.0f,
-			0.0f, 0.0f, 1.0f,
+			0.0f, 0.0f, 0.5f,
 		};
 
 		GLfloat color[] = {
@@ -75,33 +75,6 @@ Axis::Axis()
 void Axis::Render(glm::mat4 transform)
 {
 	Shader* shader = App::Inst()->GetShader("axis");
-
-	//glClear(GL_DEPTH_BUFFER_BIT);
-	//glUseProgram(shader->GetShaderID());
-
-	//const auto& view = App::Inst()->GetCurrentCamera()->GetView();
-	//const auto& proj = App::Inst()->GetCurrentCamera()->GetProjection();
-	//const auto& model = GetTransform();
-
-	//glUniformMatrix4fv(glGetUniformLocation(shader->GetShaderID(), "modelMat"), 1, false, (GLfloat*)&model);
-	//glUniformMatrix4fv(glGetUniformLocation(shader->GetShaderID(), "viewMat"), 1, false, (GLfloat*)&view);
-	//glUniformMatrix4fv(glGetUniformLocation(shader->GetShaderID(), "projMat"), 1, false, (GLfloat*)&proj);
-
-	//glBindVertexArray(_mMesh->GetVAO());
-	//glDrawArrays(GL_LINES, 0, 18);
-
-	//glBindVertexArray(0);
-
+	glClear(GL_DEPTH_BUFFER_BIT);
 	_mMesh->Render(shader, transform);
 }
-
-//void Axis::Render(RenderContext& ctx)
-//{
-//	if (ctx.CurrentPass != 1) {
-//		return;
-//	}
-//
-//	auto transform = GetActor()->GetWorldTransform();
-//	transform = glm::scale(transform, 1.f / GetActor()->GetWorldScale());
-//	_Mesh->Render(ctx, transform);
-//}

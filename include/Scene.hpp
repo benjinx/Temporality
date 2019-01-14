@@ -13,10 +13,10 @@ public:
 
 	typedef std::unordered_map<std::string, GameObject*> GameObjectMap;
 
-	Scene();
+	Scene() = default;
 	virtual ~Scene();
 	
-	virtual void Start() { }
+	virtual void Start();
 	virtual void Pause() { }
 	virtual void Resume() { }
 
