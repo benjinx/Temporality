@@ -6,6 +6,7 @@
 #include <Shader.hpp>
 
 #include <iostream>
+#include <direct.h>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw_gl3.h>
@@ -193,7 +194,24 @@ void App::Screenshot()
     
     stbi_flip_vertically_on_write(true);
 
-    stbi_write_png("Screenshot.png", GetWindow()->GetWidth(), GetWindow()->GetHeight(), 3, pixels.data(), 3 * GetWindow()->GetWidth());
+    int check = _mkdir("screenshots");
+    if (!check)
+        LogInfo("Screenshot directory created.\n");
+
+    time_t now = time(0);
+    tm* localtm = localtime(&now);
+    std::string name = "screenshots/Screenshot " + std::to_string(localtm->tm_mon+1) + std::to_string(localtm->tm_mday) + std::to_string(localtm->tm_year+1900) + "_"
+                                                 + std::to_string(localtm->tm_hour) + std::to_string(localtm->tm_min) + std::to_string(localtm->tm_sec) + ".png";
+
+    LogVerbose("Date: %s, %s, %s, Time: %s:%s:%s\n", std::to_string(localtm->tm_mon+1), std::to_string(localtm->tm_mday), std::to_string(localtm->tm_year+1900)
+                                                   , std::to_string(localtm->tm_hour), std::to_string(localtm->tm_min), std::to_string(localtm->tm_sec));
+
+    int screenshot = stbi_write_png(name.c_str(), GetWindow()->GetWidth(), GetWindow()->GetHeight(), 3, pixels.data(), 3 * GetWindow()->GetWidth());
+
+    if (screenshot)
+        LogInfo("Screenshot successful!\n");
+    else
+        LogInfo("Screenshot unsuccessful.\n");
 }
 
 void App::AddShader(std::string name, Shader* shader)
