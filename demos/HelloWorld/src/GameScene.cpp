@@ -9,16 +9,17 @@ void GameScene::Start()
 
     // Camera
     auto camera = new Camera();
-    _mGameObjects.emplace("Camera", camera);
-    _mGameObjects["Camera"]->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+    Scene::AddGameObject("Camera", camera);
+    Scene::GetGameObject("Camera")->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
     App::Inst()->SetCurrentCamera(camera);
 
     // Scene Objs
-    _mGameObjects.emplace("Logo", new GameObject("models/logo/logo.glb"));
+    Scene::Load("models/logo/logo.glb");
 
     // Initialize Objs
-    _mGameObjects["Logo"]->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
-    _mGameObjects["Logo"]->SetRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+    auto logo = Scene::GetGameObject("Logo");
+    Scene::GetGameObject("Logo")->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+    Scene::GetGameObject("Logo")->SetRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
 
     // Shaders
     printf("\nLoading Shaders\n");
@@ -29,14 +30,10 @@ void GameScene::Start()
         "shaders/passThruTexture.frag"
         }));
 
-    _mGameObjects["Logo"]->SetShader(app->GetShader("passThru"));
+    Scene::GetGameObject("Logo")->SetShader(app->GetShader("passThru"));
 
     // UI
     DevUI::Start();
-
-    // Camera
-    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 void GameScene::Update(float dt)
