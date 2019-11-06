@@ -25,7 +25,7 @@ matrix:
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test', 'kalakris-cmake' ]
-          packages: [ 'g++-7', 'libstdc++-7-dev', 'ninja-build', 'cmake', 'xorg-dev', 'libglu1-mesa-dev', 'libglm-dev', 'libglfw3-dev' ]
+          packages: [ 'g++-7', 'libstdc++-7-dev', 'ninja-build', 'cmake', 'xorg-dev', 'libglu1-mesa-dev', 'libglfw3-dev' ]
       env: CMAKE_BUILD_TYPE=DEBUG
 
     - name: "GCC (Release, ThirdParty)"
@@ -43,7 +43,7 @@ matrix:
       addons:
         apt:
           sources: [ 'ubuntu-toolchain-r-test', 'kalakris-cmake' ]
-          packages: [ 'g++-7', 'libstdc++-7-dev', 'ninja-build', 'cmake', 'xorg-dev', 'libglu1-mesa-dev', 'libglm-dev', 'libglfw3-dev' ]
+          packages: [ 'g++-7', 'libstdc++-7-dev', 'ninja-build', 'cmake', 'xorg-dev', 'libglu1-mesa-dev', 'libglfw3-dev' ]
       env: CMAKE_BUILD_TYPE=RELEASE
 
     - name: "Clang (Debug, ThirdParty)"
@@ -61,7 +61,7 @@ matrix:
       addons:
         apt:
           sources: [ 'llvm-toolchain-xenial-6.0', 'ubuntu-toolchain-r-test', 'kalakris-cmake' ]
-          packages: [ 'clang-6.0', 'libstdc++-7-dev', 'ninja-build', 'cmake', 'xorg-dev', 'libglu1-mesa-dev', 'libglm-dev', 'libglfw3-dev' ]
+          packages: [ 'clang-6.0', 'libstdc++-7-dev', 'ninja-build', 'cmake', 'xorg-dev', 'libglu1-mesa-dev', 'libglfw3-dev' ]
       env: CMAKE_BUILD_TYPE=DEBUG
 
     - name: "Clang (Release, ThirdParty)"
@@ -79,7 +79,7 @@ matrix:
       addons:
         apt:
           sources: [ 'llvm-toolchain-xenial-6.0', 'ubuntu-toolchain-r-test', 'kalakris-cmake' ]
-          packages: [ 'clang-6.0', 'libstdc++-7-dev', 'ninja-build', 'cmake', 'xorg-dev', 'libglu1-mesa-dev', 'libglm-dev', 'libglfw3-dev' ]
+          packages: [ 'clang-6.0', 'libstdc++-7-dev', 'ninja-build', 'cmake', 'xorg-dev', 'libglu1-mesa-dev', 'libglfw3-dev' ]
       env: CMAKE_BUILD_TYPE=RELEASE
 
 before_install:
