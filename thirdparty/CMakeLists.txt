@@ -11,7 +11,7 @@ INCLUDE(ExternalProject)
 # glm
 FIND_PACKAGE(GLM QUIET)
 
-if (NOT GLFM_FOUND)
+IF (NOT GLFM_FOUND)
 	SET(_GLM_DIR "${CMAKE_BINARY_DIR}/glm")
 
 	# glm
@@ -19,7 +19,7 @@ if (NOT GLFM_FOUND)
 		GIT_REPOSITORY      "https://github.com/g-truc/glm.git"
 		GIT_TAG             "0.9.9.3"
 		GIT_SHALLOW         TRUE
-		SOURCE_DIR          "${GLM_DIR}"
+		SOURCE_DIR          "${_GLM_DIR}"
 		CONFIGURE_COMMAND   ""
 		BUILD_COMMAND      	""
 		UPDATE_COMMAND      ""
