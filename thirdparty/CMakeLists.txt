@@ -11,7 +11,7 @@ INCLUDE(ExternalProject)
 # glm
 FIND_PACKAGE(GLM QUIET)
 
-IF (NOT GLFM_FOUND)
+IF (NOT GLM_FOUND)
 	SET(_GLM_DIR "${CMAKE_BINARY_DIR}/glm")
 
 	# glm
