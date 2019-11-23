@@ -13,29 +13,29 @@ void GameScene::Start()
 
     // Camera
     auto camera = new Camera();
-    Scene::AddGameObject("Camera", camera);
-    Scene::GetGameObject("Camera")->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+    AddGameObject("Camera", camera);
+    GetGameObject("Camera")->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
     App::Inst()->SetCurrentCamera(camera);
 
     // Light Source
-    auto Light = Scene::AddGameObject();
+    auto Light = AddGameObject();
     Light->SetName("Light");
     Light->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 
     // Scene Objs
-    Scene::Load("models/Primitives/pPlane.glb");
-    Scene::Load("models/Primitives/pSphere.glb");
-    Scene::Load("models/Primitives/pCube.glb");
-    Scene::Load("models/Primitives/pTorus.glb");
+    Load("models/Primitives/pPlane.glb");
+    Load("models/Primitives/pSphere.glb");
+    Load("models/Primitives/pCube.glb");
+    Load("models/Primitives/pTorus.glb");
     //_mGameObjects.emplace("Torus2", new GameObject("models/Primitives/pTorus.glb"));
     //_mGameObjects.emplace("Torus3", new GameObject("models/Primitives/pTorus.glb"));
 
     // Initialize Objs
 
-    auto Plane = Scene::GetGameObject("Plane");
-    auto Sphere = Scene::GetGameObject("sphere");
-    auto Cube = Scene::GetGameObject("cube");
-    auto Torus = Scene::GetGameObject("Torus");
+    auto Plane = GetGameObject("Plane");
+    auto Sphere = GetGameObject("sphere");
+    auto Cube = GetGameObject("cube");
+    auto Torus = GetGameObject("Torus");
 
     Plane->SetPosition(glm::vec3(0.0f, -2.5f, 0.0f));
     Plane->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -128,7 +128,7 @@ void GameScene::Update(float dt)
 
     // Point Lighting
     // Set attenuation values
-    PointLight pointLight(Scene::GetGameObject("Light")->GetPosition(),
+    PointLight pointLight(GetGameObject("Light")->GetPosition(),
                         1.0f,
                         0.09f,
                         0.032f);
@@ -168,10 +168,10 @@ void GameScene::Update(float dt)
         lightCasters->SetBool("lightCheck.Spot", false);
 
     // Rotate objects
-    Scene::GetGameObject("Sphere")->SetRotation(Scene::GetGameObject("Sphere")->GetWorldRotation()
+    GetGameObject("Sphere")->SetRotation(GetGameObject("Sphere")->GetWorldRotation()
         * glm::angleAxis(glm::radians(-0.25f) * dt, glm::vec3(1.0f, 0.0f, 0.0f)));
-    Scene::GetGameObject("cube")->SetRotation(Scene::GetGameObject("cube")->GetWorldRotation()
+    GetGameObject("cube")->SetRotation(GetGameObject("cube")->GetWorldRotation()
         * glm::angleAxis(glm::radians(-0.25f) * dt, glm::vec3(0.0f, 1.0f, 0.0f)));
-    Scene::GetGameObject("Torus")->SetRotation(Scene::GetGameObject("Torus")->GetWorldRotation()
+    GetGameObject("Torus")->SetRotation(GetGameObject("Torus")->GetWorldRotation()
         * glm::angleAxis(glm::radians(-0.25f) * dt, glm::vec3(0.0f, 0.0f, 1.0f)));
 }
