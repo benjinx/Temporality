@@ -15,16 +15,16 @@ void GameScene::Start()
 
     // Camera
     auto camera = new Camera();
-    Scene::AddGameObject("Camera", camera);
-    Scene::GetGameObject("Camera")->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+    AddGameObject("Camera", camera);
+    GetGameObject("Camera")->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
     App::Inst()->SetCurrentCamera(camera);
 
     // Scene Objs
-    Scene::Load("models/TestScene.glb");
-    Scene::Load("models/DamagedHelm.glb");
+    Load("models/TestScene.glb");
+    Load("models/DamagedHelm.glb");
 
     // Initialize Objs
-    auto helmet = Scene::GetGameObject("node_damagedHelmet_-6514");
+    auto helmet = GetGameObject("node_damagedHelmet_-6514");
     helmet->SetPosition(glm::vec3(3.0f, 0.0f, 0.0f));
     helmet->SetRotation(glm::angleAxis(glm::radians(60.0f), glm::vec3(1.0f, 1.0f, 0.0f)));
 
