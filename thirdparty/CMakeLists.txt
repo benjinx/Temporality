@@ -76,7 +76,7 @@ IF(NOT assimp_FOUND)
         BUILD_COMMAND		""
         UPDATE_COMMAND		""
         TEST_COMMAND		""
-        INSTALL_COMMAND		${CMAKE_COMMAND} --build . --target install --config Release
-        COMMAND				${CMAKE_COMMAND} --build . --target install --config Debug
+        INSTALL_COMMAND	    ${CMAKE_COMMAND} --build . --target install --config Release
+        COMMAND             ${CMAKE_COMMAND} --build . --target install --config Debug
     )
 ENDIF()
