@@ -75,9 +75,9 @@ FIND_PACKAGE(assimp CONFIG 5.0 REQUIRED)
 
 IF(TARGET assimp::assimp)
     # Extract release-specific configuration
-    GET_TARGET_PROPERTY(soname   assimp::assimp IMPORTED_SONAME_RELEASE)
-    GET_TARGET_PROPERTY(implib   assimp::assimp IMPORTED_IMPLIB_RELEASE)
-    GET_TARGET_PROPERTY(location assimp::assimp IMPORTED_LOCATION_RELEASE)
+    GET_TARGET_PROPERTY(soname      assimp::assimp IMPORTED_SONAME_RELEASE)
+    GET_TARGET_PROPERTY(implib      assimp::assimp IMPORTED_IMPLIB_RELEASE)
+    GET_TARGET_PROPERTY(location    assimp::assimp IMPORTED_LOCATION_RELEASE)
 
     # Set build type agnostic configuration
     SET_TARGET_PROPERTIES(
