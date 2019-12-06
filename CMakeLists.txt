@@ -1,5 +1,23 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.2 FATAL_ERROR)
 
+# Include CMAKE_POLICY decisions
+IF(POLICY CMP0076)
+    CMAKE_POLICY(SET CMP0048 NEW)
+ENDIF()
+
+IF(POLICY CMP0076)
+    CMAKE_POLICY(SET CMP0072 NEW)
+ENDIF()
+
+IF(POLICY CMP0072)
+    CMAKE_POLICY(SET CMP0072 NEW)
+ENDIF()
+
+IF(POLICY CMP0074)
+	CMAKE_POLICY(SET CMP0074 NEW)
+ENDIF()
+
+
 # Initialize Projects
 PROJECT(Temporality)
 
@@ -37,6 +55,7 @@ IF(BUILD_THIRDPARTY)
 
     SET(GLM_ROOT_DIR        "${CMAKE_BINARY_DIR}/thirdparty/glm")
     SET(GLFW3_ROOT_DIR      "${CMAKE_BINARY_DIR}/thirdparty/glfw3")
+	LIST(APPEND CMAKE_PREFIX_PATH ${CMAKE_BINARY_DIR}/thirdparty/assimp)
 
     EXECUTE_PROCESS(
         COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" "${CMAKE_SOURCE_DIR}/thirdparty"
@@ -67,6 +86,23 @@ ENDIF()
 
 FIND_PACKAGE(GLM REQUIRED)
 FIND_PACKAGE(GLFW3 REQUIRED)
+FIND_PACKAGE(assimp CONFIG 5.0 REQUIRED)
+
+IF(TARGET assimp::assimp)
+    # Extract release-specific configuration
+    GET_TARGET_PROPERTY(soname   assimp::assimp IMPORTED_SONAME_RELEASE)
+    GET_TARGET_PROPERTY(implib   assimp::assimp IMPORTED_IMPLIB_RELEASE)
+    GET_TARGET_PROPERTY(location assimp::assimp IMPORTED_LOCATION_RELEASE)
+
+    # Set build type agnostic configuration
+    SET_TARGET_PROPERTIES(
+        assimp::assimp 
+        PROPERTIES
+            IMPORTED_SONAME     "${soname}"
+            IMPORTED_IMPLIB     "${implib}"
+            IMPORTED_LOCATION   "${location}"
+    )
+ENDIF()
 
 # Allow VS to find .dll's
 SET(CMAKE_MSVCIDE_RUN_PATH 

@@ -1,5 +1,23 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.2 FATAL_ERROR)
 
+# Include CMAKE_POLICY decisions
+IF(POLICY CMP0076)
+    CMAKE_POLICY(SET CMP0048 NEW)
+ENDIF()
+
+IF(POLICY CMP0076)
+    CMAKE_POLICY(SET CMP0072 NEW)
+ENDIF()
+
+IF(POLICY CMP0072)
+    CMAKE_POLICY(SET CMP0072 NEW)
+ENDIF()
+
+IF(POLICY CMP0074)
+	CMAKE_POLICY(SET CMP0074 NEW)
+ENDIF()
+
+
 PROJECT(thirdparty)
 
 LIST(INSERT CMAKE_MODULE_PATH 0 "${CMAKE_SOURCE_DIR}/../cmake")
@@ -53,4 +71,31 @@ IF (NOT GLFW3_FOUND)
         INSTALL_COMMAND     ${CMAKE_COMMAND} --build . --target install --config Release
         TEST_COMMAND        ""
     )
+ENDIF()
+
+# Assimp
+SET(assimp_ROOT			"${CMAKE_BINARY_DIR}/assimp")
+SET(assimp_SOURCE_DIR	"${CMAKE_BINARY_DIR}/assimp_src")
+SET(assimp_BINARY_DIR	"${CMAKE_BINARY_DIR}/assimp_bin")
+
+FIND_PACKAGE(assimp 5.0 CONFIG QUIET)
+
+IF(NOT assimp_FOUND)
+	ExternalProject_Add(thirdparty_assimp
+		GIT_REPOSITORY		"https://github.com/assimp/assimp.git"
+		GIT_TAG				"master"
+		GIT_SHALLOW			TRUE
+		SOURCE_DIR			"${assimp_SOURCE_DIR}"
+		BINARY_DIR			"${assimp_BINARY_DIR}"
+		CMAKE_ARGS			-DCMAKE_INSTALL_PREFIX=${assimp_ROOT}
+							-DASSIMP_BUILD_ASSIMP_TOOLS=OFF
+							-DASSIMP_BUILD_SAMPLES=OFF
+							-DASSIMP_BUILD_TESTS=OFF
+							-DBUILD_DOCS=OFF
+		BUILD_COMMAND		""
+		UPDATE_COMMAND		""
+		TEST_COMMAND		""
+		INSTALL_COMMAND		${CMAKE_COMMAND} --build . --target install --config Release
+		COMMAND				${CMAKE_COMMAND} --build . --target install --config Debug
+	)
 ENDIF()
