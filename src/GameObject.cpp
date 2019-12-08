@@ -16,6 +16,10 @@
 #define TINYGLTF_NO_STB_IMAGE_WRITE
 #include <tinygltf/tiny_gltf.h>
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 GameObject::GameObject()
 {
 }
@@ -56,8 +60,8 @@ bool GameObject::Load(std::string filename)
     std::string fullPath;
     const auto& paths = Utils::GetResourcePaths();
 
-    tinygltf::Model model;
-    tinygltf::TinyGLTF loader;
+    Assimp::Importer importer;
+    const aiScene* scene;
     std::string err, warn;
 
     bool loaded = false;
@@ -66,39 +70,49 @@ bool GameObject::Load(std::string filename)
         fullPath = p + filename;
 
         LogVerbose("Checking %s\n", fullPath);
-        if (binary)
+        scene = importer.ReadFile(fullPath, aiProcessPreset_TargetRealtime_Quality);
+
+        if (scene)
         {
-            loaded = loader.LoadBinaryFromFile(&model, &err, &warn, fullPath);
-        }
-        else
-        {
-            loaded = loader.LoadASCIIFromFile(&model, &err, &warn, fullPath);
+            LogLoad("Loading: %s\n", fullPath);
+            loaded = true;
         }
 
         if (loaded) break;
     }
 
-    _mLoadedModel = &model;
-
     if (!loaded)
     {
-        LogError("Failed to load model, '%s'\n", filename);
-        return false;
+        LogError("Error: Loading %s in Assimp.\n", fullPath);
     }
 
-    LogLoad("Loading Mesh from %s\n", fullPath);
-    LogVerbose("Model Generator %s\n", model.asset.generator);
+    _mScene = scene;
 
-    bool loadedTextures = processTextures();
-    bool loadedMaterials = processMaterials();
+    if (_mScene->HasTextures())
+    {
+        bool loadedTextures = processTextures();
 
-    const auto& scene = _mLoadedModel->scenes[_mLoadedModel->defaultScene];
-    for (int id : scene.nodes) {
-        auto& node = _mLoadedModel->nodes[id];
-        LogVerbose("Loading node(GameObject): %s\n", node.name);
-        LogLoad("Loading GameObject: %s\n", node.name);
-        AddChild(processNode(node).release());
+        if (!loadedTextures)
+        {
+            LogError("Error: Could not load textures in: %s\n", fullPath);
+            return false;
+        }
     }
+
+    if (_mScene->HasMaterials())
+    {
+        bool loadedMaterials = processMaterials();
+
+        if (!loadedMaterials)
+        {
+            LogError("Error: Could not load materials in: %s\n", fullPath);
+            return false;
+        }
+    }
+
+    //bool loadedMaterials = processMaterials();
+
+    processNode(scene->mRootNode);
 
     glBindVertexArray(0);
 
@@ -109,24 +123,17 @@ bool GameObject::Load(std::string filename)
 
     _mTextures.clear();
     _mMaterials.clear();
-
+    
     return true;
 }
 
 bool GameObject::processTextures()
 {
-    for (auto& texture : _mLoadedModel->textures)
+    for (unsigned int i = 0; i < _mScene->mNumTextures; i++)
     {
-        tinygltf::Image& image = _mLoadedModel->images[texture.source];
-        LogVerbose("Loading Texture from buffer (%d, %d, %d)\n", image.width, image.height, image.component);
-        _mTextures.push_back(std::make_shared<Texture>(image.image.data(), glm::ivec2(image.width, image.height), image.component));
-    }
-
-    if (_mTextures.empty())
-    {
-        LogWarn("No Textures found, adding default\n");
-        _mTextures.push_back(std::make_shared<Texture>());
-        return false;
+        aiTexture* texture = _mScene->mTextures[i];
+        LogVerbose("Loading Texture %s: %f, %f", texture->mFilename.C_Str(), texture->mHeight, texture->mWidth);
+        _mTextures.push_back(std::make_shared<Texture>(texture->mFilename.C_Str()));
     }
 
     return true;
@@ -134,330 +141,248 @@ bool GameObject::processTextures()
 
 bool GameObject::processMaterials()
 {
-    for (auto& material : _mLoadedModel->materials)
+    if (_mScene->HasMaterials())
     {
-        auto mat = std::make_shared<Material>();
-
-        auto& vals = material.values;
-        auto it = vals.end();
-
-        auto& addVals = material.additionalValues;
-        auto addIt = addVals.end();
-
-        it = vals.find("baseColorFactor");
-        if (it != vals.end() && !it->second.number_array.empty())
+        for (int i = 0; i < _mScene->mNumMaterials; i++)
         {
-            const auto& c = it->second.ColorFactor();
-            mat->SetDiffuse(glm::make_vec4(it->second.ColorFactor().data()));
+            auto material = _mScene->mMaterials[i];
+            
         }
-
-        it = vals.find("baseColorTexture");
-        if (it != vals.end())
-        {
-            mat->SetDiffuseMap(_mTextures[it->second.TextureIndex()]);
-        }
-
-        it = vals.find("metallicFactor");
-        if (it != vals.end())
-        {
-            mat->SetMetallic((float)it->second.Factor());
-        }
-
-        it = vals.find("roughnessFactor");
-        if (it != vals.end())
-        {
-            mat->SetRoughness((float)it->second.Factor());
-        }
-
-        it = vals.find("metallicRoughnessTexture");
-        if (it != vals.end())
-        {
-            mat->SetMetallicRoughnessMap(_mTextures[it->second.TextureIndex()]);
-        }
-
-        addIt = addVals.find("normalTexture");
-        if (addIt != addVals.end())
-        {
-            mat->SetNormalMap(_mTextures[addIt->second.TextureIndex()]);
-            mat->SetNormalScale((float)addIt->second.Factor());
-        }
-
-        addIt = addVals.find("emissiveFactor");
-        if (it != vals.end() && !it->second.number_array.empty())
-        {
-            const auto& c = it->second.ColorFactor();
-            mat->SetEmissive(glm::make_vec3(addIt->second.ColorFactor().data()));
-        }
-
-        addIt = addVals.find("emissiveTexture");
-        if (addIt != addVals.end())
-        {
-            mat->SetEmissiveMap(_mTextures[addIt->second.TextureIndex()]);
-        }
-
-        addIt = addVals.find("occlusionTexture");
-        if (addIt != addVals.end())
-        {
-            mat->SetOcclusionMap(_mTextures[addIt->second.TextureIndex()]);
-            mat->SetOcclusionStrength((float)addIt->second.Factor());
-        }
-
-        for (const auto& val : material.values)
-        {
-            LogVerbose("Material value %s\n", val.first);
-        }
-
-        for (const auto& val : material.additionalValues)
-        {
-            LogVerbose("Material additional value %s\n", val.first);
-        }
-
-        _mMaterials.push_back(std::move(mat));
     }
-
-    if (_mMaterials.empty())
+    else
     {
-        LogWarn("No Materials found, adding default\n");
-        _mMaterials.push_back(std::make_shared<Material>());
         return false;
     }
 
     return true;
 }
 
-std::unique_ptr<GameObject> GameObject::processNode(tinygltf::Node& node)
+std::unique_ptr<GameObject> GameObject::processNode(aiNode* node)
 {
     GameObject* gobj = nullptr;
 
-    // Check if camera
-    if (node.camera >= 0)
+    //if (lightcrap/cameracrap)
+    //else
+    gobj = new GameObject();
+
+    if (node->mNumMeshes >= 0)
     {
-        // Set all camera values here for if it's a camera
-        Camera* camera = new Camera();
-        gobj = camera;
-
-        // Load scene cameras
-        for (auto modelcamera : _mLoadedModel->cameras)
-        {
-            LogVerbose("%i Camera(s) found.", node.camera);
-            LogInfo("Loading Camera: %s\n", modelcamera.name);
-            LogInfo("Type: %s\n", modelcamera.type);
-
-            if (modelcamera.type == "perspective")
-            {
-                // Loaded aspect ratio was coming up as 0.000? hm
-                //camera->SetAspect(modelcamera.perspective.aspectRatio);
-                camera->SetFOVY((float)modelcamera.perspective.yfov);
-                camera->SetClip(glm::vec2(modelcamera.perspective.znear, modelcamera.perspective.zfar));
-                camera->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
-
-                if (modelcamera.name == "Main Camera")
-                    App::Inst()->SetCurrentCamera(camera);
-            }
-            else if (modelcamera.type == "orthographic")
-            {
-                // This hasn't been tested but i'm pretty sure this is right.
-                camera->SetViewportSize(glm::vec2(modelcamera.orthographic.xmag, modelcamera.orthographic.ymag));
-                camera->SetClip(glm::vec2(modelcamera.orthographic.znear, modelcamera.orthographic.zfar));
-
-                if (modelcamera.name == "Main Camera")
-                    App::Inst()->SetCurrentCamera(camera);
-            }
-        }
-    }
-    else if (node.extensions.size() > 0)
-    {
-        LogInfo("We have an extension.\n");
-        for (auto ext : node.extensions)
-        {
-            if (ext.first == "KHR_lights_punctual")
-            {
-                LogInfo("KHR_lights_punctual\n");
-                int lightExt = ext.second.Get("light").GetNumberAsInt();
-                auto light = _mLoadedModel->lights[lightExt];
-
-                for (auto color : light.color)
-                    LogInfo("light.color = %f\n", color);
-
-                LogInfo("light.intensity = %f\n", light.intensity);
-                LogInfo("light.name = %s\n", light.name);
-                LogInfo("light.range = %f\n", light.range);
-                LogInfo("light.spot.innerConeAngle = %f\n", light.spot.innerConeAngle);
-                LogInfo("light.spot.outerConeAngle = %f\n", light.spot.outerConeAngle);
-                LogInfo("light.type = %s\n\n", light.type);
-
-                if (light.type == "directional")
-                {
-                    DirectionalLight* dirLight = new DirectionalLight();
-                    dirLight->SetColor(glm::make_vec3(light.color.data()));
-                    
-                    if (node.rotation.data() != 0)
-                    {
-                        const auto& rot = node.rotation;
-                        glm::quat dirQuat = glm::quat(rot[3], rot[0], rot[1], rot[2]);
-                        LogInfo("Quat: %f, %f, %f, %f\n", dirQuat.w, dirQuat.x, dirQuat.y, dirQuat.z);
-                        //glm::vec3 direction = glm::rotate(dirQuat, glm::vec3(0.0f, 0.0f, -1.0f));
-                        //dirLight->SetDirection(direction);
-                    }
-                    else
-                        dirLight->SetDirection(glm::vec3(0.0f, 0.0f, 0.0f));
-
-                    LogInfo("Directional Light.\n");
-                    for (auto color : light.color)
-                        LogInfo("light.color = %f\n", color);
-                    //LogInfo("direction = %f, %f, %f\n\n", dirLight->GetDirection().x, dirLight->GetDirection().y, dirLight->GetDirection().z);
-                    
-                    gobj = dirLight;
-                }
-                else if (light.type == "point")
-                {
-                    PointLight* pointLight = new PointLight();
-
-                    pointLight->SetColor(glm::make_vec3(light.color.data()));
-                    //pointLight->
-                    //light
-
-                    gobj = pointLight;
-                }
-                else if (light.type == "spot")
-                {
-                    SpotLight* spotLight = new SpotLight();
-
-                    gobj = spotLight;
-                }
-            }
-            else
-            {
-                gobj = new GameObject();
-            }
-        }
-    }
-    else
-    {
-        gobj = new GameObject();
-    }    
-
-    // Check if we have a mesh
-    if (node.mesh >= 0)
-    {
-        auto& mesh = _mLoadedModel->meshes[node.mesh];
-
         std::vector<Mesh*> meshes;
-        meshes.clear();
-        for (size_t pInd = 0; pInd < mesh.primitives.size(); ++pInd)
+
+        // Process our game objects meshes
+        for (int i = 0; i < node->mNumMeshes; i++)
         {
-            auto& primitive = mesh.primitives[pInd];
-            auto& indexAccessor = _mLoadedModel->accessors[primitive.indices];
-
-            GLuint vao;
-            glGenVertexArrays(1, &vao);
-            glBindVertexArray(vao);
-
-            {
-                auto& bufferView = _mLoadedModel->bufferViews[indexAccessor.bufferView];
-                auto& buffer = _mLoadedModel->buffers[bufferView.buffer];
-
-                GLuint vbo;
-                glGenBuffers(1, &vbo);
-                _mVBOS.push_back(vbo);
-
-                glBindBuffer(bufferView.target, vbo);
-                glBufferData(bufferView.target, bufferView.byteLength, buffer.data.data() + bufferView.byteOffset, GL_STATIC_DRAW);
-            }
-
-            for (auto& attrib : primitive.attributes)
-            {
-                auto& accessor = _mLoadedModel->accessors[attrib.second];
-                auto& bufferView = _mLoadedModel->bufferViews[accessor.bufferView];
-                auto& buffer = _mLoadedModel->buffers[bufferView.buffer];
-                int byteStride = accessor.ByteStride(bufferView);
-
-                LogVerbose("Attribute %s\n", attrib.first);
-
-                GLuint vbo;
-                glGenBuffers(1, &vbo);
-                _mVBOS.push_back(vbo);
-
-                glBindBuffer(bufferView.target, vbo);
-                glBufferData(bufferView.target, bufferView.byteLength, buffer.data.data() + bufferView.byteOffset, GL_STATIC_DRAW);
-
-                GLint size = (accessor.type == TINYGLTF_TYPE_SCALAR ? 1 : accessor.type);
-
-                GLint vaa = -1;
-                if (attrib.first.compare("POSITION") == 0)
-                {
-                    vaa = AttributeID::POSITION;
-                }
-
-                if (attrib.first.compare("NORMAL") == 0)
-                {
-                    vaa = AttributeID::NORMAL;
-                }
-
-                if (attrib.first.compare("TEXCOORD_0") == 0)
-                {
-                    vaa = AttributeID::TEXCOORD;
-                }
-
-                if (attrib.first.compare("TANGENT") == 0)
-                {
-                    vaa = AttributeID::TANGENT;
-                }
-
-                if (vaa > -1)
-                {
-                    glEnableVertexAttribArray(vaa);
-                    glVertexAttribPointer(vaa, size, accessor.componentType, accessor.normalized ? GL_TRUE : GL_FALSE, byteStride, (void*)accessor.byteOffset);
-                }
-                else
-                {
-                    LogWarn("Ignoring attribute %s\n", attrib.first);
-                }
-            }
-
-            meshes.push_back(new Mesh(vao,
-                (GLenum)primitive.mode,
-                (GLsizei)indexAccessor.count,
-                (GLenum)indexAccessor.componentType,
-                (GLsizei)indexAccessor.byteOffset,
-                _mMaterials[(primitive.material < 0 ? 0 : primitive.material)]));
+            auto& mesh = _mScene->mMeshes[node->mMeshes[i]];
+            meshes.push_back(processMesh(mesh));
         }
 
-        gobj->SetModel(new Model(meshes));
-
+        // Process the childrens meshes
+        for (int i = 0; i < node->mNumMeshes; i++)
+        {
+            processNode(node->mChildren[i]);
+        }
     }
-
-    // Check position and assign it
-    if (node.translation.size() == 3)
-    {
-        gobj->SetPosition(glm::make_vec3(node.translation.data()));
-    }
-
-    // Check rotation and assign it
-    if (node.rotation.size() == 4)
-    {
-        glm::vec4 data = glm::make_vec4(node.rotation.data());
-        gobj->SetRotation(glm::quat(data[3], data[0], data[1], data[2]));
-    }
-
-    // Check scale and assign it
-    if (node.scale.size() == 3)
-    {
-        gobj->SetScale(glm::make_vec3(node.scale.data()));
-    }
-
-    // Get the name
-    gobj->SetName(node.name.c_str());
-
-    // SET TEMP SHADER
-    gobj->SetShader(App::Inst()->GetShader("defaultLighting"));
-
-    // Process all children
-    for (int id : node.children) {
-        auto& child = _mLoadedModel->nodes[id];
-        gobj->AddChild(processNode(child).release());
-    }
-
-    // TRS, check if has mesh.
-    return std::unique_ptr<GameObject>(gobj);
+    return std::unique_ptr<GameObject>();
 }
+
+Mesh* GameObject::processMesh(aiMesh* mesh)
+{
+    
+    std::vector<unsigned int> indices;
+    std::vector<glm::vec3> vertices;
+    std::vector<glm::vec3> normals;
+    std::vector<glm::vec2> texCoords;
+    std::vector<glm::vec3> tangents;
+    std::vector<glm::vec3> bitangents;
+
+    // Get every indice
+    for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+    {
+        aiFace face = mesh->mFaces[i];
+        for (unsigned int j = 0; j < face.mNumIndices; j++)
+        {
+            indices.push_back(face.mIndices[j]);
+        }
+    }
+
+    for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+    {
+        // Vertices
+        glm::vec3 vertice(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
+        vertices.push_back(vertice);
+
+        GLuint vao, vbo;
+
+        // VAOs
+        glGenVertexArrays(1, &vao);
+        glBindVertexArray(vao);
+
+        // VBOs
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 3, vertices.data(), GL_STATIC_DRAW);
+       
+
+        // Attributes
+        glVertexAttribPointer(AttributeID::POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(AttributeID::POSITION);
+        _mVBOS.push_back(vbo);
+
+        // Normals
+        if (mesh->HasNormals())
+        {
+            glm::vec3 normal(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+            normals.push_back(normal);
+
+            glGenBuffers(1, &vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+            glVertexAttribPointer(AttributeID::NORMAL, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+            glEnableVertexAttribArray(AttributeID::NORMAL);
+            _mVBOS.push_back(vbo);
+        }
+
+        // TexCoords
+        // 
+        // Should probably be this.
+        // Assimp allows a model to have up to 8 different texture coordinates 
+        // per vertex which we're not going to use so we only care about the first
+        // set of texture coordinates
+        //for (int j = 0; j < 7; j++)
+        //{
+        //    if (mesh->mTextureCoords[0])
+        //    {
+        //        glm::vec2 texCoord(mesh->mTextureCoords[j][i].x, mesh->mTextureCoords[j][i].y);
+        //        texCoords.push_back(texCoord);
+        //    }
+        //    else
+        //    {
+        //        texCoords.push_back(glm::vec2(0.0f, 0.0f));
+        //    }
+        //}
+        if (mesh->mTextureCoords[0])
+        {
+            glm::vec2 texCoord(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
+            texCoords.push_back(texCoord);
+
+            glGenBuffers(1, &vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+            glVertexAttribPointer(AttributeID::TEXCOORD, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+            glEnableVertexAttribArray(AttributeID::TEXCOORD);
+            _mVBOS.push_back(vbo);
+        }
+        else
+        {
+            texCoords.push_back(glm::vec2(0.0f, 0.0f));
+            glGenBuffers(1, &vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+            glVertexAttribPointer(AttributeID::TEXCOORD, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+            glEnableVertexAttribArray(AttributeID::TEXCOORD);
+            _mVBOS.push_back(vbo);
+        }
+
+        if (mesh->HasTangentsAndBitangents())
+        {
+            // Tangents
+            glm::vec3 tangent(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
+            tangents.push_back(tangent);
+            glGenBuffers(1, &vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+            glVertexAttribPointer(AttributeID::TANGENT, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+            glEnableVertexAttribArray(AttributeID::TANGENT);
+            _mVBOS.push_back(vbo);
+
+            // Bitangents
+            glm::vec3 bitangent(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
+            bitangents.push_back(bitangent);
+
+            glGenBuffers(1, &vbo);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+            glVertexAttribPointer(AttributeID::BITANGENT, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+            glEnableVertexAttribArray(AttributeID::BITANGENT);
+            _mVBOS.push_back(vbo);
+        }
+
+        // Create a new mesh
+        meshes.push_back(new Mesh(vao,
+            GL_TRIANGLES,
+            (GLsizei)indices.size(),
+            GL_UNSIGNED_INT,
+            NULL,
+            _mMaterials[(primitive.material < 0 ? 0 : primitive.material)]));
+        
+        // create the material
+
+        // do material things
+            
+    }
+
+    //Mesh* newMesh = new Mesh(vertices, normals, texCoords, tangents, bitangents);
+    //Material* newMat = nullptr;
+
+    //// Materials
+    //if (mesh->mMaterialIndex >= 0)
+    //{
+    //    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
+    //    // Ambient
+    //    std::string ambientTex = GetMaterialTextureName(material, aiTextureType_AMBIENT, dirname);
+
+    //    // Diffuse
+    //    std::string diffuseTex = GetMaterialTextureName(material, aiTextureType_DIFFUSE, dirname);
+
+    //    // Specular
+    //    std::string specularTex = GetMaterialTextureName(material, aiTextureType_SPECULAR, dirname);
+
+    //    // Normal
+    //    std::string normalTex = GetMaterialTextureName(material, aiTextureType_NORMALS, dirname);
+
+    //    aiColor4D aiAmb;
+    //    aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, &aiAmb);
+    //    float amb[3] = { aiAmb.r, aiAmb.g, aiAmb.b };
+
+    //    aiColor4D aiDiff;
+    //    aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &aiDiff);
+    //    float diff[3] = { aiDiff.r, aiDiff.g, aiDiff.b };
+
+    //    aiColor4D aiSpec;
+    //    aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &aiSpec);
+    //    float spec[3] = { aiSpec.r, aiSpec.g, aiSpec.b };
+
+    //    aiColor4D aiShininess;
+    //    aiGetMaterialColor(material, AI_MATKEY_SHININESS, &aiShininess);
+    //    glm::vec3 shininess(aiShininess.r, aiShininess.g, aiShininess.b);
+
+    //    // Notes:
+    //    // Remove dissolve from material it's pointless
+    //    // Add all the other materials, Albedo, Metallic, roughness, AO?, etc
+
+
+    //    newMat = new Material(amb, diff, spec, aiShininess.r, ambientTex, diffuseTex, specularTex, normalTex);
+    //    newMesh->SetMaterial(newMat);
+    //}
+
+    //return newMesh;
+
+    //return Mesh(vertices, indices, textures);
+
+    return nullptr;
+}
+
+//std::string GameObject::GetMaterialTextureName(aiMaterial* material, aiTextureType type, std::string dirname)
+//{
+//    std::string texName;
+//    for (unsigned int i = 0; i < material->GetTextureCount(type); i++)
+//    {
+//        aiString str;
+//        material->GetTexture(type, i, &str);
+//        texName = dirname + str.C_Str();
+//    }
+//    return texName;
+//}
+
+

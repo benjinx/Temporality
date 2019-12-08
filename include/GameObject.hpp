@@ -8,14 +8,17 @@
 #include <vector>
 #include <memory>
 
-#include <assimp/Importer.hpp>
-
 class Shader;
 class Material;
+class Mesh;
 class Model;
 class Texture;
 namespace tinygltf { class Node; }
 namespace tinygltf { class Model; }
+
+struct aiScene;
+struct aiNode;
+struct aiMesh;
 
 //
 class GameObject
@@ -157,6 +160,8 @@ private:
     std::vector<std::shared_ptr<Material>> _mMaterials;
     std::vector<GLuint> _mVBOS;
 
+    const aiScene* _mScene;
+
     // Load Textures
     bool processTextures();
 
@@ -164,6 +169,9 @@ private:
     bool processMaterials();
 
     // Part of loading function
-    std::unique_ptr<GameObject> processNode(tinygltf::Node& node);
+    std::unique_ptr<GameObject> processNode(aiNode* node);
+
+    // Load Mesh
+    Mesh* processMesh(aiMesh* mesh);
 };
 #endif // GAMEOBJECT_HPP
