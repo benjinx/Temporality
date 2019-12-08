@@ -33,10 +33,9 @@ SET(glfw3_ROOT         ${CMAKE_BINARY_DIR}/glfw3)
 SET(glfw3_SOURCE_DIR   ${CMAKE_BINARY_DIR}/glfw3_src)
 SET(glfw3_BINARY_DIR   ${CMAKE_BINARY_DIR}/glfw3_bin)
 
-FIND_PACKAGE(GLFW3 QUIET)
+FIND_PACKAGE(glfw3 QUIET)
 
-IF (NOT GLFW3_FOUND)
-
+IF (NOT glfw3_FOUND)
     ExternalProject_Add(thirdparty-glfw
         GIT_REPOSITORY      "https://github.com/glfw/glfw"
         GIT_TAG             "3.2.1"
