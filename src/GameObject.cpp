@@ -188,12 +188,15 @@ std::unique_ptr<GameObject> GameObject::processNode(aiNode* node)
 Mesh* GameObject::processMesh(aiMesh* mesh)
 {
     
-    std::vector<unsigned int> indices;
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec3> normals;
     std::vector<glm::vec2> texCoords;
     std::vector<glm::vec3> tangents;
     std::vector<glm::vec3> bitangents;
+
+    bool hasNormals = mesh->HasNormals();
+    bool hasTexCoords = mesh->HasTextureCoords(0);
+    bool hasTangentsAndBitangents = mesh->HasTangentsAndBitangents();
 
     // Get every indice
     for (unsigned int i = 0; i < mesh->mNumFaces; i++)
@@ -201,125 +204,100 @@ Mesh* GameObject::processMesh(aiMesh* mesh)
         aiFace face = mesh->mFaces[i];
         for (unsigned int j = 0; j < face.mNumIndices; j++)
         {
-            indices.push_back(face.mIndices[j]);
+            const auto& vert = mesh->mVertices[face.mIndices[j]];
+            vertices.push_back({ vert.x, vert.y, vert.z });
+
+            if (hasNormals) {
+                const auto& norm = mesh->mNormals[face.mIndices[j]];
+                normals.push_back({ norm.x, norm.y, norm.z });
+            }
+
+            if (hasTexCoords) {
+                const auto& txcd = mesh->mTextureCoords[0][face.mIndices[j]];
+                texCoords.push_back({ txcd.x, txcd.y });
+            }
+
+            if (hasTangentsAndBitangents) {
+                const auto& tangent = mesh->mTextureCoords[0][face.mIndices[j]];
+                tangents.push_back({ tangent.x, tangent.y, tangent.z });
+
+                const auto& bitangent = mesh->mTextureCoords[0][face.mIndices[j]];
+                bitangents.push_back({ bitangent.x, bitangent.y, bitangent.z });
+            }
         }
     }
 
-    for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+    GLuint vao, vbo;
+
+    // VAOs
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
+    // VBOs
+    glGenBuffers(1, &vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 3, vertices.data(), GL_STATIC_DRAW);
+
+    // Attributes
+    glVertexAttribPointer(AttributeID::POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+    glEnableVertexAttribArray(AttributeID::POSITION);
+    _mVBOS.push_back(vbo);
+
+    // Normals
+    if (hasNormals)
     {
-        // Vertices
-        glm::vec3 vertice(mesh->mVertices[i].x, mesh->mVertices[i].y, mesh->mVertices[i].z);
-        vertices.push_back(vertice);
-
-        GLuint vao, vbo;
-
-        // VAOs
-        glGenVertexArrays(1, &vao);
-        glBindVertexArray(vao);
-
-        // VBOs
         glGenBuffers(1, &vbo);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size() * 3, vertices.data(), GL_STATIC_DRAW);
-       
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * normals.size() * 3, normals.data(), GL_STATIC_DRAW);
 
-        // Attributes
-        glVertexAttribPointer(AttributeID::POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-        glEnableVertexAttribArray(AttributeID::POSITION);
+        glVertexAttribPointer(AttributeID::NORMAL, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(AttributeID::NORMAL);
+        _mVBOS.push_back(vbo);
+    }
+
+    // TexCoords
+    if (hasTexCoords)
+    {
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * texCoords.size() * 2, texCoords.data(), GL_STATIC_DRAW);
+
+        glVertexAttribPointer(AttributeID::TEXCOORD, 2, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(AttributeID::TEXCOORD);
+        _mVBOS.push_back(vbo);
+    }
+
+    if (hasTangentsAndBitangents)
+    {
+        // Tangents
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * tangents.size() * 3, tangents.data(), GL_STATIC_DRAW);
+
+        glVertexAttribPointer(AttributeID::TANGENT, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(AttributeID::TANGENT);
         _mVBOS.push_back(vbo);
 
-        // Normals
-        if (mesh->HasNormals())
-        {
-            glm::vec3 normal(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
-            normals.push_back(normal);
+        // Bitangents
+        glGenBuffers(1, &vbo);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * bitangents.size() * 3, bitangents.data(), GL_STATIC_DRAW);
 
-            glGenBuffers(1, &vbo);
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-            glVertexAttribPointer(AttributeID::NORMAL, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-            glEnableVertexAttribArray(AttributeID::NORMAL);
-            _mVBOS.push_back(vbo);
-        }
-
-        // TexCoords
-        // 
-        // Should probably be this.
-        // Assimp allows a model to have up to 8 different texture coordinates 
-        // per vertex which we're not going to use so we only care about the first
-        // set of texture coordinates
-        //for (int j = 0; j < 7; j++)
-        //{
-        //    if (mesh->mTextureCoords[0])
-        //    {
-        //        glm::vec2 texCoord(mesh->mTextureCoords[j][i].x, mesh->mTextureCoords[j][i].y);
-        //        texCoords.push_back(texCoord);
-        //    }
-        //    else
-        //    {
-        //        texCoords.push_back(glm::vec2(0.0f, 0.0f));
-        //    }
-        //}
-        if (mesh->mTextureCoords[0])
-        {
-            glm::vec2 texCoord(mesh->mTextureCoords[0][i].x, mesh->mTextureCoords[0][i].y);
-            texCoords.push_back(texCoord);
-
-            glGenBuffers(1, &vbo);
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-            glVertexAttribPointer(AttributeID::TEXCOORD, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-            glEnableVertexAttribArray(AttributeID::TEXCOORD);
-            _mVBOS.push_back(vbo);
-        }
-        else
-        {
-            texCoords.push_back(glm::vec2(0.0f, 0.0f));
-            glGenBuffers(1, &vbo);
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-            glVertexAttribPointer(AttributeID::TEXCOORD, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-            glEnableVertexAttribArray(AttributeID::TEXCOORD);
-            _mVBOS.push_back(vbo);
-        }
-
-        if (mesh->HasTangentsAndBitangents())
-        {
-            // Tangents
-            glm::vec3 tangent(mesh->mTangents[i].x, mesh->mTangents[i].y, mesh->mTangents[i].z);
-            tangents.push_back(tangent);
-            glGenBuffers(1, &vbo);
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-            glVertexAttribPointer(AttributeID::TANGENT, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-            glEnableVertexAttribArray(AttributeID::TANGENT);
-            _mVBOS.push_back(vbo);
-
-            // Bitangents
-            glm::vec3 bitangent(mesh->mBitangents[i].x, mesh->mBitangents[i].y, mesh->mBitangents[i].z);
-            bitangents.push_back(bitangent);
-
-            glGenBuffers(1, &vbo);
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-            glVertexAttribPointer(AttributeID::BITANGENT, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-            glEnableVertexAttribArray(AttributeID::BITANGENT);
-            _mVBOS.push_back(vbo);
-        }
-
-        // Create a new mesh
-        meshes.push_back(new Mesh(vao,
-            GL_TRIANGLES,
-            (GLsizei)indices.size(),
-            GL_UNSIGNED_INT,
-            NULL,
-            _mMaterials[(primitive.material < 0 ? 0 : primitive.material)]));
-        
-        // create the material
-
-        // do material things
-            
+        glVertexAttribPointer(AttributeID::BITANGENT, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(AttributeID::BITANGENT);
+        _mVBOS.push_back(vbo);
     }
+
+    // Create a new mesh
+    meshes.push_back(new Mesh(vao,
+        GL_TRIANGLES,
+        GL_UNSIGNED_INT,
+        NULL,
+        _mMaterials[(primitive.material < 0 ? 0 : primitive.material)]));
+    
+    // create the material
+
+    // do material things
 
     //Mesh* newMesh = new Mesh(vertices, normals, texCoords, tangents, bitangents);
     //Material* newMat = nullptr;
