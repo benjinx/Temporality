@@ -19,6 +19,8 @@ namespace tinygltf { class Model; }
 struct aiScene;
 struct aiNode;
 struct aiMesh;
+struct aiMaterial;
+enum aiTextureType;
 
 //
 class GameObject
@@ -166,12 +168,15 @@ private:
     bool processTextures();
 
     // Load Materials
-    bool processMaterials();
+    Material* processMaterials(aiMaterial* material);
+    std::string GetMaterialTextureName(aiMaterial* material, aiTextureType type, std::string dirname);
 
     // Part of loading function
     std::unique_ptr<GameObject> processNode(aiNode* node);
 
     // Load Mesh
     Mesh* processMesh(aiMesh* mesh);
+
+    std::string _mDir;
 };
 #endif // GAMEOBJECT_HPP

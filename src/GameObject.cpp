@@ -76,6 +76,7 @@ bool GameObject::Load(std::string filename)
         {
             LogLoad("Loading: %s\n", fullPath);
             loaded = true;
+            _mDir = p;
         }
 
         if (loaded) break;
@@ -87,30 +88,6 @@ bool GameObject::Load(std::string filename)
     }
 
     _mScene = scene;
-
-    if (_mScene->HasTextures())
-    {
-        bool loadedTextures = processTextures();
-
-        if (!loadedTextures)
-        {
-            LogError("Error: Could not load textures in: %s\n", fullPath);
-            return false;
-        }
-    }
-
-    if (_mScene->HasMaterials())
-    {
-        bool loadedMaterials = processMaterials();
-
-        if (!loadedMaterials)
-        {
-            LogError("Error: Could not load materials in: %s\n", fullPath);
-            return false;
-        }
-    }
-
-    //bool loadedMaterials = processMaterials();
 
     processNode(scene->mRootNode);
 
@@ -139,24 +116,6 @@ bool GameObject::processTextures()
     return true;
 }
 
-bool GameObject::processMaterials()
-{
-    if (_mScene->HasMaterials())
-    {
-        for (int i = 0; i < _mScene->mNumMaterials; i++)
-        {
-            auto material = _mScene->mMaterials[i];
-            
-        }
-    }
-    else
-    {
-        return false;
-    }
-
-    return true;
-}
-
 std::unique_ptr<GameObject> GameObject::processNode(aiNode* node)
 {
     GameObject* gobj = nullptr;
@@ -176,18 +135,21 @@ std::unique_ptr<GameObject> GameObject::processNode(aiNode* node)
             meshes.push_back(processMesh(mesh));
         }
 
-        // Process the childrens meshes
-        for (int i = 0; i < node->mNumMeshes; i++)
+        if (node->mNumChildren > 0)
         {
-            processNode(node->mChildren[i]);
+            // Process the childrens meshes
+            for (int i = 0; i < node->mNumMeshes; i++)
+            {
+                gobj->AddChild(processNode(node->mChildren[i]).get());
+            }
         }
     }
-    return std::unique_ptr<GameObject>();
+
+    return std::make_shared<GameObject>(std::move(gobj));
 }
 
 Mesh* GameObject::processMesh(aiMesh* mesh)
 {
-    
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec3> normals;
     std::vector<glm::vec2> texCoords;
@@ -218,10 +180,10 @@ Mesh* GameObject::processMesh(aiMesh* mesh)
             }
 
             if (hasTangentsAndBitangents) {
-                const auto& tangent = mesh->mTextureCoords[0][face.mIndices[j]];
+                const auto& tangent = mesh->mTangents[face.mIndices[j]];
                 tangents.push_back({ tangent.x, tangent.y, tangent.z });
 
-                const auto& bitangent = mesh->mTextureCoords[0][face.mIndices[j]];
+                const auto& bitangent = mesh->mBitangents[face.mIndices[j]];
                 bitangents.push_back({ bitangent.x, bitangent.y, bitangent.z });
             }
         }
@@ -288,79 +250,180 @@ Mesh* GameObject::processMesh(aiMesh* mesh)
         _mVBOS.push_back(vbo);
     }
 
+    Material* mat;
+    // Check if the mesh has materials
+    if (mesh->mMaterialIndex >= 0)
+    {
+        aiMaterial* material = _mScene->mMaterials[mesh->mMaterialIndex];
+        mat = processMaterials(material);
+    }
+    auto m = std::make_shared<Material>(std::move(mat));
+
     // Create a new mesh
-    meshes.push_back(new Mesh(vao,
+    Mesh* newMesh = new Mesh(vao,
         GL_TRIANGLES,
+        vertices.size(),
         GL_UNSIGNED_INT,
         NULL,
-        _mMaterials[(primitive.material < 0 ? 0 : primitive.material)]));
-    
-    // create the material
+        m);
 
-    // do material things
-
-    //Mesh* newMesh = new Mesh(vertices, normals, texCoords, tangents, bitangents);
-    //Material* newMat = nullptr;
-
-    //// Materials
-    //if (mesh->mMaterialIndex >= 0)
-    //{
-    //    aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
-
-    //    // Ambient
-    //    std::string ambientTex = GetMaterialTextureName(material, aiTextureType_AMBIENT, dirname);
-
-    //    // Diffuse
-    //    std::string diffuseTex = GetMaterialTextureName(material, aiTextureType_DIFFUSE, dirname);
-
-    //    // Specular
-    //    std::string specularTex = GetMaterialTextureName(material, aiTextureType_SPECULAR, dirname);
-
-    //    // Normal
-    //    std::string normalTex = GetMaterialTextureName(material, aiTextureType_NORMALS, dirname);
-
-    //    aiColor4D aiAmb;
-    //    aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, &aiAmb);
-    //    float amb[3] = { aiAmb.r, aiAmb.g, aiAmb.b };
-
-    //    aiColor4D aiDiff;
-    //    aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &aiDiff);
-    //    float diff[3] = { aiDiff.r, aiDiff.g, aiDiff.b };
-
-    //    aiColor4D aiSpec;
-    //    aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &aiSpec);
-    //    float spec[3] = { aiSpec.r, aiSpec.g, aiSpec.b };
-
-    //    aiColor4D aiShininess;
-    //    aiGetMaterialColor(material, AI_MATKEY_SHININESS, &aiShininess);
-    //    glm::vec3 shininess(aiShininess.r, aiShininess.g, aiShininess.b);
-
-    //    // Notes:
-    //    // Remove dissolve from material it's pointless
-    //    // Add all the other materials, Albedo, Metallic, roughness, AO?, etc
-
-
-    //    newMat = new Material(amb, diff, spec, aiShininess.r, ambientTex, diffuseTex, specularTex, normalTex);
-    //    newMesh->SetMaterial(newMat);
-    //}
-
-    //return newMesh;
-
-    //return Mesh(vertices, indices, textures);
-
-    return nullptr;
+    return newMesh;
 }
 
-//std::string GameObject::GetMaterialTextureName(aiMaterial* material, aiTextureType type, std::string dirname)
-//{
-//    std::string texName;
-//    for (unsigned int i = 0; i < material->GetTextureCount(type); i++)
-//    {
-//        aiString str;
-//        material->GetTexture(type, i, &str);
-//        texName = dirname + str.C_Str();
-//    }
-//    return texName;
-//}
+Material* GameObject::processMaterials(aiMaterial* material)
+{
+    Material* mat = new Material();
+
+    // Textures
+    aiString path;
+
+    // Diffuse Texture
+    std::string diffuseTex = GetMaterialTextureName(material, aiTextureType_DIFFUSE, _mDir);
+    auto dif = std::make_shared<Texture>(diffuseTex);
+    mat->SetDiffuseMap(dif);
+
+    // Specular Texture
+    std::string specularTex = GetMaterialTextureName(material, aiTextureType_SPECULAR, _mDir);
+    //auto spec = std::make_shared<Texture>(specularTex);
+    //mat->SetSpecularMap(spec);
+
+    // Ambient Texture
+    std::string ambientTex = GetMaterialTextureName(material, aiTextureType_AMBIENT, _mDir);
+    //auto amb = std::make_shared<Texture>(ambientTex);
+    //mat->SetAmbientMap(amb);
+
+    // Emissive Texture
+    std::string emissiveTex = GetMaterialTextureName(material, aiTextureType_EMISSIVE, _mDir);
+    auto emi = std::make_shared<Texture>(emissiveTex);
+    mat->SetEmissiveMap(emi);
+
+    // Height Texture
+    std::string heightTex = GetMaterialTextureName(material, aiTextureType_HEIGHT, _mDir);
+    //auto hei = std::make_shared<Texture>(heightTex);
+    //mat->SetHeightMap(hei);
+
+    // Normal Texture
+    std::string normalTex = GetMaterialTextureName(material, aiTextureType_NORMALS, _mDir);
+    auto nor = std::make_shared<Texture>(normalTex);
+    mat->SetNormalMap(nor);
+
+    // Shininess Texture
+    std::string shininessTex = GetMaterialTextureName(material, aiTextureType_SHININESS, _mDir);
+    //auto shi = std::make_shared<Texture>(shininessTex);
+    //mat->SetShininessMap(shi);
+
+    // Opacity Texture
+    std::string opacityTex = GetMaterialTextureName(material, aiTextureType_OPACITY, _mDir);
+    //auto opa = std::make_shared<Texture>(opacityTex);
+    //mat->SetOpacityMap(opa);
+
+    // Displacement Texture
+    std::string displacementTex = GetMaterialTextureName(material, aiTextureType_DISPLACEMENT, _mDir);
+    //auto opa = std::make_shared<Texture>(opacityTex);
+    //mat->SetOpacityMap(opa);
+
+    // LightMap Texture
+    std::string lightMapTex = GetMaterialTextureName(material, aiTextureType_LIGHTMAP, _mDir);
+    //auto lig = std::make_shared<Texture>(lightMapTex);
+    //mat->SetLightMap(lig);
+
+    // Reflection Texture
+    std::string reflectionTex = GetMaterialTextureName(material, aiTextureType_REFLECTION, _mDir);
+    //auto ref = std::make_shared<Texture>(reflectionTex);
+    //mat->SetReflectionMap(ref);
+
+    ///
+    /// PBR Materials
+    ///
+    // Base Color Texture
+    std::string baseColorTex = GetMaterialTextureName(material, aiTextureType_BASE_COLOR, _mDir);
+    //auto col = std::make_shared<Texture>(baseColorTex);
+    //mat->SetBaseColorMap(col);
+
+    // Normal Camera Texture
+    std::string normalCameraTex = GetMaterialTextureName(material, aiTextureType_NORMAL_CAMERA, _mDir);
+    //auto ncm = std::make_shared<Texture>(normalCameraTex);
+    //mat->SetNormalCameraMap(ncm);
+
+    // Emission Color Texture
+    std::string emissionColorTex = GetMaterialTextureName(material, aiTextureType_EMISSION_COLOR, _mDir);
+    //auto emc = std::make_shared<Texture>(emissionColorTex);
+    //mat->SetEmissionColorMap(emc);
+
+    // Metalness Texture
+    std::string metalnessTex = GetMaterialTextureName(material, aiTextureType_METALNESS, _mDir);
+    //auto met = std::make_shared<Texture>(metalnessTex);
+    //mat->SetNormalCameraMap(met);
+
+    // Diffuse Roughness Texture
+    std::string diffuseRoughnessTex = GetMaterialTextureName(material, aiTextureType_DIFFUSE_ROUGHNESS, _mDir);
+    //auto drm = std::make_shared<Texture>(diffuseRoughnessTex);
+    //mat->SetDiffuseRoughnessTex(drm);
+
+    // Ambient Occlusion Texture
+    std::string ambientOcclusionTex = GetMaterialTextureName(material, aiTextureType_AMBIENT_OCCLUSION, _mDir);
+    //auto aot = std::make_shared<Texture>(ambientOcclusionTex);
+    //mat->SetAmbientOcclusionMap(aot);
+
+    ///
+    ///
+    ///
+
+    // Colors
+    aiColor4D aiColor;
+
+    // Diffuse
+    aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &aiColor);
+    glm::vec4 diffuse((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
+    mat->SetDiffuse(diffuse);
+
+    // Ambient
+    aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, &aiColor);
+    glm::vec4 ambient((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
+    //mat->SetAmbient(ambient);
+
+    // Specular
+    aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &aiColor);
+    glm::vec4 specular((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
+    //mat->SetSpecular(specular);
+
+    // Emissive
+    aiGetMaterialColor(material, AI_MATKEY_COLOR_EMISSIVE, &aiColor);
+    glm::vec4 emissive((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
+    mat->SetEmissive(emissive);
+
+    // Transparent
+    aiGetMaterialColor(material, AI_MATKEY_COLOR_TRANSPARENT, &aiColor);
+    glm::vec4 transparent((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
+    //mat->SetTransparent(transparent);
+
+    // Reflective
+    aiGetMaterialColor(material, AI_MATKEY_COLOR_REFLECTIVE, &aiColor);
+    glm::vec4 reflective((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
+    //mat->SetReflective(reflective);
+
+    
+
+    return mat;
+}
+
+std::string GameObject::GetMaterialTextureName(aiMaterial* material, aiTextureType type, std::string dirname)
+{
+    std::string texName;
+    for (unsigned int i = 0; i < material->GetTextureCount(type); i++)
+    {
+        aiString str;
+        if (material->GetTexture(type, i, &str) == AI_SUCCESS)
+        {
+            texName = dirname + str.C_Str();
+        }
+        else
+        {
+            LogWarn("Could not find texture: %s\n", str.C_Str());
+            texName = "";
+        }
+    }
+    return texName;
+}
 
 
