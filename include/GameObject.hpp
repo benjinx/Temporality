@@ -4,23 +4,17 @@
 #include <Config.hpp>
 #include <Math.hpp>
 #include <OpenGL.hpp>
+#include <Model.hpp>
+#include <Shader.hpp>
+#include <Material.hpp>
 
 #include <vector>
 #include <memory>
-
-class Shader;
-class Material;
-class Mesh;
-class Model;
-class Texture;
-namespace tinygltf { class Node; }
-namespace tinygltf { class Model; }
 
 struct aiScene;
 struct aiNode;
 struct aiMesh;
 struct aiMaterial;
-enum aiTextureType;
 
 //
 class GameObject
@@ -34,28 +28,32 @@ public:
     virtual void Update(const float dt);
     void Render();
 
-    void SetShader(Shader* shader);
-
-    void SetParent(GameObject* parent) { _mParent = parent; }
-    GameObject* GetParent() const { return _mParent; }
-    void AddChild(GameObject* child)
-    { 
-        child->SetParent(this);
-        _mChildren.push_back(child);
+    void SetShader(Shader * shader) {
+        _mShader = std::move(shader);
     }
-    std::vector<GameObject*> GetChildren() { return _mChildren; }
+
+    void SetParent(GameObject* parent) { 
+        _mParent = parent;
+    }
+
+    GameObject* GetParent() const { 
+        return _mParent;
+    }
+
+    void AddChild(std::unique_ptr<GameObject> && child) { 
+        child->SetParent(this);
+        _mChildren.push_back(std::move(child));
+    }
 
     //// LOCAL
     // Local Transform
-    void SetTransform(glm::vec3 position, glm::quat rotation, glm::vec3 scale)
-    {
+    void SetTransform(glm::vec3 position, glm::quat rotation, glm::vec3 scale) {
         _mPosition = position;
         _mRotation = rotation;
         _mScale = scale;
     }
 
-    glm::mat4 GetTransform() const
-    { 
+    glm::mat4 GetTransform() const { 
         glm::mat4 transform = glm::mat4(1);
         transform = glm::translate(transform, _mPosition);
         transform *= glm::mat4_cast(_mRotation);
@@ -131,9 +129,16 @@ public:
     void SetName(std::string name) { _mName = name; }
     std::string GetName() { return _mName; }
 
-    void SetModel(Model* model) { _mModel = model; }
+    void SetModel(std::unique_ptr<Model> model) { 
+        _mModel = std::move(model);
+    }
 
     bool Load(std::string filename);
+
+protected:
+
+    // Children
+    std::vector<std::unique_ptr<GameObject>> _mChildren;
     
 private:
     // Pos, rot, scale
@@ -142,41 +147,25 @@ private:
     glm::quat _mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
 
     // Gobjs Shader
-    Shader* _mShader;
+    Shader * _mShader;
 
     // Model
-    Model* _mModel = nullptr;
+    std::unique_ptr<Model> _mModel = nullptr;
 
     // Parent
     GameObject* _mParent = nullptr;
 
-    // Children
-    std::vector<GameObject*> _mChildren;
-
     // Object name
     std::string _mName;
 
-    // Loading
-    tinygltf::Model* _mLoadedModel;
-    std::vector<std::shared_ptr<Texture>> _mTextures;
-    std::vector<std::shared_ptr<Material>> _mMaterials;
-    std::vector<GLuint> _mVBOS;
-
-    const aiScene* _mScene;
-
-    // Load Textures
-    bool processTextures();
-
     // Load Materials
-    Material* processMaterials(aiMaterial* material);
-    std::string GetMaterialTextureName(aiMaterial* material, aiTextureType type, std::string dirname);
+    std::unique_ptr<Material> processMaterial(const aiScene * scene, std::string dir, aiMaterial* material);
 
     // Part of loading function
-    std::unique_ptr<GameObject> processNode(aiNode* node);
+    std::unique_ptr<GameObject> processNode(const aiScene * scene, std::string dir, aiNode* node);
 
     // Load Mesh
-    Mesh* processMesh(aiMesh* mesh);
+    std::unique_ptr<Mesh> processMesh(const aiScene * scene, std::string dir, aiMesh* mesh);
 
-    std::string _mDir;
 };
 #endif // GAMEOBJECT_HPP

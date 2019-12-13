@@ -8,9 +8,8 @@ void GameScene::Start()
     printf("\nLoading Models/Materials\n");
 
     // Camera
-    auto camera = new Camera();
-    AddGameObject("Camera", camera);
-    GetGameObject("Camera")->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
+    Camera * camera = (Camera *)AddGameObject("Camera", std::make_unique<Camera>());
+    camera->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
     App::Inst()->SetCurrentCamera(camera);
 
     // Light Source

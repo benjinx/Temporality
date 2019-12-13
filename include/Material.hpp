@@ -3,11 +3,11 @@
 
 #include <Config.hpp>
 #include <Math.hpp>
-
-#include <memory>
+#include <Texture.hpp>
 
 class Shader;
-class Texture;
+
+#include <memory>
 
 class Material
 {

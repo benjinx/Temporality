@@ -4,10 +4,8 @@
 #include <Camera.hpp>
 #include <Light.hpp>
 #include <Log.hpp>
-#include <Material.hpp>
-#include <Model.hpp>
-#include <Shader.hpp>
-#include <Texture.hpp>
+#include <Mesh.hpp>
+#include <Utils.hpp>
 
 #include <imgui/imgui.h>
 #include <nlohmann/json.hpp>
@@ -32,7 +30,6 @@ GameObject::GameObject(glm::vec3 position)
 GameObject::~GameObject()
 {
     _mChildren.clear();
-    delete _mModel;
 }
 
 void GameObject::Update(const float dt)
@@ -47,11 +44,6 @@ void GameObject::Render()
     }
 }
 
-void GameObject::SetShader(Shader* shader)
-{
-    _mShader = shader;
-}
-
 bool GameObject::Load(std::string filename)
 {
     std::string ext = Utils::GetExtension(filename);
@@ -61,7 +53,7 @@ bool GameObject::Load(std::string filename)
     const auto& paths = Utils::GetResourcePaths();
 
     Assimp::Importer importer;
-    const aiScene* scene;
+    const aiScene * scene;
     std::string err, warn;
 
     bool loaded = false;
@@ -76,7 +68,6 @@ bool GameObject::Load(std::string filename)
         {
             LogLoad("Loading: %s\n", fullPath);
             loaded = true;
-            _mDir = p;
         }
 
         if (loaded) break;
@@ -85,54 +76,37 @@ bool GameObject::Load(std::string filename)
     if (!loaded)
     {
         LogError("Error: Loading %s in Assimp.\n", fullPath);
+        return false;
     }
 
-    _mScene = scene;
+    std::string dir = Utils::GetDirname(fullPath);
 
-    processNode(scene->mRootNode);
-
-    glBindVertexArray(0);
-
-    for (auto vbo : _mVBOS)
-    {
-        glDeleteBuffers(1, &vbo);
-    }
-
-    _mTextures.clear();
-    _mMaterials.clear();
+    processNode(scene, dir, scene->mRootNode);
     
     return true;
 }
 
-bool GameObject::processTextures()
+std::unique_ptr<GameObject> GameObject::processNode(const aiScene * scene, std::string dir, aiNode* node)
 {
-    for (unsigned int i = 0; i < _mScene->mNumTextures; i++)
-    {
-        aiTexture* texture = _mScene->mTextures[i];
-        LogVerbose("Loading Texture %s: %f, %f", texture->mFilename.C_Str(), texture->mHeight, texture->mWidth);
-        _mTextures.push_back(std::make_shared<Texture>(texture->mFilename.C_Str()));
-    }
-
-    return true;
-}
-
-std::unique_ptr<GameObject> GameObject::processNode(aiNode* node)
-{
-    GameObject* gobj = nullptr;
+    auto gobj = std::make_unique<GameObject>();
 
     //if (lightcrap/cameracrap)
     //else
-    gobj = new GameObject();
 
     if (node->mNumMeshes >= 0)
     {
-        std::vector<Mesh*> meshes;
+        std::vector<std::unique_ptr<Mesh>> meshes;
 
         // Process our game objects meshes
         for (int i = 0; i < node->mNumMeshes; i++)
         {
-            auto& mesh = _mScene->mMeshes[node->mMeshes[i]];
-            meshes.push_back(processMesh(mesh));
+            auto& mesh = scene->mMeshes[node->mMeshes[i]];
+            meshes.push_back(processMesh(scene, dir, mesh));
+        }
+
+        if (!meshes.empty())
+        {
+            gobj->SetModel(std::make_unique<Model>(std::move(meshes)));
         }
 
         if (node->mNumChildren > 0)
@@ -140,15 +114,15 @@ std::unique_ptr<GameObject> GameObject::processNode(aiNode* node)
             // Process the childrens meshes
             for (int i = 0; i < node->mNumMeshes; i++)
             {
-                gobj->AddChild(processNode(node->mChildren[i]).get());
+                gobj->AddChild(processNode(scene, dir, node->mChildren[i]));
             }
         }
     }
 
-    return std::make_shared<GameObject>(std::move(gobj));
+    return gobj;
 }
 
-Mesh* GameObject::processMesh(aiMesh* mesh)
+std::unique_ptr<Mesh> GameObject::processMesh(const aiScene * scene, std::string dir, aiMesh* mesh)
 {
     std::vector<glm::vec3> vertices;
     std::vector<glm::vec3> normals;
@@ -191,6 +165,8 @@ Mesh* GameObject::processMesh(aiMesh* mesh)
 
     GLuint vao, vbo;
 
+    std::vector<GLuint> vbos;
+
     // VAOs
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
@@ -203,7 +179,7 @@ Mesh* GameObject::processMesh(aiMesh* mesh)
     // Attributes
     glVertexAttribPointer(AttributeID::POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
     glEnableVertexAttribArray(AttributeID::POSITION);
-    _mVBOS.push_back(vbo);
+    vbos.push_back(vbo);
 
     // Normals
     if (hasNormals)
@@ -214,7 +190,7 @@ Mesh* GameObject::processMesh(aiMesh* mesh)
 
         glVertexAttribPointer(AttributeID::NORMAL, 3, GL_FLOAT, GL_FALSE, 0, NULL);
         glEnableVertexAttribArray(AttributeID::NORMAL);
-        _mVBOS.push_back(vbo);
+        vbos.push_back(vbo);
     }
 
     // TexCoords
@@ -226,7 +202,7 @@ Mesh* GameObject::processMesh(aiMesh* mesh)
 
         glVertexAttribPointer(AttributeID::TEXCOORD, 2, GL_FLOAT, GL_FALSE, 0, NULL);
         glEnableVertexAttribArray(AttributeID::TEXCOORD);
-        _mVBOS.push_back(vbo);
+        vbos.push_back(vbo);
     }
 
     if (hasTangentsAndBitangents)
@@ -238,7 +214,7 @@ Mesh* GameObject::processMesh(aiMesh* mesh)
 
         glVertexAttribPointer(AttributeID::TANGENT, 3, GL_FLOAT, GL_FALSE, 0, NULL);
         glEnableVertexAttribArray(AttributeID::TANGENT);
-        _mVBOS.push_back(vbo);
+        vbos.push_back(vbo);
 
         // Bitangents
         glGenBuffers(1, &vbo);
@@ -247,127 +223,108 @@ Mesh* GameObject::processMesh(aiMesh* mesh)
 
         glVertexAttribPointer(AttributeID::BITANGENT, 3, GL_FLOAT, GL_FALSE, 0, NULL);
         glEnableVertexAttribArray(AttributeID::BITANGENT);
-        _mVBOS.push_back(vbo);
+        vbos.push_back(vbo);
     }
 
-    Material* mat;
+    glBindVertexArray(0);
+
+    glDeleteBuffers(vbos.size(), vbos.data());
+
+    std::unique_ptr<Material> mat = nullptr;
+
     // Check if the mesh has materials
     if (mesh->mMaterialIndex >= 0)
     {
-        aiMaterial* material = _mScene->mMaterials[mesh->mMaterialIndex];
-        mat = processMaterials(material);
+        aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+        mat = processMaterial(scene, dir, material);
     }
-    auto m = std::make_shared<Material>(std::move(mat));
 
-    // Create a new mesh
-    Mesh* newMesh = new Mesh(vao,
+    return std::make_unique<Mesh>(
+        vao,
         GL_TRIANGLES,
         vertices.size(),
         GL_UNSIGNED_INT,
-        NULL,
-        m);
-
-    return newMesh;
+        0,
+        std::move(mat)
+    );
 }
 
-Material* GameObject::processMaterials(aiMaterial* material)
+std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std::string dir, aiMaterial* material)
 {
-    Material* mat = new Material();
+    auto mat = std::make_unique<Material>();
 
     // Textures
-    aiString path;
+    aiString filename;
 
-    // Diffuse Texture
-    std::string diffuseTex = GetMaterialTextureName(material, aiTextureType_DIFFUSE, _mDir);
-    auto dif = std::make_shared<Texture>(diffuseTex);
-    mat->SetDiffuseMap(dif);
+    if (material->GetTexture(aiTextureType_DIFFUSE, 0, &filename) == AI_SUCCESS) {
+        mat->SetDiffuseMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    }
 
-    // Specular Texture
-    std::string specularTex = GetMaterialTextureName(material, aiTextureType_SPECULAR, _mDir);
-    //auto spec = std::make_shared<Texture>(specularTex);
-    //mat->SetSpecularMap(spec);
+    // if (material->GetTexture(aiTextureType_SPECULAR, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetSpecularMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
-    // Ambient Texture
-    std::string ambientTex = GetMaterialTextureName(material, aiTextureType_AMBIENT, _mDir);
-    //auto amb = std::make_shared<Texture>(ambientTex);
-    //mat->SetAmbientMap(amb);
+    // if (material->GetTexture(aiTextureType_AMBIENT, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetAmbientMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
-    // Emissive Texture
-    std::string emissiveTex = GetMaterialTextureName(material, aiTextureType_EMISSIVE, _mDir);
-    auto emi = std::make_shared<Texture>(emissiveTex);
-    mat->SetEmissiveMap(emi);
+    if (material->GetTexture(aiTextureType_EMISSIVE, 0, &filename) == AI_SUCCESS) {
+        mat->SetEmissiveMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    }
 
-    // Height Texture
-    std::string heightTex = GetMaterialTextureName(material, aiTextureType_HEIGHT, _mDir);
-    //auto hei = std::make_shared<Texture>(heightTex);
-    //mat->SetHeightMap(hei);
+    // if (material->GetTexture(aiTextureType_HEIGHT, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetHeightMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
-    // Normal Texture
-    std::string normalTex = GetMaterialTextureName(material, aiTextureType_NORMALS, _mDir);
-    auto nor = std::make_shared<Texture>(normalTex);
-    mat->SetNormalMap(nor);
+    if (material->GetTexture(aiTextureType_NORMALS, 0, &filename) == AI_SUCCESS) {
+        mat->SetNormalMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    }
 
-    // Shininess Texture
-    std::string shininessTex = GetMaterialTextureName(material, aiTextureType_SHININESS, _mDir);
-    //auto shi = std::make_shared<Texture>(shininessTex);
-    //mat->SetShininessMap(shi);
+    // if (material->GetTexture(aiTextureType_SHININESS, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetShininessMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
-    // Opacity Texture
-    std::string opacityTex = GetMaterialTextureName(material, aiTextureType_OPACITY, _mDir);
-    //auto opa = std::make_shared<Texture>(opacityTex);
-    //mat->SetOpacityMap(opa);
+    // if (material->GetTexture(aiTextureType_OPACITY, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetOpacityMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
-    // Displacement Texture
-    std::string displacementTex = GetMaterialTextureName(material, aiTextureType_DISPLACEMENT, _mDir);
-    //auto opa = std::make_shared<Texture>(opacityTex);
-    //mat->SetOpacityMap(opa);
+    // if (material->GetTexture(aiTextureType_DISPLACEMENT, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetDisplacementMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
-    // LightMap Texture
-    std::string lightMapTex = GetMaterialTextureName(material, aiTextureType_LIGHTMAP, _mDir);
-    //auto lig = std::make_shared<Texture>(lightMapTex);
-    //mat->SetLightMap(lig);
+    // if (material->GetTexture(aiTextureType_LIGHTMAP, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetLightMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
-    // Reflection Texture
-    std::string reflectionTex = GetMaterialTextureName(material, aiTextureType_REFLECTION, _mDir);
-    //auto ref = std::make_shared<Texture>(reflectionTex);
-    //mat->SetReflectionMap(ref);
+    // if (material->GetTexture(aiTextureType_REFLECTION, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetReflectionMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
-    ///
-    /// PBR Materials
-    ///
-    // Base Color Texture
-    std::string baseColorTex = GetMaterialTextureName(material, aiTextureType_BASE_COLOR, _mDir);
-    //auto col = std::make_shared<Texture>(baseColorTex);
-    //mat->SetBaseColorMap(col);
+    // PBR
 
-    // Normal Camera Texture
-    std::string normalCameraTex = GetMaterialTextureName(material, aiTextureType_NORMAL_CAMERA, _mDir);
-    //auto ncm = std::make_shared<Texture>(normalCameraTex);
-    //mat->SetNormalCameraMap(ncm);
+    // if (material->GetTexture(aiTextureType_BASE_COLOR, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetBaseColorMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
-    // Emission Color Texture
-    std::string emissionColorTex = GetMaterialTextureName(material, aiTextureType_EMISSION_COLOR, _mDir);
-    //auto emc = std::make_shared<Texture>(emissionColorTex);
-    //mat->SetEmissionColorMap(emc);
+    // if (material->GetTexture(aiTextureType_NORMAL_CAMERA, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetNormalCameraMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
-    // Metalness Texture
-    std::string metalnessTex = GetMaterialTextureName(material, aiTextureType_METALNESS, _mDir);
-    //auto met = std::make_shared<Texture>(metalnessTex);
-    //mat->SetNormalCameraMap(met);
+    // if (material->GetTexture(aiTextureType_EMISSION_COLOR, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetEmissionColorMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
-    // Diffuse Roughness Texture
-    std::string diffuseRoughnessTex = GetMaterialTextureName(material, aiTextureType_DIFFUSE_ROUGHNESS, _mDir);
-    //auto drm = std::make_shared<Texture>(diffuseRoughnessTex);
-    //mat->SetDiffuseRoughnessTex(drm);
+    // if (material->GetTexture(aiTextureType_METALNESS, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetNormalCameraMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
-    // Ambient Occlusion Texture
-    std::string ambientOcclusionTex = GetMaterialTextureName(material, aiTextureType_AMBIENT_OCCLUSION, _mDir);
-    //auto aot = std::make_shared<Texture>(ambientOcclusionTex);
-    //mat->SetAmbientOcclusionMap(aot);
+    // if (material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetDiffuseRoughnessTex(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
-    ///
-    ///
-    ///
+    // if (material->GetTexture(aiTextureType_AMBIENT_OCCLUSION, 0, &filename) == AI_SUCCESS) {
+    //     mat->SetAmbientOcclusionMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    // }
 
     // Colors
     aiColor4D aiColor;
@@ -402,28 +359,7 @@ Material* GameObject::processMaterials(aiMaterial* material)
     glm::vec4 reflective((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
     //mat->SetReflective(reflective);
 
-    
-
     return mat;
-}
-
-std::string GameObject::GetMaterialTextureName(aiMaterial* material, aiTextureType type, std::string dirname)
-{
-    std::string texName;
-    for (unsigned int i = 0; i < material->GetTextureCount(type); i++)
-    {
-        aiString str;
-        if (material->GetTexture(type, i, &str) == AI_SUCCESS)
-        {
-            texName = dirname + str.C_Str();
-        }
-        else
-        {
-            LogWarn("Could not find texture: %s\n", str.C_Str());
-            texName = "";
-        }
-    }
-    return texName;
 }
 
 

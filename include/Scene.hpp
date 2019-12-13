@@ -30,10 +30,10 @@ public:
     // Ui Options.
     static void Options();
 
-    void AddGameObject(std::string name, GameObject* gameObject);
+    GameObject* AddGameObject(std::string name, std::unique_ptr<GameObject> gameObject);
     GameObject* AddGameObject();
     GameObject* AddGameObject(std::string name);
-    void AddGameObject(GameObject* gobj);
+    GameObject* AddGameObject(std::unique_ptr<GameObject> gobj);
 
 private:
     static bool _sShowAxis;

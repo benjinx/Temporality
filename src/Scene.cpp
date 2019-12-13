@@ -47,7 +47,7 @@ void Scene::Update(float dt)
     //    gobj.second->Update(dt);
     //}
 
-    for (auto& gobj : GetChildren())
+    for (auto& gobj : _mChildren)
     {
         // Need to also update myself?
         gobj->Update(dt);
@@ -62,14 +62,11 @@ void Scene::Render()
     //    gameObject.second->Render();
     //}
 
-    for (auto& gobj : GetChildren())
-    {
-        gobj->Render();
-    }
+    GameObject::Render();
 
     if (_sShowAxis)
     {
-        for (auto& gameObject : GetChildren())
+        for (auto& gameObject : _mChildren)
         {
             // Render the gobjs axis
             _mSceneAxis->Render(gameObject->GetWorldTransform());
@@ -90,47 +87,43 @@ bool Scene::Load(std::string filename)
     return false;
 }
 
-void Scene::AddGameObject(std::string name, GameObject* gameObject)
+GameObject* Scene::AddGameObject(std::string name, std::unique_ptr<GameObject> gameObject)
 {
-    if (gameObject)
-    {
-        gameObject->SetName(name);
-        AddChild(gameObject);
-    }
+    gameObject->SetName(name);
+    _mChildren.push_back(std::move(gameObject));
+    return _mChildren.back().get();
 }
 
 GameObject* Scene::AddGameObject()
 {
-    GameObject* tmp = new GameObject();
-    tmp->SetName("tmp" + rand());
-    AddChild(tmp);
-    return GetGameObject(tmp->GetName());
+    _mChildren.push_back(std::make_unique<GameObject>());
+    return _mChildren.back().get();
 }
 
 GameObject* Scene::AddGameObject(std::string name)
 {
-    GameObject* tmp = new GameObject();
-    tmp->SetName(name);
-    AddChild(tmp);
-    return GetGameObject(name);
+    _mChildren.push_back(std::make_unique<GameObject>());
+    _mChildren.back()->SetName(name);
+    return _mChildren.back().get();
 }
 
-void Scene::AddGameObject(GameObject* gobj)
+GameObject* Scene::AddGameObject(std::unique_ptr<GameObject> gobj)
 {
-    AddChild(gobj);
+    _mChildren.push_back(std::move(gobj));
+    return _mChildren.back().get();
 }
 
 GameObject* Scene::GetGameObject(std::string name)
 {
-    for (auto gobj : GetChildren())
+    for (auto& gobj : _mChildren)
     {
         if (gobj->GetName() == name)
         {
-            return gobj;
+            return gobj.get();
         }
     }
 
-    return new GameObject();
+    return nullptr;
 }
 
 void Scene::Options()
