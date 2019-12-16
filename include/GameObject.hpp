@@ -15,6 +15,7 @@ struct aiScene;
 struct aiNode;
 struct aiMesh;
 struct aiMaterial;
+struct aiString;
 
 //
 class GameObject
@@ -166,6 +167,9 @@ private:
 
     // Load Mesh
     std::unique_ptr<Mesh> processMesh(const aiScene * scene, std::string dir, aiMesh* mesh);
+
+    // process textures
+    std::unique_ptr<Texture> processTexture(const aiScene * scene, std::string dir, const aiString& filename);
 
 };
 #endif // GAMEOBJECT_HPP

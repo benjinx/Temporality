@@ -11,9 +11,6 @@
 #include <nlohmann/json.hpp>
 #include <stb/stb_image.h>
 
-#define TINYGLTF_NO_STB_IMAGE_WRITE
-#include <tinygltf/tiny_gltf.h>
-
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -81,7 +78,7 @@ bool GameObject::Load(std::string filename)
 
     std::string dir = Utils::GetDirname(fullPath);
 
-    processNode(scene, dir, scene->mRootNode);
+    AddChild(processNode(scene, dir, scene->mRootNode));
     
     return true;
 }
@@ -107,6 +104,25 @@ std::unique_ptr<GameObject> GameObject::processNode(const aiScene * scene, std::
         if (!meshes.empty())
         {
             gobj->SetModel(std::make_unique<Model>(std::move(meshes)));
+
+            aiVector3D scale, pos;
+            aiQuaternion rot;
+            node->mTransformation.Decompose(scale, rot, pos);
+
+            LogInfo("Scale x, y, z ~ %f, %f, %f\n", scale.x, scale.y, scale.z);
+            gobj->SetScale(glm::vec3(scale.x, scale.y, scale.z));
+            LogInfo("Rotation w, x, y, z ~ %f, %f, %f, %f\n", rot.w, rot.x, rot.y, rot.z);
+            gobj->SetRotation(glm::quat(rot.w, rot.x, rot.y, rot.z));
+            LogInfo("Position x, y, z ~ %f, %f, %f\n", pos.x, pos.y, pos.z);
+            gobj->SetPosition(glm::vec3(pos.x, pos.y, pos.z));
+
+
+            // Set default shader
+            gobj->SetShader(App::Inst()->GetShader("defaultLighting"));
+
+            // set name
+            gobj->SetName(node->mName.data);
+            LogInfo("Name: %s\n", gobj->GetName());
         }
 
         if (node->mNumChildren > 0)
@@ -249,6 +265,7 @@ std::unique_ptr<Mesh> GameObject::processMesh(const aiScene * scene, std::string
     );
 }
 
+
 std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std::string dir, aiMaterial* material)
 {
     auto mat = std::make_unique<Material>();
@@ -257,73 +274,211 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
     aiString filename;
 
     if (material->GetTexture(aiTextureType_DIFFUSE, 0, &filename) == AI_SUCCESS) {
-        mat->SetDiffuseMap(std::make_shared<Texture>(dir + filename.C_Str()));
+        
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetDiffuseMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
     }
 
-    // if (material->GetTexture(aiTextureType_SPECULAR, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetSpecularMap(std::make_shared<Texture>(dir + filename.C_Str()));
-    // }
+     //if (material->GetTexture(aiTextureType_SPECULAR, 0, &filename) == AI_SUCCESS) {
+     //   auto tex = processTexture(scene, dir, filename);
+     //   if (tex)
+     //   {
+     //       mat->SetSpecularMap(std::move(tex));
+     //   }
+     //   else
+     //   {
+     //       LogWarn("Issue loading texture: %s\n", filename.data);
+     //   }
+     //}
 
-    // if (material->GetTexture(aiTextureType_AMBIENT, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetAmbientMap(std::make_shared<Texture>(dir + filename.C_Str()));
-    // }
+     //if (material->GetTexture(aiTextureType_AMBIENT, 0, &filename) == AI_SUCCESS) {
+     //  auto tex = processTexture(scene, dir, filename);
+     //  if (tex)
+     //  {
+     //      mat->SetAmbientMap(std::move(tex));
+     //  }
+     //  else
+     //  {
+     //      LogWarn("Issue loading texture: %s\n", filename.data);
+     //  }
+     //}
 
     if (material->GetTexture(aiTextureType_EMISSIVE, 0, &filename) == AI_SUCCESS) {
-        mat->SetEmissiveMap(std::make_shared<Texture>(dir + filename.C_Str()));
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetEmissiveMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
     }
 
-    // if (material->GetTexture(aiTextureType_HEIGHT, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetHeightMap(std::make_shared<Texture>(dir + filename.C_Str()));
-    // }
+     //if (material->GetTexture(aiTextureType_HEIGHT, 0, &filename) == AI_SUCCESS) {
+     // auto tex = processTexture(scene, dir, filename);
+     // if (tex)
+     // {
+     //     mat->SetHeightMap(std::move(tex));
+     // }
+     // else
+     // {
+     //     LogWarn("Issue loading texture: %s\n", filename.data);
+     // }
+     //}
 
     if (material->GetTexture(aiTextureType_NORMALS, 0, &filename) == AI_SUCCESS) {
-        mat->SetNormalMap(std::make_shared<Texture>(dir + filename.C_Str()));
+
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetNormalMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
     }
 
-    // if (material->GetTexture(aiTextureType_SHININESS, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetShininessMap(std::make_shared<Texture>(dir + filename.C_Str()));
-    // }
+     //if (material->GetTexture(aiTextureType_SHININESS, 0, &filename) == AI_SUCCESS) {
+     //    auto tex = processTexture(scene, dir, filename);
+     //    if (tex)
+     //    {
+     //        mat->SetShininessMap(std::move(tex));
+     //    }
+     //    else
+     //    {
+     //        LogWarn("Issue loading texture: %s\n", filename.data);
+     //    }
+     //}
 
     // if (material->GetTexture(aiTextureType_OPACITY, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetOpacityMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    //    auto tex = processTexture(scene, dir, filename);
+    //    if (tex)
+    //    {
+    //        mat->SetOpacityMap(std::move(tex));
+    //    }
+    //    else
+    //    {
+    //        LogWarn("Issue loading texture: %s\n", filename.data);
+    //    }
     // }
 
     // if (material->GetTexture(aiTextureType_DISPLACEMENT, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetDisplacementMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    //    auto tex = processTexture(scene, dir, filename);
+    //    if (tex)
+    //    {
+    //        mat->SetDisplacementMap(std::move(tex));
+    //    }
+    //    else
+    //    {
+    //        LogWarn("Issue loading texture: %s\n", filename.data);
+    //    }
     // }
 
     // if (material->GetTexture(aiTextureType_LIGHTMAP, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetLightMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    //    auto tex = processTexture(scene, dir, filename);
+    //    if (tex)
+    //    {
+    //        mat->SetLightMap(std::move(tex));
+    //    }
+    //    else
+    //    {
+    //        LogWarn("Issue loading texture: %s\n", filename.data);
+    //    }
     // }
 
     // if (material->GetTexture(aiTextureType_REFLECTION, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetReflectionMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    //    auto tex = processTexture(scene, dir, filename);
+    //    if (tex)
+    //    {
+    //        mat->SetReflectionMap(std::move(tex));
+    //    }
+    //    else
+    //    {
+    //        LogWarn("Issue loading texture: %s\n", filename.data);
+    //    }
     // }
 
     // PBR
 
     // if (material->GetTexture(aiTextureType_BASE_COLOR, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetBaseColorMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    //    auto tex = processTexture(scene, dir, filename);
+    //    if (tex)
+    //    {
+    //        mat->SetBaseColorMap(std::move(tex));
+    //    }
+    //    else
+    //    {
+    //        LogWarn("Issue loading texture: %s\n", filename.data);
+    //    }
     // }
 
     // if (material->GetTexture(aiTextureType_NORMAL_CAMERA, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetNormalCameraMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    //    auto tex = processTexture(scene, dir, filename);
+    //    if (tex)
+    //    {
+    //        mat->SetNormalCameraMap(std::move(tex));
+    //    }
+    //    else
+    //    {
+    //        LogWarn("Issue loading texture: %s\n", filename.data);
+    //    }
     // }
 
     // if (material->GetTexture(aiTextureType_EMISSION_COLOR, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetEmissionColorMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    //    auto tex = processTexture(scene, dir, filename);
+    //    if (tex)
+    //    {
+    //        mat->SetEmissionColorMap(std::move(tex));
+    //    }
+    //    else
+    //    {
+    //        LogWarn("Issue loading texture: %s\n", filename.data);
+    //    }
     // }
 
     // if (material->GetTexture(aiTextureType_METALNESS, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetNormalCameraMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    //    auto tex = processTexture(scene, dir, filename);
+    //    if (tex)
+    //    {
+    //        mat->SetNormalCameraMap(std::move(tex));
+    //    }
+    //    else
+    //    {
+    //        LogWarn("Issue loading texture: %s\n", filename.data);
+    //    }
     // }
 
     // if (material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetDiffuseRoughnessTex(std::make_shared<Texture>(dir + filename.C_Str()));
+    //    auto tex = processTexture(scene, dir, filename);
+    //    if (tex)
+    //    {
+    //        mat->SetDiffuseRoughnessTex(std::move(tex));
+    //    }
+    //    else
+    //    {
+    //        LogWarn("Issue loading texture: %s\n", filename.data);
+    //    }
     // }
 
     // if (material->GetTexture(aiTextureType_AMBIENT_OCCLUSION, 0, &filename) == AI_SUCCESS) {
-    //     mat->SetAmbientOcclusionMap(std::make_shared<Texture>(dir + filename.C_Str()));
+    //    auto tex = processTexture(scene, dir, filename);
+    //    if (tex)
+    //    {
+    //        mat->SetAmbientOcclusionMap(std::move(tex));
+    //    }
+    //    else
+    //    {
+    //        LogWarn("Issue loading texture: %s\n", filename.data);
+    //    }
     // }
 
     // Colors
@@ -363,3 +518,18 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
 }
 
 
+std::unique_ptr<Texture> GameObject::processTexture(const aiScene * scene, std::string dir, const aiString& filename)
+{
+    // Binary Check
+    if (filename.data[0] == '*')
+    {
+        int index = std::stoi(filename.data + 1);
+        aiTexture* texture = scene->mTextures[index];
+        uint8_t * data = (uint8_t *)texture->pcData;
+        return std::make_unique<Texture>(Texture(data, glm::ivec2(texture->mWidth, texture->mHeight)));
+    }
+    else
+    {
+       return std::make_unique<Texture>(Texture(dir + filename.C_Str()));
+    }
+}

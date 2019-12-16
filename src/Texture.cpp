@@ -104,7 +104,7 @@ bool Texture::Load(const uint8_t* buffer, glm::ivec2 size, int comp /*=4*//*, Op
         return false;
     }
 
-    GLint intfmt;
+    /*GLint intfmt;
     GLenum fmt;
 
     switch(comp)
@@ -134,7 +134,7 @@ bool Texture::Load(const uint8_t* buffer, glm::ivec2 size, int comp /*=4*//*, Op
             fmt = GL_RGBA;
             break;
         }
-    }
+    }*/
 
     glBindTexture(GL_TEXTURE_2D, _mglID);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -150,7 +150,7 @@ bool Texture::Load(const uint8_t* buffer, glm::ivec2 size, int comp /*=4*//*, Op
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // Create the image
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     // Bind texture

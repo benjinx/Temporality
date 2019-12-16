@@ -34,11 +34,11 @@ public:
     void SetNormalScale(float value) { _mNormalScale = value; }
     void SetOcclusionStrength(float value) { _mOcclusionStrength = value; }
 
-    void SetDiffuseMap(std::shared_ptr<Texture> texture) { _mDiffuseMap = texture; }
-    void SetMetallicRoughnessMap(std::shared_ptr<Texture> texture) { _mMetallicRoughnessMap = texture; }
-    void SetNormalMap(std::shared_ptr<Texture> texture) { _mNormalMap = texture; }
-    void SetEmissiveMap(std::shared_ptr<Texture> texture) { _mEmissiveMap = texture; }
-    void SetOcclusionMap(std::shared_ptr<Texture> texture) { _mOcclusionMap = texture; }
+    void SetDiffuseMap(std::unique_ptr<Texture>&& texture) { _mDiffuseMap = std::move(texture); }
+    void SetMetallicRoughnessMap(std::unique_ptr<Texture>&& texture) { _mMetallicRoughnessMap = std::move(texture); }
+    void SetNormalMap(std::unique_ptr<Texture>&& texture) { _mNormalMap = std::move(texture); }
+    void SetEmissiveMap(std::unique_ptr<Texture>&& texture) { _mEmissiveMap = std::move(texture); }
+    void SetOcclusionMap(std::unique_ptr<Texture>&& texture) { _mOcclusionMap = std::move(texture); }
 
     bool DiffuseMapExists() { return (_mDiffuseMap != nullptr); }
     bool NormalMapExists() { return (_mNormalMap != nullptr); }
@@ -55,7 +55,7 @@ private:
                 _mNormalScale = 1.0f,
                 _mOcclusionStrength = 0.0f;
 
-    std::shared_ptr<Texture>    _mDiffuseMap,
+    std::unique_ptr<Texture>    _mDiffuseMap,
                                 _mMetallicRoughnessMap,
                                 _mNormalMap,
                                 _mEmissiveMap,
