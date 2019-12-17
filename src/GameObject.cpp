@@ -59,7 +59,7 @@ bool GameObject::Load(std::string filename)
         fullPath = p + filename;
 
         LogVerbose("Checking %s\n", fullPath);
-        scene = importer.ReadFile(fullPath, aiProcessPreset_TargetRealtime_Quality);
+        scene = importer.ReadFile(fullPath, aiProcess_Triangulate);//aiProcessPreset_TargetRealtime_Quality);
 
         if (scene)
         {
@@ -128,7 +128,7 @@ std::unique_ptr<GameObject> GameObject::processNode(const aiScene * scene, std::
         if (node->mNumChildren > 0)
         {
             // Process the childrens meshes
-            for (int i = 0; i < node->mNumMeshes; i++)
+            for (int i = 0; i < node->mNumChildren; i++)
             {
                 gobj->AddChild(processNode(scene, dir, node->mChildren[i]));
             }
@@ -177,6 +177,31 @@ std::unique_ptr<Mesh> GameObject::processMesh(const aiScene * scene, std::string
                 bitangents.push_back({ bitangent.x, bitangent.y, bitangent.z });
             }
         }
+    }
+
+    for (int i = 0; i < vertices.size(); ++i)
+    {
+        LogWarn("Vertices: %f, %f, %f\n", vertices[i].x, vertices[i].y, vertices[i].z);
+    }
+
+    for (int i = 0; i < normals.size(); ++i)
+    {
+        LogWarn("Normals: %f, %f, %f\n", normals[i].x, normals[i].y, normals[i].z);
+    }
+
+    for (int i = 0; i < texCoords.size(); ++i)
+    {
+        LogWarn("TexCoords: %f, %f\n", texCoords[i].x, texCoords[i].y);
+    }
+
+    for (int i = 0; i < tangents.size(); ++i)
+    {
+        LogWarn("Tangents: %f, %f, %f\n", tangents[i].x, tangents[i].y, tangents[i].z);
+    }
+
+    for (int i = 0; i < bitangents.size(); ++i)
+    {
+        LogWarn("Bitangents: %f, %f, %f\n", bitangents[i].x, bitangents[i].y, bitangents[i].z);
     }
 
     GLuint vao, vbo;
@@ -525,7 +550,7 @@ std::unique_ptr<Texture> GameObject::processTexture(const aiScene * scene, std::
     {
         int index = std::stoi(filename.data + 1);
         aiTexture* texture = scene->mTextures[index];
-        uint8_t * data = (uint8_t *)texture->pcData;
+        unsigned char * data = (unsigned char*)texture->pcData;
         return std::make_unique<Texture>(Texture(data, glm::ivec2(texture->mWidth, texture->mHeight)));
     }
     else

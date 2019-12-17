@@ -12,7 +12,7 @@ Texture::Texture(const std::string& filename/*, Options opts = Options()*/)
     Load(filename);
 }
 
-Texture::Texture(const uint8_t* data, glm::ivec2 size, int comp /*=4*//*, Options opts = Options()*/)
+Texture::Texture(unsigned char* data, glm::ivec2 size, int comp /*=4*//*, Options opts = Options()*/)
 {
     Load(data, size, comp/*,opts*/);
 }
@@ -86,7 +86,7 @@ bool Texture::Load(const std::string& filename/*, Options opts = Options()*/)
     return _mLoaded;
 }
 
-bool Texture::Load(const uint8_t* buffer, glm::ivec2 size, int comp /*=4*//*, Options opts = Options()*/)
+bool Texture::Load(unsigned char* buffer, glm::ivec2 size, int comp /*=4*//*, Options opts = Options()*/)
 {
     _mLoaded = false;
 
@@ -141,6 +141,22 @@ bool Texture::Load(const uint8_t* buffer, glm::ivec2 size, int comp /*=4*//*, Op
 
     LogVerbose("Binding texture to id %u\n", _mglID);
 
+    stbi_uc* image_data = nullptr;
+    int width, height, cpp;
+    if (size.y == 0)
+    {
+        image_data = stbi_load_from_memory(buffer, size.x, &size.x, &size.y, &comp, 4);
+    }
+    else
+    {
+        image_data = stbi_load_from_memory(buffer, size.x * size.y, &size.x, &size.y, &comp, 4);
+    }
+
+    if (image_data)
+    {
+        LogError("Image not loaded. %s\n", stbi_failure_reason);
+    }
+
     // texture wrapping params
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
@@ -150,7 +166,7 @@ bool Texture::Load(const uint8_t* buffer, glm::ivec2 size, int comp /*=4*//*, Op
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     // Create the image
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_BGRA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
     glGenerateMipmap(GL_TEXTURE_2D);
 
     // Bind texture

@@ -10,7 +10,7 @@ class Texture
 public:
     Texture() = default;
     Texture(const std::string& filename/*, Options opts = Options()*/);
-    Texture(const uint8_t* data, glm::ivec2 size, int comp = 4/*, Options opts = Options()*/);
+    Texture(unsigned char* data, glm::ivec2 size, int comp = 4/*, Options opts = Options()*/);
     Texture(GLuint&& id, glm::ivec2 size);
     Texture(Texture&& rhs);
 
@@ -20,7 +20,7 @@ public:
     bool Load(const std::string& filename/*, Options opts = Options()*/);
 
     // Load from a buffer
-    bool Load(const uint8_t* buffer, glm::ivec2 size, int comp = 4/*, Options opts = Options()*/);
+    bool Load(unsigned char* buffer, glm::ivec2 size, int comp = 4/*, Options opts = Options()*/);
 
     void Bind();
 
