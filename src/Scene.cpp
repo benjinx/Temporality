@@ -56,11 +56,11 @@ void Scene::Update(float dt)
 
 void Scene::Render()
 {
-    //for (auto& gameObject : _mGameObjects)
-    //{
-    //    // Render gobjs
-    //    gameObject.second->Render();
-    //}
+    for (auto& gameObject : _mChildren)
+    {
+       // Render gobjs
+       gameObject->Render();
+    }
 
     GameObject::Render();
 

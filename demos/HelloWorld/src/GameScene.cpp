@@ -25,8 +25,8 @@ void GameScene::Start()
 
     App* app = App::Inst();
     app->AddShader("passThru", new Shader({
-        "shaders/passThruTexture.vert",
-        "shaders/passThruTexture.frag"
+        "shaders/passThruColor.vert",
+        "shaders/passThruColor.frag"
         }));
 
     logo->SetShader(app->GetShader("passThru"));

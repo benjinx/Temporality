@@ -35,7 +35,7 @@ void GameObject::Update(const float dt)
 
 void GameObject::Render()
 {
-    if (_mShader != nullptr && _mModel != nullptr)
+    if (_mShader && _mModel)
     {
         _mModel->Render(_mShader, GetWorldTransform());
     }
@@ -179,30 +179,30 @@ std::unique_ptr<Mesh> GameObject::processMesh(const aiScene * scene, std::string
         }
     }
 
-    for (int i = 0; i < vertices.size(); ++i)
-    {
-        LogWarn("Vertices: %f, %f, %f\n", vertices[i].x, vertices[i].y, vertices[i].z);
-    }
+    // for (int i = 0; i < vertices.size(); ++i)
+    // {
+    //     LogWarn("Vertices: %f, %f, %f\n", vertices[i].x, vertices[i].y, vertices[i].z);
+    // }
 
-    for (int i = 0; i < normals.size(); ++i)
-    {
-        LogWarn("Normals: %f, %f, %f\n", normals[i].x, normals[i].y, normals[i].z);
-    }
+    // for (int i = 0; i < normals.size(); ++i)
+    // {
+    //     LogWarn("Normals: %f, %f, %f\n", normals[i].x, normals[i].y, normals[i].z);
+    // }
 
-    for (int i = 0; i < texCoords.size(); ++i)
-    {
-        LogWarn("TexCoords: %f, %f\n", texCoords[i].x, texCoords[i].y);
-    }
+    // for (int i = 0; i < texCoords.size(); ++i)
+    // {
+    //     LogWarn("TexCoords: %f, %f\n", texCoords[i].x, texCoords[i].y);
+    // }
 
-    for (int i = 0; i < tangents.size(); ++i)
-    {
-        LogWarn("Tangents: %f, %f, %f\n", tangents[i].x, tangents[i].y, tangents[i].z);
-    }
+    // for (int i = 0; i < tangents.size(); ++i)
+    // {
+    //     LogWarn("Tangents: %f, %f, %f\n", tangents[i].x, tangents[i].y, tangents[i].z);
+    // }
 
-    for (int i = 0; i < bitangents.size(); ++i)
-    {
-        LogWarn("Bitangents: %f, %f, %f\n", bitangents[i].x, bitangents[i].y, bitangents[i].z);
-    }
+    // for (int i = 0; i < bitangents.size(); ++i)
+    // {
+    //     LogWarn("Bitangents: %f, %f, %f\n", bitangents[i].x, bitangents[i].y, bitangents[i].z);
+    // }
 
     GLuint vao, vbo;
 
@@ -269,7 +269,7 @@ std::unique_ptr<Mesh> GameObject::processMesh(const aiScene * scene, std::string
 
     glBindVertexArray(0);
 
-    glDeleteBuffers(vbos.size(), vbos.data());
+    // glDeleteBuffers(vbos.size(), vbos.data());
 
     std::unique_ptr<Material> mat = nullptr;
 
@@ -283,9 +283,7 @@ std::unique_ptr<Mesh> GameObject::processMesh(const aiScene * scene, std::string
     return std::make_unique<Mesh>(
         vao,
         GL_TRIANGLES,
-        vertices.size(),
-        GL_UNSIGNED_INT,
-        0,
+        vertices.size() * 3,
         std::move(mat)
     );
 }
