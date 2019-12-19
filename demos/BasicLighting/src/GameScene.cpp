@@ -13,8 +13,6 @@ void GameScene::Start()
     App::Inst()->SetCurrentCamera(camera);
 
     // Light Source
-    //Load("models/Primitives/pCube.glb");
-    //auto Light = GetGameObject("cube");
     auto Light = AddGameObject();
     Light->SetName("Light");
     Light->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));

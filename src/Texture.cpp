@@ -141,8 +141,9 @@ bool Texture::Load(unsigned char* buffer, glm::ivec2 size, int comp /*=4*//*, Op
 
     LogVerbose("Binding texture to id %u\n", _mglID);
 
+    stbi_set_flip_vertically_on_load(true);
+
     stbi_uc* image_data = nullptr;
-    int width, height, cpp;
     if (size.y == 0)
     {
         image_data = stbi_load_from_memory(buffer, size.x, &size.x, &size.y, &comp, STBI_rgb_alpha);

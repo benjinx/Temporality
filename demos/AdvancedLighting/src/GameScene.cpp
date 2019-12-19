@@ -102,7 +102,7 @@ void GameScene::Update(float dt)
 
     
     // Rotate objects
-    GetGameObject("Sphere")->SetRotation(GetGameObject("Sphere")->GetWorldRotation()
+    GetGameObject("sphere")->SetRotation(GetGameObject("sphere")->GetWorldRotation()
         * glm::angleAxis(glm::radians(-0.25f) * dt, glm::vec3(1.0f, 0.0f, 0.0f)));
     GetGameObject("cube")->SetRotation(GetGameObject("cube")->GetWorldRotation()
         * glm::angleAxis(glm::radians(-0.25f) * dt, glm::vec3(0.0f, 1.0f, 0.0f)));

@@ -30,7 +30,9 @@ void Scene::Start()
 
 void Scene::Update(float dt)
 {
-    // Use default shader
+    GameObject::Update(dt);
+
+    // Use our default shaders and set the color & light position.
     App* app = App::Inst();
     Shader* defaultLighting = app->GetShader("defaultLighting");
 
@@ -40,28 +42,10 @@ void Scene::Update(float dt)
 
     glm::vec4 defaultLightPosition = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
     defaultLighting->SetVec4("lightPosition", defaultLightPosition);
-
-    //for (auto& gobj : _mGameObjects)
-    //{
-    //    // Update gobjs
-    //    gobj.second->Update(dt);
-    //}
-
-    for (auto& gobj : _mChildren)
-    {
-        // Need to also update myself?
-        gobj->Update(dt);
-    }
 }
 
 void Scene::Render()
 {
-    for (auto& gameObject : _mChildren)
-    {
-       // Render gobjs
-       gameObject->Render();
-    }
-
     GameObject::Render();
 
     if (_sShowAxis)
@@ -120,6 +104,11 @@ GameObject* Scene::GetGameObject(std::string name)
         if (gobj->GetName() == name)
         {
             return gobj.get();
+        }
+        else if (gobj->HasChildren())
+        {
+            //GetGameObject(name);
+            // Get gameobject( from childs list)
         }
     }
 

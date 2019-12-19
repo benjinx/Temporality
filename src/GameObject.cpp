@@ -31,10 +31,21 @@ GameObject::~GameObject()
 
 void GameObject::Update(const float dt)
 {
+    // Update all children
+    for (auto& gobj : _mChildren)
+    {
+        gobj->Update(dt);
+    }
 }
 
 void GameObject::Render()
 {
+    // Render all children
+    for (auto& gobj : _mChildren)
+    {
+        gobj->Render();
+    }
+
     if (_mShader && _mModel)
     {
         _mModel->Render(_mShader, GetWorldTransform());
@@ -78,6 +89,51 @@ bool GameObject::Load(std::string filename)
 
     std::string dir = Utils::GetDirname(fullPath);
 
+    {
+        if (scene->mNumCameras > 0)
+        {
+            for (int i = 0; i < scene->mNumCameras; ++i)
+            {
+                auto cam = scene->mCameras[i];
+                auto camera = std::make_unique<Camera>();
+
+                LogVerbose("Camera Info\n");
+                LogVerbose("Aspect: %f\n", cam->mAspect);
+                //camera->SetAspect(cam->mAspect);
+
+                LogVerbose("Clip Plane Near: %f\n", cam->mClipPlaneNear);
+                LogVerbose("Clip Plane Far: %f\n", cam->mClipPlaneFar);
+                camera->SetClip(glm::vec2(cam->mClipPlaneNear, cam->mClipPlaneFar));
+
+                LogVerbose("HorizontalFOV: %f\n", cam->mHorizontalFOV);
+                camera->SetFOVX(cam->mHorizontalFOV);
+
+                LogVerbose("Look at: %f, %f, %f\n", cam->mLookAt.x, cam->mLookAt.y, cam->mLookAt.z);
+                camera->SetLookAt(glm::vec3(cam->mLookAt.x, cam->mLookAt.y, cam->mLookAt.z));
+
+                LogVerbose("Name: %s\n", cam->mName.data);
+                camera->SetName(cam->mName.data);
+
+                LogVerbose("Position: %f, %f, %f\n", cam->mPosition.x, cam->mPosition.y, cam->mPosition.z);
+                camera->SetPosition(glm::vec3(cam->mPosition.x, cam->mPosition.y, cam->mPosition.z));
+
+                LogVerbose("Up: %f, %f, %f\n", cam->mUp.x, cam->mUp.y, cam->mUp.z);
+                camera->SetUp(glm::vec3(cam->mUp.x, cam->mUp.y, cam->mUp.z));
+
+                if (camera->GetName() == "Main_Camera")
+                {
+                    App::Inst()->SetCurrentCamera(camera.get());
+                }
+                else if (scene->mNumCameras == 1)
+                {
+                    App::Inst()->SetCurrentCamera(camera.get());
+                }
+
+                AddChild(std::move(camera));
+            }
+        }
+    }
+
     AddChild(processNode(scene, dir, scene->mRootNode));
     
     return true;
@@ -87,9 +143,9 @@ std::unique_ptr<GameObject> GameObject::processNode(const aiScene * scene, std::
 {
     auto gobj = std::make_unique<GameObject>();
 
+    LogInfo("All Node Names\nName: %s\n", node->mName.data);
     //if (lightcrap/cameracrap)
     //else
-
     if (node->mNumMeshes >= 0)
     {
         std::vector<std::unique_ptr<Mesh>> meshes;
@@ -109,11 +165,8 @@ std::unique_ptr<GameObject> GameObject::processNode(const aiScene * scene, std::
             aiQuaternion rot;
             node->mTransformation.Decompose(scale, rot, pos);
 
-            LogInfo("Scale x, y, z ~ %f, %f, %f\n", scale.x, scale.y, scale.z);
             gobj->SetScale(glm::vec3(scale.x, scale.y, scale.z));
-            LogInfo("Rotation w, x, y, z ~ %f, %f, %f, %f\n", rot.w, rot.x, rot.y, rot.z);
             gobj->SetRotation(glm::quat(rot.w, rot.x, rot.y, rot.z));
-            LogInfo("Position x, y, z ~ %f, %f, %f\n", pos.x, pos.y, pos.z);
             gobj->SetPosition(glm::vec3(pos.x, pos.y, pos.z));
 
 
@@ -122,12 +175,12 @@ std::unique_ptr<GameObject> GameObject::processNode(const aiScene * scene, std::
 
             // set name
             gobj->SetName(node->mName.data);
-            LogInfo("Name: %s\n", gobj->GetName());
+            LogInfo("Creating Object Name: %s\n", gobj->GetName());
         }
 
         if (node->mNumChildren > 0)
         {
-            // Process the childrens meshes
+            // Proc6ess the childrens meshes
             for (int i = 0; i < node->mNumChildren; i++)
             {
                 gobj->AddChild(processNode(scene, dir, node->mChildren[i]));
@@ -287,7 +340,6 @@ std::unique_ptr<Mesh> GameObject::processMesh(const aiScene * scene, std::string
         std::move(mat)
     );
 }
-
 
 std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std::string dir, aiMaterial* material)
 {
@@ -539,7 +591,6 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
 
     return mat;
 }
-
 
 std::unique_ptr<Texture> GameObject::processTexture(const aiScene * scene, std::string dir, const aiString& filename)
 {
