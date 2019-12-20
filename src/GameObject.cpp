@@ -112,61 +112,55 @@ bool GameObject::Load(std::string filename)
 
     std::string dir = Utils::GetDirname(fullPath);
 
-    if (scene->HasCameras())
+    for (int i = 0; i < scene->mNumCameras; ++i)
     {
-        for (int i = 0; i < scene->mNumCameras; ++i)
+        auto cam = scene->mCameras[i];
+        auto camera = std::make_unique<Camera>();
+
+        LogVerbose("Camera Info\n");
+        LogVerbose("Aspect: %f\n", cam->mAspect);
+        //camera->SetAspect(cam->mAspect);
+
+        LogVerbose("Clip Plane Near: %f\n", cam->mClipPlaneNear);
+        LogVerbose("Clip Plane Far: %f\n", cam->mClipPlaneFar);
+        camera->SetClip(glm::vec2(cam->mClipPlaneNear, cam->mClipPlaneFar));
+
+        LogVerbose("HorizontalFOV: %f\n", cam->mHorizontalFOV);
+        camera->SetFOVX(cam->mHorizontalFOV);
+
+        LogVerbose("Look at: %f, %f, %f\n", cam->mLookAt.x, cam->mLookAt.y, cam->mLookAt.z);
+        camera->SetLookAt(glm::vec3(cam->mLookAt.x, cam->mLookAt.y, cam->mLookAt.z));
+
+        LogVerbose("Name: %s\n", cam->mName.data);
+        camera->SetName(cam->mName.data);
+
+        LogVerbose("Position: %f, %f, %f\n", cam->mPosition.x, cam->mPosition.y, cam->mPosition.z);
+        camera->SetPosition(glm::vec3(cam->mPosition.x, cam->mPosition.y, cam->mPosition.z));
+
+        LogVerbose("Up: %f, %f, %f\n", cam->mUp.x, cam->mUp.y, cam->mUp.z);
+        camera->SetUp(glm::vec3(cam->mUp.x, cam->mUp.y, cam->mUp.z));
+
+        if (camera->GetName() == "Main_Camera")
         {
-            auto cam = scene->mCameras[i];
-            auto camera = std::make_unique<Camera>();
-
-            LogVerbose("Camera Info\n");
-            LogVerbose("Aspect: %f\n", cam->mAspect);
-            //camera->SetAspect(cam->mAspect);
-
-            LogVerbose("Clip Plane Near: %f\n", cam->mClipPlaneNear);
-            LogVerbose("Clip Plane Far: %f\n", cam->mClipPlaneFar);
-            camera->SetClip(glm::vec2(cam->mClipPlaneNear, cam->mClipPlaneFar));
-
-            LogVerbose("HorizontalFOV: %f\n", cam->mHorizontalFOV);
-            camera->SetFOVX(cam->mHorizontalFOV);
-
-            LogVerbose("Look at: %f, %f, %f\n", cam->mLookAt.x, cam->mLookAt.y, cam->mLookAt.z);
-            camera->SetLookAt(glm::vec3(cam->mLookAt.x, cam->mLookAt.y, cam->mLookAt.z));
-
-            LogVerbose("Name: %s\n", cam->mName.data);
-            camera->SetName(cam->mName.data);
-
-            LogVerbose("Position: %f, %f, %f\n", cam->mPosition.x, cam->mPosition.y, cam->mPosition.z);
-            camera->SetPosition(glm::vec3(cam->mPosition.x, cam->mPosition.y, cam->mPosition.z));
-
-            LogVerbose("Up: %f, %f, %f\n", cam->mUp.x, cam->mUp.y, cam->mUp.z);
-            camera->SetUp(glm::vec3(cam->mUp.x, cam->mUp.y, cam->mUp.z));
-
-            if (camera->GetName() == "Main_Camera")
-            {
-                App::Inst()->SetCurrentCamera(camera.get());
-            }
-            else if (scene->mNumCameras == 1)
-            {
-                App::Inst()->SetCurrentCamera(camera.get());
-            }
-
-            AddChild(std::move(camera));
+            App::Inst()->SetCurrentCamera(camera.get());
         }
+        else if (scene->mNumCameras == 1)
+        {
+            App::Inst()->SetCurrentCamera(camera.get());
+        }
+
+        AddChild(std::move(camera));
     }
 
-    if (scene->HasLights())
+    for (int i = 0; i < scene->mNumLights; ++i)
     {
-        for (int i = 0; i < scene->mNumLights; ++i)
-        {
-            auto lit = scene->mLights[i];
+        auto lit = scene->mLights[i];
 
-            auto light = std::make_unique<Camera>();
+        auto light = std::make_unique<Camera>();
 
-            light->SetName(lit->mName.data);
+        light->SetName(lit->mName.data);
 
-            AddChild(std::move(light));
-        }
+        AddChild(std::move(light));
     }
 
     AddChild(processNode(scene, dir, scene->mRootNode));
@@ -177,50 +171,39 @@ bool GameObject::Load(std::string filename)
 std::unique_ptr<GameObject> GameObject::processNode(const aiScene * scene, std::string dir, aiNode* node)
 {
     auto gobj = std::make_unique<GameObject>();
+    gobj->SetName(node->mName.data);
 
     LogInfo("Name: %s\n", node->mName.data);
-    //if (lightcrap/cameracrap)
-    //else
-    if (node->mNumMeshes >= 0)
+
+    std::vector<std::unique_ptr<Mesh>> meshes;
+
+    // Process our game objects meshes
+    for (int i = 0; i < node->mNumMeshes; i++)
     {
-        std::vector<std::unique_ptr<Mesh>> meshes;
+        auto& mesh = scene->mMeshes[node->mMeshes[i]];
+        meshes.push_back(processMesh(scene, dir, mesh));
+    }
 
-        // Process our game objects meshes
-        for (int i = 0; i < node->mNumMeshes; i++)
-        {
-            auto& mesh = scene->mMeshes[node->mMeshes[i]];
-            meshes.push_back(processMesh(scene, dir, mesh));
-        }
+    if (!meshes.empty())
+    {
+        gobj->SetModel(std::make_unique<Model>(std::move(meshes)));
 
-        if (!meshes.empty())
-        {
-            gobj->SetModel(std::make_unique<Model>(std::move(meshes)));
+        aiVector3D scale, pos;
+        aiQuaternion rot;
+        node->mTransformation.Decompose(scale, rot, pos);
 
-            aiVector3D scale, pos;
-            aiQuaternion rot;
-            node->mTransformation.Decompose(scale, rot, pos);
+        gobj->SetScale(glm::vec3(scale.x, scale.y, scale.z));
+        gobj->SetRotation(glm::quat(rot.w, rot.x, rot.y, rot.z));
+        gobj->SetPosition(glm::vec3(pos.x, pos.y, pos.z));
 
-            gobj->SetScale(glm::vec3(scale.x, scale.y, scale.z));
-            gobj->SetRotation(glm::quat(rot.w, rot.x, rot.y, rot.z));
-            gobj->SetPosition(glm::vec3(pos.x, pos.y, pos.z));
+        // Set default shader
+        gobj->SetShader(App::Inst()->GetShader("defaultLighting"));
+    }
 
-
-            // Set default shader
-            gobj->SetShader(App::Inst()->GetShader("defaultLighting"));
-
-            // set name
-            gobj->SetName(node->mName.data);
-            LogInfo("Creating Object Name: %s\n", gobj->GetName());
-        }
-
-        if (node->mNumChildren > 0)
-        {
-            // Proc6ess the childrens meshes
-            for (int i = 0; i < node->mNumChildren; i++)
-            {
-                gobj->AddChild(processNode(scene, dir, node->mChildren[i]));
-            }
-        }
+    // Proc6ess the childrens meshes
+    for (int i = 0; i < node->mNumChildren; i++)
+    {
+        gobj->AddChild(processNode(scene, dir, node->mChildren[i]));
     }
 
     return gobj;
