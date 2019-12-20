@@ -11,8 +11,8 @@ void GameScene::Start()
 
     App* app = App::Inst();
     app->AddShader("passThru", new Shader({
-        "shaders/passThruTexture.vert",
-        "shaders/passThruTexture.frag" }));
+        "shaders/passThruColor.vert",
+        "shaders/passThruColor.frag" }));
 
     app->AddShader("normalMapping", new Shader({
         "shaders/normalMapping.vert",
@@ -23,21 +23,21 @@ void GameScene::Start()
         "shaders/lightCasters.frag" }));
 
     // Scene Objs
-    Load("models/DamagedHelm.glb");
-    auto helm = GetGameObject("node_damagedHelmet_-6514");
-    helm->SetPosition(glm::vec3(2.0f, 0.0f, 1.0f));
-    helm->SetShader(app->GetShader("normalMapping"));
+    //Load("models/DamagedHelm.glb");
+    //auto helm = GetGameObject("node_damagedHelmet_-6514");
+    //helm->SetPosition(glm::vec3(2.0f, 0.0f, 1.0f));
+    //helm->SetShader(app->GetShader("normalMapping"));
+    //
+    //Load("models/logo/logo.glb");
+    //auto logo = GetGameObject("Logo");
+    //logo->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
+    //logo->SetRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+    //logo->SetShader(app->GetShader("passThru"));
 
-    Load("models/logo/logo.glb");
-    auto logo = GetGameObject("Logo");
-    logo->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
-    logo->SetRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-    logo->SetShader(app->GetShader("passThru"));
-
-    Load("models/defaultScene3.glb");
-    //auto cube = GetGameObject("Cube");
-    //cube->SetPosition(glm::vec3(-1.0f, -1.0f, -1.0f));
-    //cube->SetShader(app->GetShader("passThru"));
+    Load("models/defaultScene2.glb");
+    auto cube = GetGameObject("Cube");
+    cube->SetPosition(glm::vec3(-1.0f, -1.0f, -1.0f));
+    cube->SetShader(app->GetShader("passThru"));
 
     // Camera
     Camera * camera = (Camera *)AddGameObject("Camera", std::make_unique<Camera>());
@@ -58,6 +58,12 @@ void GameScene::Update(float dt)
     norm->Use();
 
     norm->SetVec4("lightPos", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+
+    auto color = app->GetShader("passThru");
+
+    color->Use();
+
+    color->SetVec3("passColor", glm::vec3(1.0f, 0.0f, 0.0f));
 }
 
 void GameScene::LogTest()

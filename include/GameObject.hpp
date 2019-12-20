@@ -41,21 +41,7 @@ public:
         return _mParent;
     }
 
-    bool HasChildren() { 
-        if (_mChildren.size() > 0)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    GameObject* FindChild(std::string name)
-    {
-
-    }
+    GameObject* GetGameObject(std::string name);
 
     void AddChild(std::unique_ptr<GameObject> && child) { 
         child->SetParent(this);

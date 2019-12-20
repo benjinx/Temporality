@@ -52,6 +52,29 @@ void GameObject::Render()
     }
 }
 
+GameObject* GameObject::GetGameObject(std::string name)
+{
+    for (auto& gobj : _mChildren)
+    {
+        LogWarn("Searching gobj: %s\n", gobj->GetName());
+        if (gobj->GetName() == name)
+        {
+            return gobj.get();
+        }
+    }
+
+    for (auto& gobj : _mChildren)
+    {
+        auto tmp = gobj->GetGameObject(name);
+        if (tmp)
+        {
+            return tmp;
+        }
+    }
+
+    return nullptr;
+}
+
 bool GameObject::Load(std::string filename)
 {
     std::string ext = Utils::GetExtension(filename);
@@ -89,48 +112,60 @@ bool GameObject::Load(std::string filename)
 
     std::string dir = Utils::GetDirname(fullPath);
 
+    if (scene->HasCameras())
     {
-        if (scene->mNumCameras > 0)
+        for (int i = 0; i < scene->mNumCameras; ++i)
         {
-            for (int i = 0; i < scene->mNumCameras; ++i)
+            auto cam = scene->mCameras[i];
+            auto camera = std::make_unique<Camera>();
+
+            LogVerbose("Camera Info\n");
+            LogVerbose("Aspect: %f\n", cam->mAspect);
+            //camera->SetAspect(cam->mAspect);
+
+            LogVerbose("Clip Plane Near: %f\n", cam->mClipPlaneNear);
+            LogVerbose("Clip Plane Far: %f\n", cam->mClipPlaneFar);
+            camera->SetClip(glm::vec2(cam->mClipPlaneNear, cam->mClipPlaneFar));
+
+            LogVerbose("HorizontalFOV: %f\n", cam->mHorizontalFOV);
+            camera->SetFOVX(cam->mHorizontalFOV);
+
+            LogVerbose("Look at: %f, %f, %f\n", cam->mLookAt.x, cam->mLookAt.y, cam->mLookAt.z);
+            camera->SetLookAt(glm::vec3(cam->mLookAt.x, cam->mLookAt.y, cam->mLookAt.z));
+
+            LogVerbose("Name: %s\n", cam->mName.data);
+            camera->SetName(cam->mName.data);
+
+            LogVerbose("Position: %f, %f, %f\n", cam->mPosition.x, cam->mPosition.y, cam->mPosition.z);
+            camera->SetPosition(glm::vec3(cam->mPosition.x, cam->mPosition.y, cam->mPosition.z));
+
+            LogVerbose("Up: %f, %f, %f\n", cam->mUp.x, cam->mUp.y, cam->mUp.z);
+            camera->SetUp(glm::vec3(cam->mUp.x, cam->mUp.y, cam->mUp.z));
+
+            if (camera->GetName() == "Main_Camera")
             {
-                auto cam = scene->mCameras[i];
-                auto camera = std::make_unique<Camera>();
-
-                LogVerbose("Camera Info\n");
-                LogVerbose("Aspect: %f\n", cam->mAspect);
-                //camera->SetAspect(cam->mAspect);
-
-                LogVerbose("Clip Plane Near: %f\n", cam->mClipPlaneNear);
-                LogVerbose("Clip Plane Far: %f\n", cam->mClipPlaneFar);
-                camera->SetClip(glm::vec2(cam->mClipPlaneNear, cam->mClipPlaneFar));
-
-                LogVerbose("HorizontalFOV: %f\n", cam->mHorizontalFOV);
-                camera->SetFOVX(cam->mHorizontalFOV);
-
-                LogVerbose("Look at: %f, %f, %f\n", cam->mLookAt.x, cam->mLookAt.y, cam->mLookAt.z);
-                camera->SetLookAt(glm::vec3(cam->mLookAt.x, cam->mLookAt.y, cam->mLookAt.z));
-
-                LogVerbose("Name: %s\n", cam->mName.data);
-                camera->SetName(cam->mName.data);
-
-                LogVerbose("Position: %f, %f, %f\n", cam->mPosition.x, cam->mPosition.y, cam->mPosition.z);
-                camera->SetPosition(glm::vec3(cam->mPosition.x, cam->mPosition.y, cam->mPosition.z));
-
-                LogVerbose("Up: %f, %f, %f\n", cam->mUp.x, cam->mUp.y, cam->mUp.z);
-                camera->SetUp(glm::vec3(cam->mUp.x, cam->mUp.y, cam->mUp.z));
-
-                if (camera->GetName() == "Main_Camera")
-                {
-                    App::Inst()->SetCurrentCamera(camera.get());
-                }
-                else if (scene->mNumCameras == 1)
-                {
-                    App::Inst()->SetCurrentCamera(camera.get());
-                }
-
-                AddChild(std::move(camera));
+                App::Inst()->SetCurrentCamera(camera.get());
             }
+            else if (scene->mNumCameras == 1)
+            {
+                App::Inst()->SetCurrentCamera(camera.get());
+            }
+
+            AddChild(std::move(camera));
+        }
+    }
+
+    if (scene->HasLights())
+    {
+        for (int i = 0; i < scene->mNumLights; ++i)
+        {
+            auto lit = scene->mLights[i];
+
+            auto light = std::make_unique<Camera>();
+
+            light->SetName(lit->mName.data);
+
+            AddChild(std::move(light));
         }
     }
 
@@ -143,7 +178,7 @@ std::unique_ptr<GameObject> GameObject::processNode(const aiScene * scene, std::
 {
     auto gobj = std::make_unique<GameObject>();
 
-    LogInfo("All Node Names\nName: %s\n", node->mName.data);
+    LogInfo("Name: %s\n", node->mName.data);
     //if (lightcrap/cameracrap)
     //else
     if (node->mNumMeshes >= 0)
