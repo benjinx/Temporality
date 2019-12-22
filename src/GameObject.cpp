@@ -56,7 +56,6 @@ GameObject* GameObject::GetGameObject(std::string name)
 {
     for (auto& gobj : _mChildren)
     {
-        LogWarn("Searching gobj: %s\n", gobj->GetName());
         if (gobj->GetName() == name)
         {
             return gobj.get();
@@ -93,7 +92,7 @@ bool GameObject::Load(std::string filename)
         fullPath = p + filename;
 
         LogVerbose("Checking %s\n", fullPath);
-        scene = importer.ReadFile(fullPath, aiProcess_Triangulate);//aiProcessPreset_TargetRealtime_Quality);
+        scene = importer.ReadFile(fullPath, aiProcessPreset_TargetRealtime_Quality);
 
         if (scene)
         {
@@ -112,32 +111,17 @@ bool GameObject::Load(std::string filename)
 
     std::string dir = Utils::GetDirname(fullPath);
 
+    // Process Cameras
+    std::unordered_map<std::string, std::unique_ptr<GameObject>> mapOfCameras;
     for (int i = 0; i < scene->mNumCameras; ++i)
     {
         auto cam = scene->mCameras[i];
         auto camera = std::make_unique<Camera>();
 
-        LogVerbose("Camera Info\n");
-        LogVerbose("Aspect: %f\n", cam->mAspect);
-        //camera->SetAspect(cam->mAspect);
-
-        LogVerbose("Clip Plane Near: %f\n", cam->mClipPlaneNear);
-        LogVerbose("Clip Plane Far: %f\n", cam->mClipPlaneFar);
         camera->SetClip(glm::vec2(cam->mClipPlaneNear, cam->mClipPlaneFar));
-
-        LogVerbose("HorizontalFOV: %f\n", cam->mHorizontalFOV);
         camera->SetFOVX(cam->mHorizontalFOV);
-
-        LogVerbose("Look at: %f, %f, %f\n", cam->mLookAt.x, cam->mLookAt.y, cam->mLookAt.z);
         camera->SetLookAt(glm::vec3(cam->mLookAt.x, cam->mLookAt.y, cam->mLookAt.z));
-
-        LogVerbose("Name: %s\n", cam->mName.data);
-        camera->SetName(cam->mName.data);
-
-        LogVerbose("Position: %f, %f, %f\n", cam->mPosition.x, cam->mPosition.y, cam->mPosition.z);
         camera->SetPosition(glm::vec3(cam->mPosition.x, cam->mPosition.y, cam->mPosition.z));
-
-        LogVerbose("Up: %f, %f, %f\n", cam->mUp.x, cam->mUp.y, cam->mUp.z);
         camera->SetUp(glm::vec3(cam->mUp.x, cam->mUp.y, cam->mUp.z));
 
         if (camera->GetName() == "Main_Camera")
@@ -149,31 +133,93 @@ bool GameObject::Load(std::string filename)
             App::Inst()->SetCurrentCamera(camera.get());
         }
 
-        AddChild(std::move(camera));
+        mapOfCameras.emplace(cam->mName.data, std::move(camera));
     }
+
+    // Process Lights
+    std::unordered_map<std::string, std::unique_ptr<GameObject>> mapOfLights;
 
     for (int i = 0; i < scene->mNumLights; ++i)
     {
         auto lit = scene->mLights[i];
+        
+        if (lit->mType == aiLightSource_DIRECTIONAL)
+        {
+            auto dirLight = std::make_unique<DirectionalLight>();
+            dirLight->SetPosition(glm::vec3(lit->mPosition.x, lit->mPosition.y, lit->mPosition.z));
+            dirLight->SetColor(lit->mColorDiffuse.r, lit->mColorDiffuse.g, lit->mColorDiffuse.b);
+            dirLight->SetDirection(glm::vec3(lit->mDirection.x, lit->mDirection.y, lit->mDirection.z));
+            mapOfLights.emplace(lit->mName.data, std::move(dirLight));
+        }
+        else if (lit->mType == aiLightSource_POINT)
+        {
+            auto pointLight = std::make_unique<PointLight>();
+            pointLight->SetPosition(glm::vec3(lit->mPosition.x, lit->mPosition.y, lit->mPosition.z));
+            pointLight->SetColor(lit->mColorDiffuse.r, lit->mColorDiffuse.g, lit->mColorDiffuse.b);
+            pointLight->SetConstant(lit->mAttenuationConstant);
+            pointLight->SetLinear(lit->mAttenuationLinear);
+            pointLight->SetQuadratic(lit->mAttenuationQuadratic);
+            mapOfLights.emplace(lit->mName.data, std::move(pointLight));
+        }
+        else if (lit->mType == aiLightSource_SPOT)
+        {
+            auto spotLight = std::make_unique<SpotLight>();
+            spotLight->SetPosition(glm::vec3(lit->mPosition.x, lit->mPosition.y, lit->mPosition.z));
+            spotLight->SetColor(lit->mColorDiffuse.r, lit->mColorDiffuse.g, lit->mColorDiffuse.b);
+            spotLight->SetDirection(glm::vec3(lit->mDirection.x, lit->mDirection.y, lit->mDirection.z));
+            spotLight->SetCutOff(lit->mAngleInnerCone);
+            spotLight->SetOuterCutOff(lit->mAngleOuterCone);
+            mapOfLights.emplace(lit->mName.data, std::move(spotLight));
+        }
+        // No support for ambient and area lights yet.
+        //else if (lit->mType == aiLightSource_AMBIENT)
+        //{
 
-        auto light = std::make_unique<Camera>();
+        //}
+        //else if (lit->mType == aiLightSource_AREA)
+        //{
 
-        light->SetName(lit->mName.data);
-
-        AddChild(std::move(light));
+        //}
     }
 
-    AddChild(processNode(scene, dir, scene->mRootNode));
+    AddChild(processNode(scene, dir, scene->mRootNode, mapOfLights, mapOfCameras));
     
     return true;
 }
 
-std::unique_ptr<GameObject> GameObject::processNode(const aiScene * scene, std::string dir, aiNode* node)
+std::unique_ptr<GameObject> GameObject::processNode(const aiScene * scene, std::string dir, aiNode* node, std::unordered_map<std::string, std::unique_ptr<GameObject>>& mapOfLights, std::unordered_map<std::string, std::unique_ptr<GameObject>>& mapOfCameras)
 {
-    auto gobj = std::make_unique<GameObject>();
-    gobj->SetName(node->mName.data);
+    std::unique_ptr<GameObject> gobj = nullptr;
 
+    auto lightIt = mapOfLights.find(node->mName.data);
+    if (lightIt != mapOfLights.end())
+    {
+        gobj = std::move(lightIt->second);
+        mapOfLights.erase(lightIt);
+    }
+
+    auto cameraIt = mapOfCameras.find(node->mName.data);
+    if (cameraIt != mapOfCameras.end())
+    {
+        gobj = std::move(cameraIt->second);
+        mapOfCameras.erase(cameraIt);
+    }
+
+    if (!gobj)
+    {
+        gobj = std::make_unique<GameObject>();
+    }
+
+    gobj->SetName(node->mName.data);
     LogInfo("Name: %s\n", node->mName.data);
+
+    aiVector3D scale, pos;
+    aiQuaternion rot;
+    node->mTransformation.Decompose(scale, rot, pos);
+
+    gobj->SetScale(glm::vec3(scale.x, scale.y, scale.z));
+    gobj->SetRotation(glm::quat(rot.w, rot.x, rot.y, rot.z));
+    gobj->SetPosition(glm::vec3(pos.x, pos.y, pos.z));
 
     std::vector<std::unique_ptr<Mesh>> meshes;
 
@@ -188,22 +234,14 @@ std::unique_ptr<GameObject> GameObject::processNode(const aiScene * scene, std::
     {
         gobj->SetModel(std::make_unique<Model>(std::move(meshes)));
 
-        aiVector3D scale, pos;
-        aiQuaternion rot;
-        node->mTransformation.Decompose(scale, rot, pos);
-
-        gobj->SetScale(glm::vec3(scale.x, scale.y, scale.z));
-        gobj->SetRotation(glm::quat(rot.w, rot.x, rot.y, rot.z));
-        gobj->SetPosition(glm::vec3(pos.x, pos.y, pos.z));
-
         // Set default shader
         gobj->SetShader(App::Inst()->GetShader("defaultLighting"));
     }
 
-    // Proc6ess the childrens meshes
+    // Process the childrens meshes
     for (int i = 0; i < node->mNumChildren; i++)
     {
-        gobj->AddChild(processNode(scene, dir, node->mChildren[i]));
+        gobj->AddChild(processNode(scene, dir, node->mChildren[i], mapOfLights, mapOfCameras));
     }
 
     return gobj;
@@ -249,31 +287,6 @@ std::unique_ptr<Mesh> GameObject::processMesh(const aiScene * scene, std::string
             }
         }
     }
-
-    // for (int i = 0; i < vertices.size(); ++i)
-    // {
-    //     LogWarn("Vertices: %f, %f, %f\n", vertices[i].x, vertices[i].y, vertices[i].z);
-    // }
-
-    // for (int i = 0; i < normals.size(); ++i)
-    // {
-    //     LogWarn("Normals: %f, %f, %f\n", normals[i].x, normals[i].y, normals[i].z);
-    // }
-
-    // for (int i = 0; i < texCoords.size(); ++i)
-    // {
-    //     LogWarn("TexCoords: %f, %f\n", texCoords[i].x, texCoords[i].y);
-    // }
-
-    // for (int i = 0; i < tangents.size(); ++i)
-    // {
-    //     LogWarn("Tangents: %f, %f, %f\n", tangents[i].x, tangents[i].y, tangents[i].z);
-    // }
-
-    // for (int i = 0; i < bitangents.size(); ++i)
-    // {
-    //     LogWarn("Bitangents: %f, %f, %f\n", bitangents[i].x, bitangents[i].y, bitangents[i].z);
-    // }
 
     GLuint vao, vbo;
 

@@ -25,8 +25,6 @@ public:
 
     bool Load(std::string filename);
 
-    /*GameObject* GetGameObject(std::string name);*/
-
     // Ui Options.
     static void Options();
 

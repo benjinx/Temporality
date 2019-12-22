@@ -23,16 +23,10 @@ void GameScene::Start()
         "shaders/lightCasters.frag" }));
 
     // Scene Objs
-    //Load("models/DamagedHelm.glb");
-    //auto helm = GetGameObject("node_damagedHelmet_-6514");
-    //helm->SetPosition(glm::vec3(2.0f, 0.0f, 1.0f));
-    //helm->SetShader(app->GetShader("normalMapping"));
-    //
-    //Load("models/logo/logo.glb");
-    //auto logo = GetGameObject("Logo");
-    //logo->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
-    //logo->SetRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-    //logo->SetShader(app->GetShader("passThru"));
+    Load("models/DamagedHelm.glb");
+    auto helm = GetGameObject("node_damagedHelmet_-6514");
+    helm->SetPosition(glm::vec3(2.0f, 0.0f, 1.0f));
+    helm->SetShader(app->GetShader("normalMapping"));
 
     Load("models/defaultScene2.glb");
     auto cube = GetGameObject("Cube");
@@ -56,14 +50,12 @@ void GameScene::Update(float dt)
     auto norm = app->GetShader("normalMapping");
 
     norm->Use();
-
-    norm->SetVec4("lightPos", glm::vec4(0.0f, 0.0f, 0.0f, 1.0f));
+    PointLight* light = (PointLight*)GetGameObject("Light_Orientation");
+    norm->SetVec4("lightPos", glm::vec4(light->GetWorldPosition(), 1.0f));
 
     auto color = app->GetShader("passThru");
-
     color->Use();
-
-    color->SetVec3("passColor", glm::vec3(1.0f, 0.0f, 0.0f));
+    color->SetVec3("passColor", glm::vec3(0.0f, 0.0f, 1.0f));
 }
 
 void GameScene::LogTest()

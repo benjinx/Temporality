@@ -97,24 +97,6 @@ GameObject* Scene::AddGameObject(std::unique_ptr<GameObject> gobj)
     return _mChildren.back().get();
 }
 
-//GameObject* Scene::GetGameObject(std::string name)
-//{
-//    for (auto& gobj : _mChildren)
-//    {
-//        if (gobj->GetName() == name)
-//        {
-//            return gobj.get();
-//        }
-//        else if (gobj->HasChildren())
-//        {
-//            gobj->GetGameObject(name);
-//            // Get gameobject( from childs list)
-//        }
-//    }
-//
-//    return nullptr;
-//}
-
 void Scene::Options()
 {
     ImGui::Checkbox("Show GameObject Axis", &_sShowAxis);
