@@ -392,29 +392,29 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         }
     }
 
-     //if (material->GetTexture(aiTextureType_SPECULAR, 0, &filename) == AI_SUCCESS) {
-     //   auto tex = processTexture(scene, dir, filename);
-     //   if (tex)
-     //   {
-     //       mat->SetSpecularMap(std::move(tex));
-     //   }
-     //   else
-     //   {
-     //       LogWarn("Issue loading texture: %s\n", filename.data);
-     //   }
-     //}
+    if (material->GetTexture(aiTextureType_SPECULAR, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetSpecularMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
+    }
 
-     //if (material->GetTexture(aiTextureType_AMBIENT, 0, &filename) == AI_SUCCESS) {
-     //  auto tex = processTexture(scene, dir, filename);
-     //  if (tex)
-     //  {
-     //      mat->SetAmbientMap(std::move(tex));
-     //  }
-     //  else
-     //  {
-     //      LogWarn("Issue loading texture: %s\n", filename.data);
-     //  }
-     //}
+    if (material->GetTexture(aiTextureType_AMBIENT, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetAmbientMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+}
+    }
 
     if (material->GetTexture(aiTextureType_EMISSIVE, 0, &filename) == AI_SUCCESS) {
         auto tex = processTexture(scene, dir, filename);
@@ -428,17 +428,17 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         }
     }
 
-     //if (material->GetTexture(aiTextureType_HEIGHT, 0, &filename) == AI_SUCCESS) {
-     // auto tex = processTexture(scene, dir, filename);
-     // if (tex)
-     // {
-     //     mat->SetHeightMap(std::move(tex));
-     // }
-     // else
-     // {
-     //     LogWarn("Issue loading texture: %s\n", filename.data);
-     // }
-     //}
+    if (material->GetTexture(aiTextureType_HEIGHT, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetHeightMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
+    }
 
     if (material->GetTexture(aiTextureType_NORMALS, 0, &filename) == AI_SUCCESS) {
 
@@ -453,139 +453,139 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         }
     }
 
-     //if (material->GetTexture(aiTextureType_SHININESS, 0, &filename) == AI_SUCCESS) {
-     //    auto tex = processTexture(scene, dir, filename);
-     //    if (tex)
-     //    {
-     //        mat->SetShininessMap(std::move(tex));
-     //    }
-     //    else
-     //    {
-     //        LogWarn("Issue loading texture: %s\n", filename.data);
-     //    }
-     //}
+    if (material->GetTexture(aiTextureType_SHININESS, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetShininessMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
+    }
 
-    // if (material->GetTexture(aiTextureType_OPACITY, 0, &filename) == AI_SUCCESS) {
-    //    auto tex = processTexture(scene, dir, filename);
-    //    if (tex)
-    //    {
-    //        mat->SetOpacityMap(std::move(tex));
-    //    }
-    //    else
-    //    {
-    //        LogWarn("Issue loading texture: %s\n", filename.data);
-    //    }
-    // }
+    if (material->GetTexture(aiTextureType_OPACITY, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetOpacityMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
+    }
 
-    // if (material->GetTexture(aiTextureType_DISPLACEMENT, 0, &filename) == AI_SUCCESS) {
-    //    auto tex = processTexture(scene, dir, filename);
-    //    if (tex)
-    //    {
-    //        mat->SetDisplacementMap(std::move(tex));
-    //    }
-    //    else
-    //    {
-    //        LogWarn("Issue loading texture: %s\n", filename.data);
-    //    }
-    // }
+    if (material->GetTexture(aiTextureType_DISPLACEMENT, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetDisplacementMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
+    }
 
-    // if (material->GetTexture(aiTextureType_LIGHTMAP, 0, &filename) == AI_SUCCESS) {
-    //    auto tex = processTexture(scene, dir, filename);
-    //    if (tex)
-    //    {
-    //        mat->SetLightMap(std::move(tex));
-    //    }
-    //    else
-    //    {
-    //        LogWarn("Issue loading texture: %s\n", filename.data);
-    //    }
-    // }
+    if (material->GetTexture(aiTextureType_LIGHTMAP, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetLightMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
+    }
 
-    // if (material->GetTexture(aiTextureType_REFLECTION, 0, &filename) == AI_SUCCESS) {
-    //    auto tex = processTexture(scene, dir, filename);
-    //    if (tex)
-    //    {
-    //        mat->SetReflectionMap(std::move(tex));
-    //    }
-    //    else
-    //    {
-    //        LogWarn("Issue loading texture: %s\n", filename.data);
-    //    }
-    // }
+    if (material->GetTexture(aiTextureType_REFLECTION, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetReflectionMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
+    }
 
     // PBR
 
-    // if (material->GetTexture(aiTextureType_BASE_COLOR, 0, &filename) == AI_SUCCESS) {
-    //    auto tex = processTexture(scene, dir, filename);
-    //    if (tex)
-    //    {
-    //        mat->SetBaseColorMap(std::move(tex));
-    //    }
-    //    else
-    //    {
-    //        LogWarn("Issue loading texture: %s\n", filename.data);
-    //    }
-    // }
+    if (material->GetTexture(aiTextureType_BASE_COLOR, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetBaseColorMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
+    }
 
-    // if (material->GetTexture(aiTextureType_NORMAL_CAMERA, 0, &filename) == AI_SUCCESS) {
-    //    auto tex = processTexture(scene, dir, filename);
-    //    if (tex)
-    //    {
-    //        mat->SetNormalCameraMap(std::move(tex));
-    //    }
-    //    else
-    //    {
-    //        LogWarn("Issue loading texture: %s\n", filename.data);
-    //    }
-    // }
+    if (material->GetTexture(aiTextureType_NORMAL_CAMERA, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetNormalCameraMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
+    }
 
-    // if (material->GetTexture(aiTextureType_EMISSION_COLOR, 0, &filename) == AI_SUCCESS) {
-    //    auto tex = processTexture(scene, dir, filename);
-    //    if (tex)
-    //    {
-    //        mat->SetEmissionColorMap(std::move(tex));
-    //    }
-    //    else
-    //    {
-    //        LogWarn("Issue loading texture: %s\n", filename.data);
-    //    }
-    // }
+    if (material->GetTexture(aiTextureType_EMISSION_COLOR, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetEmissionColorMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
+    }
 
-    // if (material->GetTexture(aiTextureType_METALNESS, 0, &filename) == AI_SUCCESS) {
-    //    auto tex = processTexture(scene, dir, filename);
-    //    if (tex)
-    //    {
-    //        mat->SetNormalCameraMap(std::move(tex));
-    //    }
-    //    else
-    //    {
-    //        LogWarn("Issue loading texture: %s\n", filename.data);
-    //    }
-    // }
+    if (material->GetTexture(aiTextureType_METALNESS, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetNormalCameraMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
+    }
 
-    // if (material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &filename) == AI_SUCCESS) {
-    //    auto tex = processTexture(scene, dir, filename);
-    //    if (tex)
-    //    {
-    //        mat->SetDiffuseRoughnessTex(std::move(tex));
-    //    }
-    //    else
-    //    {
-    //        LogWarn("Issue loading texture: %s\n", filename.data);
-    //    }
-    // }
+    if (material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetDiffuseRoughnessMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
+    }
 
-    // if (material->GetTexture(aiTextureType_AMBIENT_OCCLUSION, 0, &filename) == AI_SUCCESS) {
-    //    auto tex = processTexture(scene, dir, filename);
-    //    if (tex)
-    //    {
-    //        mat->SetAmbientOcclusionMap(std::move(tex));
-    //    }
-    //    else
-    //    {
-    //        LogWarn("Issue loading texture: %s\n", filename.data);
-    //    }
-    // }
+    if (material->GetTexture(aiTextureType_AMBIENT_OCCLUSION, 0, &filename) == AI_SUCCESS) {
+        auto tex = processTexture(scene, dir, filename);
+        if (tex)
+        {
+            mat->SetAmbientOcclusionMap(std::move(tex));
+        }
+        else
+        {
+            LogWarn("Issue loading texture: %s\n", filename.data);
+        }
+    }
 
     // Colors
     aiColor4D aiColor;
@@ -595,16 +595,16 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
     glm::vec4 diffuse((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
     mat->SetDiffuse(diffuse);
 
-    // Ambient
-    aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, &aiColor);
-    glm::vec4 ambient((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
-    //mat->SetAmbient(ambient);
-
     // Specular
     aiGetMaterialColor(material, AI_MATKEY_COLOR_SPECULAR, &aiColor);
     glm::vec4 specular((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
-    //mat->SetSpecular(specular);
+    mat->SetSpecular(specular);
 
+    // Ambient
+    aiGetMaterialColor(material, AI_MATKEY_COLOR_AMBIENT, &aiColor);
+    glm::vec4 ambient((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
+    mat->SetAmbient(ambient);
+    
     // Emissive
     aiGetMaterialColor(material, AI_MATKEY_COLOR_EMISSIVE, &aiColor);
     glm::vec4 emissive((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
@@ -613,12 +613,12 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
     // Transparent
     aiGetMaterialColor(material, AI_MATKEY_COLOR_TRANSPARENT, &aiColor);
     glm::vec4 transparent((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
-    //mat->SetTransparent(transparent);
+    mat->SetTransparent(transparent);
 
     // Reflective
     aiGetMaterialColor(material, AI_MATKEY_COLOR_REFLECTIVE, &aiColor);
     glm::vec4 reflective((float)aiColor.r, (float)aiColor.g, (float)aiColor.b, (float)aiColor.a);
-    //mat->SetReflective(reflective);
+    mat->SetReflective(reflective);
 
     return mat;
 }

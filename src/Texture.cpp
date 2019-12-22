@@ -7,14 +7,14 @@
 
 #include <stb/stb_image.h>
 
-Texture::Texture(const std::string& filename/*, Options opts = Options()*/)
+Texture::Texture(const std::string& filename)
 {
     Load(filename);
 }
 
-Texture::Texture(unsigned char* data, glm::ivec2 size, int comp /*=4*//*, Options opts = Options()*/)
+Texture::Texture(unsigned char* data, glm::ivec2 size, int comp)
 {
-    Load(data, size, comp/*,opts*/);
+    Load(data, size, comp);
 }
 
 Texture::Texture(GLuint&& id, glm::ivec2 size)
@@ -42,7 +42,7 @@ Texture::~Texture()
     }
 }
 
-bool Texture::Load(const std::string& filename/*, Options opts = Options()*/)
+bool Texture::Load(const std::string& filename)
 {
     // Load img
     int            bpp;
@@ -60,13 +60,7 @@ bool Texture::Load(const std::string& filename/*, Options opts = Options()*/)
 
         LogLoad("Loaded:  [%s]\n", fullFilename);
 
-        /* Remember to call stbi_image_free(image) after using the image and before another.
-            bpp - bytes per pixel
-            32 = RGBA = 4 * 8
-            24 = RGB = 3 * 8
-        */
-        //stbi_set_flip_vertically_on_load(true);
-
+        stbi_set_flip_vertically_on_load(true);
 
         image = stbi_load_from_file(file, &_mSize.x, &_mSize.y, &bpp, STBI_rgb_alpha);
         fclose(file);
@@ -78,7 +72,7 @@ bool Texture::Load(const std::string& filename/*, Options opts = Options()*/)
     }
 
     // Load from buffer
-    Load(image, _mSize, bpp/*, opts*/);
+    Load(image, _mSize, bpp);
 
     // Free the Image
     stbi_image_free(image);
@@ -86,7 +80,7 @@ bool Texture::Load(const std::string& filename/*, Options opts = Options()*/)
     return _mLoaded;
 }
 
-bool Texture::Load(unsigned char* buffer, glm::ivec2 size, int comp /*=4*//*, Options opts = Options()*/)
+bool Texture::Load(unsigned char* buffer, glm::ivec2 size, int comp)
 {
     _mLoaded = false;
 
@@ -103,38 +97,6 @@ bool Texture::Load(unsigned char* buffer, glm::ivec2 size, int comp /*=4*//*, Op
         LogError("Failed to create GL Texture\n");
         return false;
     }
-
-    /*GLint intfmt;
-    GLenum fmt;
-
-    switch(comp)
-    {
-        case 1:
-        {
-            intfmt = GL_RED;
-            fmt = GL_RED;
-            break;
-        }
-        case 2:
-        {
-            intfmt = GL_RG;
-            fmt = GL_RG;
-            break;
-        }
-        case 3:
-        {
-            intfmt = GL_RGB;
-            fmt = GL_RGB;
-            break;
-        }
-        case 4:
-        default:
-        {
-            intfmt = GL_RGBA;
-            fmt = GL_RGBA;
-            break;
-        }
-    }*/
 
     glBindTexture(GL_TEXTURE_2D, _mglID);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
