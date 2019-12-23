@@ -43,100 +43,44 @@ public:
 
     GameObject* GetGameObject(std::string name);
 
-    void AddChild(std::unique_ptr<GameObject> && child) { 
-        child->SetParent(this);
-        _mChildren.push_back(std::move(child));
-    }
+    void AddChild(std::unique_ptr<GameObject>&& child);
 
-    //// LOCAL
+
+    void SetName(std::string name) { _mName = name; }
+    std::string GetName() { return _mName; }
+
+    void SetModel(std::unique_ptr<Model> model) { _mModel = std::move(model); }
+
+    bool Load(std::string filename);
+
     // Local Transform
-    void SetTransform(glm::vec3 position, glm::quat rotation, glm::vec3 scale) {
-        _mPosition = position;
-        _mRotation = rotation;
-        _mScale = scale;
-    }
+    void SetTransform(glm::vec3 position, glm::quat rotation, glm::vec3 scale);
 
-    glm::mat4 GetTransform() const { 
-        glm::mat4 transform = glm::mat4(1);
-        transform = glm::translate(transform, _mPosition);
-        transform *= glm::mat4_cast(_mRotation);
-        transform = glm::scale(transform, _mScale);
-        return transform;
-    }
+    glm::mat4 GetTransform() const;
+    glm::vec3 GetPosition() const { return _mPosition; }
+    glm::quat GetRotation() const { return _mRotation; }
+    glm::vec3 GetScale() const { return _mScale; }
 
     // Remember matrix order is Translate (Position), Rotate, Scale
     void SetPosition(glm::vec3 position) {
         _mPosition = position;
     }
 
-    glm::vec3 GetPosition() const { return _mPosition; }
-
     // Remember matrix order is Translate (Position), Rotate, Scale
     void SetRotation(glm::quat rotation) {
         _mRotation = rotation;
     }
-
-    glm::quat GetRotation() const { return _mRotation; }
 
     // Remember matrix order is Translate (Position), Rotate, Scale
     void SetScale(glm::vec3 scale) {
         _mScale = scale;
     }
 
-    glm::vec3 GetScale() const { return _mScale; }
-    //// END LOCAL
-
-    //// WORLD
-    // World Transform
-    glm::mat4 GetWorldTransform() const
-    {
-        if (GetParent())
-        {
-            return GetParent()->GetTransform() * GetTransform();
-        }
-
-        return GetTransform();
-    }
-
-    glm::vec3 GetWorldPosition() const
-    {
-        if (GetParent())
-        {
-            return GetParent()->GetPosition() + GetPosition();
-        }
-
-        return GetPosition();
-    }
-
-    glm::quat GetWorldRotation() const
-    {
-        if (GetParent())
-        {
-            return GetParent()->GetRotation() * GetRotation();
-        }
-
-        return GetRotation();
-    }
-
-    glm::vec3 GetWorldScale() const
-    {
-        if (GetParent())
-        {
-            return GetParent()->GetScale() * GetScale();
-        }
-
-        return GetScale();
-    }
-    //// END WORLD
-
-    void SetName(std::string name) { _mName = name; }
-    std::string GetName() { return _mName; }
-
-    void SetModel(std::unique_ptr<Model> model) { 
-        _mModel = std::move(model);
-    }
-
-    bool Load(std::string filename);
+    // World Transforms
+    glm::mat4 GetWorldTransform() const;
+    glm::vec3 GetWorldPosition() const;
+    glm::quat GetWorldRotation() const;
+    glm::vec3 GetWorldScale() const;
 
 protected:
 

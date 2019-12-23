@@ -74,6 +74,67 @@ GameObject* GameObject::GetGameObject(std::string name)
     return nullptr;
 }
 
+void GameObject::AddChild(std::unique_ptr<GameObject>&& child)
+{
+    child->SetParent(this);
+    _mChildren.push_back(std::move(child));
+}
+
+void GameObject::SetTransform(glm::vec3 position, glm::quat rotation, glm::vec3 scale)
+{
+    _mPosition = position;
+    _mRotation = rotation;
+    _mScale = scale;
+}
+
+glm::mat4 GameObject::GetTransform() const {
+    glm::mat4 transform = glm::mat4(1);
+    transform = glm::translate(transform, _mPosition);
+    transform *= glm::mat4_cast(_mRotation);
+    transform = glm::scale(transform, _mScale);
+    return transform;
+}
+
+glm::mat4 GameObject::GetWorldTransform() const
+{
+    if (GetParent())
+    {
+        return GetParent()->GetTransform() * GetTransform();
+    }
+
+    return GetTransform();
+}
+
+glm::vec3 GameObject::GetWorldPosition() const
+{
+    if (GetParent())
+    {
+        return GetParent()->GetPosition() + GetPosition();
+    }
+
+    return GetPosition();
+}
+
+glm::quat GameObject::GetWorldRotation() const
+{
+    if (GetParent())
+    {
+        return GetParent()->GetRotation() * GetRotation();
+    }
+
+    return GetRotation();
+}
+
+glm::vec3 GameObject::GetWorldScale() const
+{
+    if (GetParent())
+    {
+        return GetParent()->GetScale() * GetScale();
+    }
+
+    return GetScale();
+}
+
 bool GameObject::Load(std::string filename)
 {
     std::string ext = Utils::GetExtension(filename);
@@ -113,7 +174,7 @@ bool GameObject::Load(std::string filename)
 
     // Process Cameras
     std::unordered_map<std::string, std::unique_ptr<GameObject>> mapOfCameras;
-    for (int i = 0; i < scene->mNumCameras; ++i)
+    for (unsigned i = 0; i < scene->mNumCameras; ++i)
     {
         auto cam = scene->mCameras[i];
         auto camera = std::make_unique<Camera>();
@@ -139,7 +200,7 @@ bool GameObject::Load(std::string filename)
     // Process Lights
     std::unordered_map<std::string, std::unique_ptr<GameObject>> mapOfLights;
 
-    for (int i = 0; i < scene->mNumLights; ++i)
+    for (unsigned i = 0; i < scene->mNumLights; ++i)
     {
         auto lit = scene->mLights[i];
         
@@ -224,7 +285,7 @@ std::unique_ptr<GameObject> GameObject::processNode(const aiScene * scene, std::
     std::vector<std::unique_ptr<Mesh>> meshes;
 
     // Process our game objects meshes
-    for (int i = 0; i < node->mNumMeshes; i++)
+    for (unsigned i = 0; i < node->mNumMeshes; i++)
     {
         auto& mesh = scene->mMeshes[node->mMeshes[i]];
         meshes.push_back(processMesh(scene, dir, mesh));
@@ -239,7 +300,7 @@ std::unique_ptr<GameObject> GameObject::processNode(const aiScene * scene, std::
     }
 
     // Process the childrens meshes
-    for (int i = 0; i < node->mNumChildren; i++)
+    for (unsigned i = 0; i < node->mNumChildren; i++)
     {
         gobj->AddChild(processNode(scene, dir, node->mChildren[i], mapOfLights, mapOfCameras));
     }
