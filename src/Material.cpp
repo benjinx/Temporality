@@ -17,224 +17,59 @@ void Material::Bind(Shader* shader)
 
     // Set Textures
 
-    // Diffuse Map
-    if (_mDiffuseMap)
+    for (auto& tex : _mTextures)
     {
-        shader->SetBool("material.hasDiffuseMap", true);
-        shader->SetInt("material.diffuseMap", Material::TextureID::DIFFUSE);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::DIFFUSE);
-        _mDiffuseMap->Bind();
+        shader->SetBool("material." + GetHasMapVariableName(tex.first), true);
+        shader->SetInt("material." + GetMapVariableName(tex.first), tex.first);
+        glActiveTexture(GL_TEXTURE0 + tex.first);
+        tex.second->Bind();
     }
-    else
-    {
-        shader->SetBool("material.hasDiffuseMap", false);
-    }
+}
 
-    // Specular Map
-    if (_mSpecularMap)
-    {
-        shader->SetBool("material.hasSpecularMap", true);
-        shader->SetInt("material.specularMap", Material::TextureID::SPECULAR);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::SPECULAR);
-        _mSpecularMap->Bind();
+std::string Material::GetMapVariableName(Material::TextureID id)
+{
+    switch (id) {
+        case DIFFUSE:           return "diffuseMap";
+        case SPECULAR:          return "specularMap";
+        case AMBIENT:           return "ambientMap";
+        case EMISSIVE:          return "emissiveMap";
+        case HEIGHT:            return "heightMap";
+        case NORMAL:            return "normalMap";
+        case SHININESS:         return "shininessMap";
+        case OPACITY:           return "opacityMap";
+        case DISPLACEMENT:      return "displacementMap";
+        case LIGHT_MAP:         return "lightMap";
+        case REFLECTION:        return "reflectionMap";
+        case BASE_COLOR:        return "baseColorMap";
+        case NORMAL_CAMERA:     return "normalCameraMap";
+        case EMISSION_COLOR:    return "emissionColorMap";
+        case METALNESS:         return "metalnessMap";
+        case DIFFUSE_ROUGHNESS: return "diffuseRoughnessMap";
+        case AMBIENT_OCCLUSION: return "ambientOcclusionMap";
     }
-    else
-    {
-        shader->SetBool("material.hasSpecularMap", false);
-    }
+    return "";
+}
 
-    // Ambient Map
-    if (_mAmbientMap)
-    {
-        shader->SetBool("material.hasAmbientMap", true);
-        shader->SetInt("material.ambientMap", Material::TextureID::AMBIENT);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::AMBIENT);
-        _mAmbientMap->Bind();
+std::string Material::GetHasMapVariableName(Material::TextureID id)
+{
+    switch (id) {
+    case DIFFUSE:           return "hasDiffuseMap";
+    case SPECULAR:          return "hasSpecularMap";
+    case AMBIENT:           return "hasAmbientMap";
+    case EMISSIVE:          return "hasEmissiveMap";
+    case HEIGHT:            return "hasHeightMap";
+    case NORMAL:            return "hasNormalMap";
+    case SHININESS:         return "hasShininessMap";
+    case OPACITY:           return "hasOpacityMap";
+    case DISPLACEMENT:      return "hasDisplacementMap";
+    case LIGHT_MAP:         return "hasLightMap";
+    case REFLECTION:        return "hasReflectionMap";
+    case BASE_COLOR:        return "hasBaseColorMap";
+    case NORMAL_CAMERA:     return "hasNormalCameraMap";
+    case EMISSION_COLOR:    return "hasEmissionColorMap";
+    case METALNESS:         return "hasMetalnessMap";
+    case DIFFUSE_ROUGHNESS: return "hasDiffuseRoughnessMap";
+    case AMBIENT_OCCLUSION: return "hasAmbientOcclusionMap";
     }
-    else
-    {
-        shader->SetBool("material.hasAmbientMap", false);
-    }
-
-    // Emissive Map
-    if (_mEmissiveMap)
-    {
-        shader->SetBool("material.hasEmissiveMap", true);
-        shader->SetInt("material.emissiveMap", Material::TextureID::EMISSIVE);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::EMISSIVE);
-        _mEmissiveMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasEmissiveMap", false);
-    }
-
-    // Height Map
-    if (_mHeightMap)
-    {
-        shader->SetBool("material.hasHeightMap", true);
-        shader->SetInt("material.heightMap", Material::TextureID::HEIGHT);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::HEIGHT);
-        _mHeightMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasHeightMap", false);
-    }
-
-    // Normal Map
-    if (_mNormalMap)
-    {
-        shader->SetBool("material.hasNormalMap", true);
-        shader->SetInt("material.normalMap", Material::TextureID::NORMAL);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::NORMAL);
-        _mNormalMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasNormalMap", false);
-    }
-
-    // Shininess Map
-    if (_mShininessMap)
-    {
-        shader->SetBool("material.hasShininessMap", true);
-        shader->SetInt("material.shininessMap", Material::TextureID::SHININESS);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::SHININESS);
-        _mShininessMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasShininessMap", false);
-    }
-
-    // Opacity Map
-    if (_mOpacityMap)
-    {
-        shader->SetBool("material.hasOpacityMap", true);
-        shader->SetInt("material.opacityMap", Material::TextureID::OPACITY);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::OPACITY);
-        _mOpacityMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasOpacityMap", false);
-    }
-
-    // Displacement Map
-    if (_mDisplacementMap)
-    {
-        shader->SetBool("material.hasDisplacementMap", true);
-        shader->SetInt("material.displacementMap", Material::TextureID::DISPLACEMENT);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::DISPLACEMENT);
-        _mDisplacementMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasDisplacementMap", false);
-    }
-
-    // Light Map
-    if (_mLightMap)
-    {
-        shader->SetBool("material.hasLightMap", true);
-        shader->SetInt("material.lightMap", Material::TextureID::LIGHT_MAP);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::LIGHT_MAP);
-        _mLightMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasLightMap", false);
-    }
-
-    // Reflection Map
-    if (_mReflectionMap)
-    {
-        shader->SetBool("material.hasReflectionMap", true);
-        shader->SetInt("material.reflectionMap", Material::TextureID::REFLECTION);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::REFLECTION);
-        _mReflectionMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasReflectionMap", false);
-    }
-
-    // Base Color Map
-    if (_mBaseColorMap)
-    {
-        shader->SetBool("material.hasBaseColorMap", true);
-        shader->SetInt("material.baseColorMap", Material::TextureID::BASE_COLOR);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::BASE_COLOR);
-        _mBaseColorMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasBaseColorMap", false);
-    }
-
-    // Normal Camera Map
-    if (_mNormalCameraMap)
-    {
-        shader->SetBool("material.hasNormalCameraMap", true);
-        shader->SetInt("material.normalCameraMap", Material::TextureID::NORMAL_CAMERA);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::NORMAL_CAMERA);
-        _mNormalCameraMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasNormalCameraMap", false);
-    }
-
-    // Emission Color Map
-    if (_mEmissionColorMap)
-    {
-        shader->SetBool("material.hasEmissionColorMap", true);
-        shader->SetInt("material.emissionColorMap", Material::TextureID::EMISSION_COLOR);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::EMISSION_COLOR);
-        _mEmissionColorMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasEmissionColorMap", false);
-    }
-
-    // Metalness Map
-    if (_mMetalnessMap)
-    {
-        shader->SetBool("material.hasMetalnessMap", true);
-        shader->SetInt("material.metalnessMap", Material::TextureID::METALNESS);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::METALNESS);
-        _mMetalnessMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasMetalnessMap", false);
-    }
-
-    // Diffuse Roughness Map
-    if (_mDiffuseRoughnessMap)
-    {
-        shader->SetBool("material.hasDiffuseRoughnessMap", true);
-        shader->SetInt("material.diffuseRoughnessMap", Material::TextureID::DIFFUSE_ROUGHNESS);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::DIFFUSE_ROUGHNESS);
-        _mDiffuseRoughnessMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasDiffuseRoughnessMap", false);
-    }
-
-    // Ambient Occlusion Map
-    if (_mAmbientOcclusionMap)
-    {
-        shader->SetBool("material.hasAmbientOcclusionMap", true);
-        shader->SetInt("material.ambientOcclusionMap", Material::TextureID::AMBIENT_OCCLUSION);
-        glActiveTexture(GL_TEXTURE0 + Material::TextureID::AMBIENT_OCCLUSION);
-        _mAmbientOcclusionMap->Bind();
-    }
-    else
-    {
-        shader->SetBool("material.hasAmbientOcclusionMap", false);
-    }
+    return "";
 }

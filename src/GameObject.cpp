@@ -461,7 +461,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetDiffuseMap(std::move(tex));
+            mat->SetMap(Material::TextureID::DIFFUSE, std::move(tex));
         }
         else
         {
@@ -473,7 +473,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetSpecularMap(std::move(tex));
+            mat->SetMap(Material::TextureID::SPECULAR, std::move(tex));
         }
         else
         {
@@ -485,7 +485,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetAmbientMap(std::move(tex));
+            mat->SetMap(Material::TextureID::AMBIENT, std::move(tex));
         }
         else
         {
@@ -497,7 +497,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetEmissiveMap(std::move(tex));
+            mat->SetMap(Material::TextureID::EMISSIVE, std::move(tex));
         }
         else
         {
@@ -509,7 +509,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetHeightMap(std::move(tex));
+            mat->SetMap(Material::TextureID::HEIGHT, std::move(tex));
         }
         else
         {
@@ -522,7 +522,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetNormalMap(std::move(tex));
+            mat->SetMap(Material::TextureID::NORMAL, std::move(tex));
         }
         else
         {
@@ -534,7 +534,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetShininessMap(std::move(tex));
+            mat->SetMap(Material::TextureID::SHININESS, std::move(tex));
         }
         else
         {
@@ -546,7 +546,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetOpacityMap(std::move(tex));
+            mat->SetMap(Material::TextureID::OPACITY, std::move(tex));
         }
         else
         {
@@ -558,7 +558,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetDisplacementMap(std::move(tex));
+            mat->SetMap(Material::TextureID::DISPLACEMENT, std::move(tex));
         }
         else
         {
@@ -570,7 +570,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetLightMap(std::move(tex));
+            mat->SetMap(Material::TextureID::LIGHT_MAP, std::move(tex));
         }
         else
         {
@@ -582,7 +582,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetReflectionMap(std::move(tex));
+            mat->SetMap(Material::TextureID::REFLECTION, std::move(tex));
         }
         else
         {
@@ -596,7 +596,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetBaseColorMap(std::move(tex));
+            mat->SetMap(Material::TextureID::BASE_COLOR, std::move(tex));
         }
         else
         {
@@ -608,7 +608,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetNormalCameraMap(std::move(tex));
+            mat->SetMap(Material::TextureID::NORMAL_CAMERA, std::move(tex));
         }
         else
         {
@@ -620,7 +620,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetEmissionColorMap(std::move(tex));
+            mat->SetMap(Material::TextureID::EMISSION_COLOR, std::move(tex));
         }
         else
         {
@@ -632,7 +632,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetNormalCameraMap(std::move(tex));
+            mat->SetMap(Material::TextureID::METALNESS, std::move(tex));
         }
         else
         {
@@ -644,7 +644,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetDiffuseRoughnessMap(std::move(tex));
+            mat->SetMap(Material::TextureID::DIFFUSE_ROUGHNESS, std::move(tex));
         }
         else
         {
@@ -656,7 +656,7 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
         auto tex = processTexture(scene, dir, filename);
         if (tex)
         {
-            mat->SetAmbientOcclusionMap(std::move(tex));
+            mat->SetMap(Material::TextureID::AMBIENT_OCCLUSION, std::move(tex));
         }
         else
         {
