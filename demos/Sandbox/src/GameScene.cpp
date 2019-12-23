@@ -24,12 +24,12 @@ void GameScene::Start()
 
     // Scene Objs
     Load("models/DamagedHelm.glb");
-    auto helm = GetGameObject("node_damagedHelmet_-6514");
+    auto helm = FindGameObject("node_damagedHelmet_-6514");
     helm->SetPosition(glm::vec3(2.0f, 0.0f, 1.0f));
     helm->SetShader(app->GetShader("normalMapping"));
 
     Load("models/defaultScene2.glb");
-    auto cube = GetGameObject("Cube");
+    auto cube = FindGameObject("Cube");
     cube->SetPosition(glm::vec3(-1.0f, -1.0f, -1.0f));
     cube->SetShader(app->GetShader("passThru"));
 
@@ -50,7 +50,7 @@ void GameScene::Update(float dt)
     auto norm = app->GetShader("normalMapping");
 
     norm->Use();
-    PointLight* light = (PointLight*)GetGameObject("Light_Orientation");
+    PointLight* light = (PointLight*)FindGameObject("Light_Orientation");
     norm->SetVec4("lightPos", glm::vec4(light->GetWorldPosition(), 1.0f));
 
     auto color = app->GetShader("passThru");

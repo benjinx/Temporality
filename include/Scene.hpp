@@ -14,9 +14,9 @@ class Scene : public GameObject
 public:
 
     Scene() = default;
-    virtual ~Scene();
+    virtual ~Scene() {}
     
-    virtual void Start();
+    virtual void Start() { }
     virtual void Pause() { }
     virtual void Resume() { }
 
@@ -35,8 +35,6 @@ public:
 
 private:
     static bool _sShowAxis;
-
-    Axis* _mSceneAxis;
 
     glm::mat4 _mSceneTransform = glm::mat4(1);
 };

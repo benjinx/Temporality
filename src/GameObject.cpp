@@ -26,6 +26,7 @@ GameObject::GameObject(glm::vec3 position)
 
 GameObject::~GameObject()
 {
+    delete _mSceneAxis;
     _mChildren.clear();
 }
 
@@ -52,7 +53,22 @@ void GameObject::Render()
     }
 }
 
-GameObject* GameObject::GetGameObject(std::string name)
+void GameObject::RenderAxis()
+{
+    if (_mSceneAxis == nullptr)
+        _mSceneAxis = new Axis();
+
+    // Render the gobjs axis
+    _mSceneAxis->Render(GetWorldTransform());
+
+    // Render it for our children
+    for (auto& gobj : _mChildren)
+    {
+        gobj->RenderAxis();
+    }
+}
+
+GameObject* GameObject::FindGameObject(std::string name)
 {
     for (auto& gobj : _mChildren)
     {
@@ -64,7 +80,7 @@ GameObject* GameObject::GetGameObject(std::string name)
 
     for (auto& gobj : _mChildren)
     {
-        auto tmp = gobj->GetGameObject(name);
+        auto tmp = gobj->FindGameObject(name);
         if (tmp)
         {
             return tmp;

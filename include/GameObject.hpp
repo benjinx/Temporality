@@ -1,6 +1,7 @@
 #ifndef GAMEOBJECT_HPP
 #define GAMEOBJECT_HPP
 
+#include <Axis.hpp>
 #include <Config.hpp>
 #include <Math.hpp>
 #include <OpenGL.hpp>
@@ -41,10 +42,11 @@ public:
         return _mParent;
     }
 
-    GameObject* GetGameObject(std::string name);
+    GameObject* FindGameObject(std::string name);
 
     void AddChild(std::unique_ptr<GameObject>&& child);
 
+    void RenderAxis();
 
     void SetName(std::string name) { _mName = name; }
     std::string GetName() { return _mName; }
@@ -92,6 +94,9 @@ private:
     glm::vec3 _mPosition = glm::vec3(0.0f),
               _mScale = glm::vec3(1.0f);
     glm::quat _mRotation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+
+    // Axis of the object
+    Axis* _mSceneAxis = nullptr;
 
     // Gobjs Shader
     Shader * _mShader;

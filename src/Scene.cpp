@@ -19,15 +19,6 @@
 
 bool Scene::_sShowAxis = false;
 
-Scene::~Scene() {
-    delete _mSceneAxis;
-}
-
-void Scene::Start()
-{
-    _mSceneAxis = new Axis();
-}
-
 void Scene::Update(float dt)
 {
     GameObject::Update(dt);
@@ -52,11 +43,7 @@ void Scene::Render()
     {
         for (auto& gameObject : _mChildren)
         {
-            // Render the gobjs axis
-            _mSceneAxis->Render(gameObject->GetWorldTransform());
-
-            // Render the scenes axis
-            _mSceneAxis->Render(_mSceneTransform);
+            RenderAxis();
         }
     }
 }

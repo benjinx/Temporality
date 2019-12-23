@@ -27,7 +27,7 @@ void GameScene::Start()
     if (loaded)
     {
         // Initialize Objs
-        auto logo = GetGameObject("Logo");
+        auto logo = FindGameObject("Logo");
         logo->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
         logo->SetRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
         logo->SetShader(app->GetShader("passThru"));
