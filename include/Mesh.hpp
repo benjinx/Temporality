@@ -20,8 +20,6 @@ public:
 
     void Render(Shader * shader, glm::mat4 modelMat);
 
-    //void SetMaterial(Material* material) { _mMaterial = material; }
-
     GLuint GetVAO() { return _mVAO; }
 
 private:
