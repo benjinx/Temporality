@@ -50,9 +50,6 @@ public:
         _mTextures.emplace(id, std::move(texture));
     }
 
-    static std::string GetMapVariableName(Material::TextureID id);
-    static std::string GetHasMapVariableName(Material::TextureID id);
-
 private:
     glm::vec3   _mDiffuse = glm::vec3(1.0f, 1.0f, 1.0f),
                 _mSpecular = glm::vec3(0),
@@ -62,6 +59,9 @@ private:
                 _mReflective = glm::vec3(0);
 
     std::unordered_map<Material::TextureID, std::unique_ptr<Texture>> _mTextures;
+
+    static std::string GetMapVariableName(Material::TextureID id);
+    static std::string GetHasMapVariableName(Material::TextureID id);
 };
 
 #endif // MATERIAL_H

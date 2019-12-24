@@ -22,9 +22,7 @@ void GameScene::Start()
     printf("\nLoading Models/Materials\n");
 
     // Scene Objs
-    bool loaded = Load("models/logo/logo.glb");
-
-    if (loaded)
+    if (Load("models/logo/logo.glb"))
     {
         // Initialize Objs
         auto logo = FindGameObject("Logo");
