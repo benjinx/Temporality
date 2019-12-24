@@ -453,214 +453,39 @@ std::unique_ptr<Material> GameObject::processMaterial(const aiScene * scene, std
 {
     auto mat = std::make_unique<Material>();
 
+    static const std::unordered_map<aiTextureType, Material::TextureID> textureIDs = {
+        { aiTextureType_DIFFUSE,            Material::TextureID::DIFFUSE            },
+        { aiTextureType_SPECULAR,           Material::TextureID::SPECULAR           },
+        { aiTextureType_AMBIENT,            Material::TextureID::AMBIENT            },
+        { aiTextureType_EMISSIVE,           Material::TextureID::EMISSIVE           },
+        { aiTextureType_HEIGHT,             Material::TextureID::HEIGHT             },
+        { aiTextureType_NORMALS,            Material::TextureID::NORMAL             },
+        { aiTextureType_SHININESS,          Material::TextureID::SHININESS          },
+        { aiTextureType_OPACITY,            Material::TextureID::OPACITY            },
+        { aiTextureType_DISPLACEMENT,       Material::TextureID::DISPLACEMENT       },
+        { aiTextureType_LIGHTMAP,           Material::TextureID::LIGHT_MAP          },
+        { aiTextureType_REFLECTION,         Material::TextureID::REFLECTION         },
+        { aiTextureType_BASE_COLOR,         Material::TextureID::BASE_COLOR         },
+        { aiTextureType_NORMAL_CAMERA,      Material::TextureID::NORMAL_CAMERA      },
+        { aiTextureType_EMISSION_COLOR,     Material::TextureID::BASE_COLOR         },
+        { aiTextureType_METALNESS,          Material::TextureID::METALNESS          },
+        { aiTextureType_DIFFUSE_ROUGHNESS,  Material::TextureID::DIFFUSE_ROUGHNESS  },
+        { aiTextureType_AMBIENT_OCCLUSION,  Material::TextureID::AMBIENT_OCCLUSION  },
+    };
+
     // Textures
     aiString filename;
-
-    if (material->GetTexture(aiTextureType_DIFFUSE, 0, &filename) == AI_SUCCESS) {
-        
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::DIFFUSE, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_SPECULAR, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::SPECULAR, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_AMBIENT, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::AMBIENT, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-}
-    }
-
-    if (material->GetTexture(aiTextureType_EMISSIVE, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::EMISSIVE, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_HEIGHT, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::HEIGHT, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_NORMALS, 0, &filename) == AI_SUCCESS) {
-
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::NORMAL, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_SHININESS, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::SHININESS, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_OPACITY, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::OPACITY, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_DISPLACEMENT, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::DISPLACEMENT, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_LIGHTMAP, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::LIGHT_MAP, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_REFLECTION, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::REFLECTION, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    // PBR
-
-    if (material->GetTexture(aiTextureType_BASE_COLOR, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::BASE_COLOR, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_NORMAL_CAMERA, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::NORMAL_CAMERA, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_EMISSION_COLOR, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::EMISSION_COLOR, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_METALNESS, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::METALNESS, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_DIFFUSE_ROUGHNESS, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::DIFFUSE_ROUGHNESS, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
-        }
-    }
-
-    if (material->GetTexture(aiTextureType_AMBIENT_OCCLUSION, 0, &filename) == AI_SUCCESS) {
-        auto tex = processTexture(scene, dir, filename);
-        if (tex)
-        {
-            mat->SetMap(Material::TextureID::AMBIENT_OCCLUSION, std::move(tex));
-        }
-        else
-        {
-            LogWarn("Issue loading texture: %s\n", filename.data);
+    for (const auto& pair : textureIDs) {
+        if (material->GetTexture(pair.first, 0, &filename) == AI_SUCCESS) {
+            auto tex = processTexture(scene, dir, filename);
+            if (tex)
+            {
+                mat->SetMap(pair.second, std::move(tex));
+            }
+            else
+            {
+                LogWarn("Issue loading texture: %s\n", filename.data);
+            }
         }
     }
 
