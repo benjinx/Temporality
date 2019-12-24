@@ -14,11 +14,11 @@ class Scene : public GameObject
 public:
 
     Scene() = default;
-    virtual ~Scene() {}
+    virtual ~Scene() = default;
     
-    virtual void Start() { }
-    virtual void Pause() { }
-    virtual void Resume() { }
+    virtual void Start() {}
+    virtual void Pause() {}
+    virtual void Resume() {}
 
     virtual void Update(float dt);
     virtual void Render();
