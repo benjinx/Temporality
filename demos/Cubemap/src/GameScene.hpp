@@ -10,6 +10,7 @@ public:
 
     void Start() override;
     void Update(float dt) override;
+    void Render() override;
 
     unsigned int LoadCubemap(std::vector<std::string> faces);
 
