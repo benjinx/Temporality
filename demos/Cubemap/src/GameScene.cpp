@@ -85,8 +85,8 @@ void GameScene::Start()
         "images/skyboxes/demo/left.jpg",
         "images/skyboxes/demo/top.jpg",
         "images/skyboxes/demo/bottom.jpg",
-        "images/skyboxes/demo/back.jpg",
-        "images/skyboxes/demo/front.jpg",};
+        "images/skyboxes/demo/front.jpg",
+        "images/skyboxes/demo/back.jpg",};
 
     cubemapTexture = LoadCubemap(faces);
 
@@ -105,11 +105,16 @@ void GameScene::Update(float dt)
     Scene::Update(dt);
 
     App* app = App::Inst();
+}
+
+void GameScene::Render()
+{
+    App* app = App::Inst();
 
     //glDepthMask(GL_FALSE);
     auto skybox = app->GetShader("skybox");
     skybox->Use();
-    glm::mat4 view = app->GetCurrentCamera()->GetView();
+    glm::mat4 view = glm::mat3(app->GetCurrentCamera()->GetView());
     glm::mat4 proj = app->GetCurrentCamera()->GetProjection();
     skybox->SetMat4("viewMat", view);
     skybox->SetMat4("projMat", proj);
@@ -117,7 +122,12 @@ void GameScene::Update(float dt)
     glBindVertexArray(skyboxVAO);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
     //glDepthMask(GL_TRUE);
+    glClear(GL_DEPTH_BUFFER_BIT);
+
+    // Render everything else after
+    Scene::Render();
 }
 
 unsigned int GameScene::LoadCubemap(std::vector<std::string> faces)
@@ -131,8 +141,8 @@ unsigned int GameScene::LoadCubemap(std::vector<std::string> faces)
     // GL_TEXTURE_CUBE_MAP_NEGATIVE_X	Left
     // GL_TEXTURE_CUBE_MAP_POSITIVE_Y	Top
     // GL_TEXTURE_CUBE_MAP_NEGATIVE_Y	Bottom
-    // GL_TEXTURE_CUBE_MAP_POSITIVE_Z	Back
-    // GL_TEXTURE_CUBE_MAP_NEGATIVE_Z	Front
+    // GL_TEXTURE_CUBE_MAP_POSITIVE_Z	Front
+    // GL_TEXTURE_CUBE_MAP_NEGATIVE_Z	Back
     int width, height, nrChannels;
     unsigned char* data;
     int i = 0;
