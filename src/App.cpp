@@ -167,6 +167,10 @@ void App::OpenGLInfo()
     glGetIntegerv(GL_MAX_UNIFORM_BLOCK_SIZE, &tmp);
     LogInfo("Max UBO Size: %d\n", tmp);
 
+    // Max Vertex Attributes
+    glGetIntegerv(GL_MAX_VERTEX_ATTRIBS, &tmp);
+    LogInfo("Max Vertex Attributes: %d\n", tmp);
+    
     // Max Vertex UBOs
     glGetIntegerv(GL_MAX_VERTEX_UNIFORM_BLOCKS, &tmp);
     LogInfo("Max Vertex UBOs: %d\n", tmp);
