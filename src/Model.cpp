@@ -5,6 +5,7 @@
 #include <Log.hpp>
 #include <Material.hpp>
 #include <Mesh.hpp>
+#include <Shader.hpp>
 #include <Texture.hpp>
 #include <Utils.hpp>
 
@@ -12,12 +13,14 @@
 
 #include <stb/stb_image.h>
 
-#define TINYGLTF_NO_STB_IMAGE_WRITE
-#include <tinygltf/tiny_gltf.h>
-
-Model::Model(std::vector<std::unique_ptr<Mesh>> && meshes)
+Model::Model(std::shared_ptr<Mesh> mesh)
 {
-    _mMeshes = std::move(meshes);
+    _mMeshes.push_back(mesh);
+}
+
+Model::Model(std::vector<std::shared_ptr<Mesh>> meshes)
+{
+    _mMeshes = meshes;
 }
 
 void Model::Render(Shader* shader, glm::mat4 modelMatrix)

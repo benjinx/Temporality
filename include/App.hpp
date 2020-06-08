@@ -19,12 +19,9 @@ public:
     App() { _sInst = this; }
     ~App();
 
+    bool Start();
     void Run();
-
-    void HandleGLFWKey(GLFWwindow* window, int key, int scancode, int action, int mode);
-    void HandleGLFWMouseButton(GLFWwindow* window, int button, int action, int mode);
-    void HandleGLFWScroll(GLFWwindow* window, double xoffset, double yoffset);
-    void HandleGLFWMousePos(GLFWwindow* window, double x, double y);
+    void Quit() { _mRunning = false; }
 
     Window * GetWindow() { return _mWindow; }
 
@@ -46,7 +43,6 @@ private:
 
     static App* _sInst;
 
-    void Start();
     void Update(float dt);
     void Render();
     void HandleInput(float dt);
@@ -64,6 +60,8 @@ private:
           _mLastMY = -1;
 
     Camera* _mCurrentCamera = nullptr;
+
+    bool _mRunning = true;
 };
 
 #endif // APPLICATION_H

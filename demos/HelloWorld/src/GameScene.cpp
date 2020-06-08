@@ -32,7 +32,7 @@ void GameScene::Start()
     }
 
     // UI
-    DevUI::Start();
+    //DevUI::Start();
 }
 
 void GameScene::Update(float dt)

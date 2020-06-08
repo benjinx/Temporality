@@ -6,7 +6,8 @@
 #include <vector>
 
 #include <imgui/imgui.h>
-#include <imgui/imgui_impl_glfw_gl3.h>
+#include <imgui/imgui_impl_sdl.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 bool _SettingsShown;
 
@@ -14,14 +15,16 @@ std::vector<std::function<void()>> _OptionsFuncs;
 
 void DevUI::Start()
 {
-    ImGui::CreateContext();
-    ImGui_ImplGlfwGL3_Init(App::Inst()->GetWindow()->GetGLFWWindow(), true);
+    /*ImGui::CreateContext();
+    ImGui_ImplSDL2_InitForOpenGL(App::Inst()->GetWindow()->GetSDLWindow(), App::Inst()->GetWindow()->GetGLContext());
+    ImGui_ImplOpenGL3_Init("#version 150");*/
 }
 
 void DevUI::Render()
 {
+    /*
     // Call this to start ImGUI
-    ImGui_ImplGlfwGL3_NewFrame();
+    ImGui_ImplSDL2_NewFrame(App::Inst()->GetWindow()->GetSDLWindow());
 
     ImVec4             Red = ImVec4(255.0f, 0.0f, 0.0f, 255.0f);
     ImVec4             Yellow = ImVec4(255.0f, 255.0f, 0.0f, 255.0f);
@@ -47,7 +50,7 @@ void DevUI::Render()
     if (_SettingsShown)
     {
         ImGui::SetNextWindowSize(ImVec2(300, 400));
-        ImGui::SetNextWindowPosCenter();
+        ImGui::SetNextWindowPos(ImVec2(App::Inst()->GetWindow()->GetWidth() / 2 - 300, App::Inst()->GetWindow()->GetHeight() / 2 - 400));
         ImGui::Begin("Settings", NULL, ImGuiWindowFlags_NoCollapse + ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::Text("Credits\n");
         ImGui::TextColored(Green, "Created by BC/DC Games:\n");
@@ -59,7 +62,7 @@ void DevUI::Render()
         ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
 
         if (ImGui::Button("Quit"))
-            glfwSetWindowShouldClose(App::Inst()->GetWindow()->GetGLFWWindow(), GL_TRUE);
+            App::Inst()->Quit();
         ImGui::End();
     }
 
@@ -72,51 +75,11 @@ void DevUI::Render()
     }
 
     ImGui::Render();
-    ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
-}
-
-void DevUI::HandleKeyEvent(int key, int scancode, int action, int mode)
-{
-    if (action == GLFW_PRESS)
-    {
-        switch (key)
-        {
-            case GLFW_KEY_ESCAPE:
-            {
-                _SettingsShown = !_SettingsShown;
-                break;
-            }
-                
-            /*
-            case GLFW_KEY_GRAVE_ACCENT:
-            {
-                UI::showMainMenuBar = !UI::showMainMenuBar;
-                break;
-            }
-
-            case GLFW_KEY_F1:
-            {
-                UI::consoleSelected = !UI::consoleSelected;
-                break;
-            }
-
-            case GLFW_KEY_F2:
-            {
-                UI::optionsSelected = !UI::optionsSelected;
-                break;
-            }
-
-            case GLFW_KEY_F11:
-            {
-                UI::showTestWindow = !UI::showTestWindow;
-                break;
-            }
-            */
-        }
-    }
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+    */
 }
 
 void DevUI::RegisterOptionsFunc(std::function<void()> func)
 {
-    _OptionsFuncs.push_back(func);
+    //_OptionsFuncs.push_back(func);
 }

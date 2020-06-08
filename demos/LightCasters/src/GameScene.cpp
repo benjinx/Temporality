@@ -80,12 +80,12 @@ void GameScene::Start()
     //_mGameObjects["Torus3"]->SetShader(app->GetShader("lightCasters"));
 
     // UI
-    DevUI::Start();
+   /* DevUI::Start();
     DevUI::RegisterOptionsFunc([this]() {
         ImGui::Checkbox("Enable Directional Light", &_mDirLight);
         ImGui::Checkbox("Enable Point Light", &_mPointLight);
         ImGui::Checkbox("Enable Spot Light", &_mSpotLight);
-    });
+    });*/
 
     // Camera
     glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);

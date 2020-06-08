@@ -36,13 +36,13 @@ Axis::Axis()
 
         glBindBuffer(GL_ARRAY_BUFFER, vbos[0]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(position), position, GL_STATIC_DRAW);
-        glVertexAttribPointer(AttributeID::POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-        glEnableVertexAttribArray(AttributeID::POSITION);
+        glVertexAttribPointer(Mesh::AttributeID::POSITION, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(Mesh::AttributeID::POSITION);
 
         glBindBuffer(GL_ARRAY_BUFFER, vbos[1]);
         glBufferData(GL_ARRAY_BUFFER, sizeof(color), color, GL_STATIC_DRAW);
-        glVertexAttribPointer(AttributeID::COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-        glEnableVertexAttribArray(AttributeID::COLOR);
+        glVertexAttribPointer(Mesh::AttributeID::COLOR, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+        glEnableVertexAttribArray(Mesh::AttributeID::COLOR);
 
         glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -55,6 +55,8 @@ Axis::Axis()
             vao,
             (GLenum)GL_LINES,
             (GLsizei)count,
+            GL_UNSIGNED_INT,
+            0,
             nullptr
         );
     }

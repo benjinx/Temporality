@@ -53,7 +53,7 @@ public:
 
     void SetModel(std::unique_ptr<Model> model) { _mModel = std::move(model); }
 
-    bool Load(std::string filename);
+    //bool Load(std::string filename);
 
     // Local Transform
     void SetTransform(glm::vec3 position, glm::quat rotation, glm::vec3 scale);
@@ -110,7 +110,7 @@ private:
     // Object name
     std::string _mName;
 
-    // Load Materials
+   /* // Load Materials
     std::unique_ptr<Material> processMaterial(const aiScene * scene, std::string dir, aiMaterial* material);
 
     // Part of loading function
@@ -121,6 +121,6 @@ private:
 
     // process textures
     std::unique_ptr<Texture> processTexture(const aiScene * scene, std::string dir, const aiString& filename);
-
+    */
 };
 #endif // GAMEOBJECT_HPP

@@ -14,9 +14,6 @@
 
 #include <stb/stb_image.h>
 
-#define TINYGLTF_NO_STB_IMAGE_WRITE
-#include <tinygltf/tiny_gltf.h>
-
 bool Scene::_sShowAxis = false;
 
 void Scene::Update(float dt)
@@ -50,7 +47,7 @@ void Scene::Render()
 
 bool Scene::Load(std::string filename)
 {
-    bool loaded = GameObject::Load(filename);
+    bool loaded = false;//GameObject::Load(filename);
 
     if (loaded)
         return true;
@@ -86,5 +83,5 @@ GameObject* Scene::AddGameObject(std::unique_ptr<GameObject> gobj)
 
 void Scene::Options()
 {
-    ImGui::Checkbox("Show GameObject Axis", &_sShowAxis);
+    //ImGui::Checkbox("Show GameObject Axis", &_sShowAxis);
 }

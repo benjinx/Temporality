@@ -11,10 +11,6 @@
 #include <nlohmann/json.hpp>
 #include <stb/stb_image.h>
 
-#include <assimp/Importer.hpp>
-#include <assimp/scene.h>
-#include <assimp/postprocess.h>
-
 GameObject::GameObject()
 {
 }
@@ -151,7 +147,7 @@ glm::vec3 GameObject::GetWorldScale() const
     return GetScale();
 }
 
-bool GameObject::Load(std::string filename)
+/*bool GameObject::Load(std::string filename)
 {
     std::string ext = Utils::GetExtension(filename);
     bool binary = (ext == "glb");
@@ -539,4 +535,4 @@ std::unique_ptr<Texture> GameObject::processTexture(const aiScene * scene, std::
     {
        return std::make_unique<Texture>(Texture(dir + filename.C_Str()));
     }
-}
+}*/

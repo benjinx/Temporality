@@ -9,36 +9,26 @@
 #include <vector>
 #include <memory>
 
-enum AttributeID : GLint
-{
-    POSITION = 0,
-    NORMAL = 1,
-    TEXCOORD = 2,
-    TANGENT = 3,
-    BITANGENT = 4,
-    COLOR = 5,
-};
-
 class Shader;
 
 class Model
 {
 public:
-    
-    Model(std::vector<std::unique_ptr<Mesh>> && meshes);
+    Model(std::shared_ptr<Mesh> mesh);
+    Model(std::vector<std::shared_ptr<Mesh>> meshes);
 
     virtual ~Model() = default;
 
     void Render(Shader* shader, glm::mat4 modelMatrix);
 
-    void AddMesh(std::unique_ptr<Mesh> && mesh) { 
-        _mMeshes.push_back(std::move(mesh));
+    void AddMesh(std::shared_ptr<Mesh> mesh) {
+        _mMeshes.push_back(mesh);
     }
 
 private:
 
     // Mesh
-    std::vector<std::unique_ptr<Mesh>> _mMeshes;
+    std::vector<std::shared_ptr<Mesh>> _mMeshes;
 
 };
 
