@@ -12,6 +12,7 @@ public:
     ~Input();
 
     // 
+    void Init();
     void ProcessEvent(SDL_Event* event);
 
     // Need an event system
@@ -145,41 +146,44 @@ public:
 
     enum GamepadButton
     {
-        LEFT = 0,
-        //DOWN,
-        //UP,
-        //RIGHT,
-        //A,
-        //B,
-        //X,
-        //Y,
-        //PAUSE,
-        //BACK,
-        //L1,
-        //L2,
-        //L3,
-        //R1,
-        //R2,
-        //R3,
-        //MENU,
+        GAME_CONTROLLER_BUTTON_INVALID,
+        GAME_CONTROLLER_BUTTON_A,
+        GAME_CONTROLLER_BUTTON_B,
+        GAME_CONTROLLER_BUTTON_X,
+        GAME_CONTROLLER_BUTTON_Y,
+        GAME_CONTROLLER_BUTTON_BACK,
+        GAME_CONTROLLER_BUTTON_GUIDE,
+        GAME_CONTROLLER_BUTTON_START,
+        GAME_CONTROLLER_BUTTON_LEFTSTICK,
+        GAME_CONTROLLER_BUTTON_RIGHTSTICK,
+        GAME_CONTROLLER_BUTTON_LEFTSHOULDER,
+        GAME_CONTROLLER_BUTTON_RIGHTSHOULDER,
+        GAME_CONTROLLER_BUTTON_DPAD_UP,
+        GAME_CONTROLLER_BUTTON_DPAD_DOWN,
+        GAME_CONTROLLER_BUTTON_DPAD_LEFT,
+        GAME_CONTROLLER_BUTTON_DPAD_RIGHT,
+        GAME_CONTROLLER_BUTTON_MAX,
     };
 
 private:
     
-    MouseButton     SDLMouseButtonToMyButton(Uint8 mouseButton);
     KeyboardKey     SDLKeyToMyKey(SDL_Keycode key);
-    GamepadButton   SDLGamepadButtonToMyButton();
-
-    std::unordered_map<std::string, MouseButton> _mMouseButtonMap;
+    MouseButton     SDLMouseButtonToMyButton(Uint8 mouseButton);
+    GamepadButton   SDLGamepadButtonToMyButton(Uint8 button);
 
     std::unordered_map<std::string, KeyboardKey> _mKeyboardMap;
-
+    std::unordered_map<std::string, MouseButton> _mMouseButtonMap;
     std::unordered_map<std::string, GamepadButton> _mGamepadMap;
 
+    std::vector<SDL_GameController*> _mGameControllers;
     // So we need to map them correctly corrosponding to the SDL_KEY
     // then figure out how to connect the event occuring in SDL (when the key is pressed),
     //      to then fire our events.
     // We can "fire" an event whenever one of these things is triggered.
+
+    // Still needs work:
+    // Mouse movement? If connecting to a camera or something.
+    // Axis controls on the gamepad
 };
 
 #endif // INPUT_HPP

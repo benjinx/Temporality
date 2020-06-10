@@ -18,6 +18,23 @@ Input::~Input()
 
 }
 
+void Input::Init()
+{
+    // Controller
+    int const MAX_JOYSTICKS = SDL_NumJoysticks();
+
+    for (int i = 0; i < MAX_JOYSTICKS; ++i)
+    {
+        if (SDL_IsGameController(i))
+        {
+            _mGameControllers.push_back(SDL_GameControllerOpen(i));
+        }
+    }
+
+    for (size_t i = 0; i < _mGameControllers.size(); ++i)
+        LogInfo("CONTROLLER: %s\n", SDL_GameControllerName(_mGameControllers[i]));
+}
+
 void Input::ProcessEvent(SDL_Event* event)
 {
     if (event->type == SDL_KEYDOWN) //|| event->type == SDL_KEYUP)
@@ -368,9 +385,6 @@ void Input::ProcessEvent(SDL_Event* event)
                 LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
         }
-
-        // Handle Gamepad
-        auto gamepad = SDLGamepadButtonToMyButton();
     }
     else if (event->type == SDL_MOUSEBUTTONDOWN)
     {
@@ -382,18 +396,75 @@ void Input::ProcessEvent(SDL_Event* event)
         case MOUSE_BUTTON_UNKNOWN:
             LogInfo("Unknown Mouse Button: %d\n", event->button.button);
             break;
-
         case MOUSE_BUTTON_LEFT:
             LogInfo("Left Mouse Button: %d\n", event->button.button);
             break;
-
         case MOUSE_BUTTON_MIDDLE:
             LogInfo("Middle Mouse Button: %d\n", event->button.button);
             break;
-
         case MOUSE_BUTTON_RIGHT:
             LogInfo("Right Mouse Button: %d\n", event->button.button);
             break;
+        }
+    }
+    else if (event->type == SDL_CONTROLLERBUTTONDOWN)
+    {
+        // Handle Gamepad
+        auto gamepad = SDLGamepadButtonToMyButton(event->cbutton.button);
+
+        switch (gamepad)
+        {
+            case GAME_CONTROLLER_BUTTON_INVALID:
+                LogInfo("Controller Button Invalid: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_A:
+                LogInfo("Controller Button A: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_B:
+                LogInfo("Controller Button B: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_X:
+                LogInfo("Controller Button X: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_Y:
+                LogInfo("Controller Button Y: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_BACK:
+                LogInfo("Controller Button Back: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_GUIDE:
+                LogInfo("Controller Button Guide: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_START:
+                LogInfo("Controller Button Start: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_LEFTSTICK:
+                LogInfo("Controller Button Left Stick: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_RIGHTSTICK:
+                LogInfo("Controller Button Right Stick: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_LEFTSHOULDER:
+                LogInfo("Controller Button Left Shoulder: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_RIGHTSHOULDER:
+                LogInfo("Controller Button Right Shoulder: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_DPAD_UP:
+                LogInfo("Controller Button Dpad Up: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_DPAD_DOWN:
+                LogInfo("Controller Button Dpad Down: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_DPAD_LEFT:
+                LogInfo("Controller Button Dpad Left: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_DPAD_RIGHT:
+                LogInfo("Controller Button Dpad Right: %d\n", event->cbutton.button);
+                break;
+            case GAME_CONTROLLER_BUTTON_MAX:
+                LogInfo("Controller Button Max: %d\n", event->cbutton.button);
+                break;
         }
     }
 }
@@ -648,7 +719,44 @@ Input::MouseButton Input::SDLMouseButtonToMyButton(Uint8 mouseButton)
     return MOUSE_BUTTON_UNKNOWN;
 }
 
-Input::GamepadButton Input::SDLGamepadButtonToMyButton()
+Input::GamepadButton Input::SDLGamepadButtonToMyButton(Uint8 button)
 {
-    return LEFT;
+    switch (button)
+    {
+        case SDL_CONTROLLER_BUTTON_INVALID:
+            return GAME_CONTROLLER_BUTTON_INVALID;
+        case SDL_CONTROLLER_BUTTON_A:
+            return GAME_CONTROLLER_BUTTON_A;
+        case SDL_CONTROLLER_BUTTON_B:
+            return GAME_CONTROLLER_BUTTON_B;
+        case SDL_CONTROLLER_BUTTON_X:
+            return GAME_CONTROLLER_BUTTON_X;
+        case SDL_CONTROLLER_BUTTON_Y:
+            return GAME_CONTROLLER_BUTTON_Y;
+        case SDL_CONTROLLER_BUTTON_BACK:
+            return GAME_CONTROLLER_BUTTON_BACK;
+        case SDL_CONTROLLER_BUTTON_GUIDE:
+            return GAME_CONTROLLER_BUTTON_GUIDE;
+        case SDL_CONTROLLER_BUTTON_START:
+            return GAME_CONTROLLER_BUTTON_START;
+        case SDL_CONTROLLER_BUTTON_LEFTSTICK:
+            return GAME_CONTROLLER_BUTTON_LEFTSTICK;
+        case SDL_CONTROLLER_BUTTON_RIGHTSTICK:
+            return GAME_CONTROLLER_BUTTON_RIGHTSTICK;
+        case SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+            return GAME_CONTROLLER_BUTTON_LEFTSHOULDER;
+        case SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+            return GAME_CONTROLLER_BUTTON_RIGHTSHOULDER;
+        case SDL_CONTROLLER_BUTTON_DPAD_UP:
+            return GAME_CONTROLLER_BUTTON_DPAD_UP;
+        case SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+            return GAME_CONTROLLER_BUTTON_DPAD_DOWN;
+        case SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+            return GAME_CONTROLLER_BUTTON_DPAD_LEFT;
+        case SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+            return GAME_CONTROLLER_BUTTON_DPAD_RIGHT;
+        case SDL_CONTROLLER_BUTTON_MAX:
+            return GAME_CONTROLLER_BUTTON_MAX;
+    }
+    return GAME_CONTROLLER_BUTTON_INVALID;
 }

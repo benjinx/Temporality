@@ -90,7 +90,7 @@ bool App::Start()
     printf("Temporality Engine v%s\n\n", VERSION);
 
     // Init SDL
-    if (SDL_Init(SDL_INIT_VIDEO) > 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMECONTROLLER) > 0)
     {
         LogError("Failed to init SDL!\n");
         return false;
@@ -129,6 +129,9 @@ bool App::Start()
     // Register the options function into the UI
     //DevUI::RegisterOptionsFunc(&Scene::Options);
 
+    // Controller
+    _mInput.Init();
+    
     return true;
 }
 
