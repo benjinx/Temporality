@@ -6,6 +6,7 @@
 #include <Camera.hpp>
 #include <DevUI.hpp>
 #include <GameObject.hpp>
+#include <Input.hpp>
 #include <Light.hpp>
 #include <Log.hpp>
 #include <Material.hpp>

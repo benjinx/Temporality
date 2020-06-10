@@ -61,6 +61,9 @@ void App::Run()
                 }
                 break;
             }
+            
+            // Input
+            _mInput.ProcessEvent(&event);
         }
         //float currTime = (float)glfwGetTime();
         //float elapsed = currTime - prevTime;
@@ -110,8 +113,7 @@ bool App::Start()
         "shaders/defaultLighting.frag" }));
 
     // Clear Window
-    //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClearColor(1.0f, 0.0f, 0.0f, 1.0f);
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
     // Depth
     glEnable(GL_DEPTH_TEST);

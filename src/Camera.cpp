@@ -152,22 +152,22 @@ void Camera::HandleMovement(Direction dir, float dt)
 
     switch (dir)
     {
-    case FORWARD:
+    case Direction::FORWARD:
         SetPosition(GetPosition() + (GetForward() * velocity));
         break;
-    case BACKWARD:
+    case Direction::BACKWARD:
         SetPosition(GetPosition() - (GetForward() * velocity));
         break;
-    case LEFT:
+    case Direction::LEFT:
         SetPosition(GetPosition() - (glm::normalize(glm::cross(GetForward(), _mUp)) * velocity));
         break;
-    case RIGHT:
+    case Direction::RIGHT:
         SetPosition(GetPosition() + (glm::normalize(glm::cross(GetForward(), _mUp)) * velocity));
         break;
-    case UP:
+    case Direction::UP:
         SetPosition(GetPosition() + (glm::normalize(glm::cross(GetForward(), right)) * velocity));
         break;
-    case DOWN:
+    case Direction::DOWN:
         SetPosition(GetPosition() - (glm::normalize(glm::cross(GetForward(), right)) * velocity));
         break;
     default:

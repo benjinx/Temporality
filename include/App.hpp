@@ -4,6 +4,7 @@
 #include <Config.hpp>
 #include <Camera.hpp>
 #include <Scene.hpp>
+#include <Input.hpp>
 #include <Window.hpp>
 
 class Shader;
@@ -39,17 +40,20 @@ public:
     
     Camera* GetCurrentCamera() { return _mCurrentCamera; }
 
+    Input* GetInput() { return &_mInput; }
+
 private:
 
     static App* _sInst;
 
     void Update(float dt);
     void Render();
-    void HandleInput(float dt);
     void OpenGLInfo();
 
+    // Should change window to not be a pointer and have an init
     Window* _mWindow = nullptr;
     Scene* _mCurrentScene = nullptr;
+    Input _mInput;
     
     std::unordered_map<int, bool> _mInputMap;
 

@@ -5,16 +5,6 @@
 #include <GameObject.hpp>
 #include <Math.hpp>
 
-enum Direction
-{
-    FORWARD = 0,
-    BACKWARD,
-    LEFT,
-    RIGHT,
-    UP,
-    DOWN,
-};
-
 class Window;
 
 class Camera : public GameObject
@@ -24,6 +14,16 @@ public:
     enum Mode {
         Perspective,
         Orthographic,
+    };
+
+    enum Direction
+    {
+        FORWARD = 0,
+        BACKWARD,
+        LEFT,
+        RIGHT,
+        UP,
+        DOWN,
     };
     
     Camera();
