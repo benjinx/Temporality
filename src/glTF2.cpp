@@ -10,7 +10,7 @@
 #include <Camera.hpp>
 #include <Log.hpp>
 #include <glm/glm.hpp>
-#include <Model.hpp>
+#include <MeshComponent.hpp>
 
 #include <cstdint>
 #include <fstream>
@@ -730,8 +730,7 @@ namespace glTF2 {
 			int meshIndex = data.value("mesh", -1);
 			if (meshIndex >= 0) {
 				LogVerbose("Adding MeshComponent");
-                //actor->AddComponent(std::make_unique<MeshComponent>(meshes[meshIndex]));
-                gobj->SetModel(std::make_unique<Model>(meshes[meshIndex]));
+                gobj->AddComponent(std::make_unique<MeshComponent>(meshes[meshIndex]));
 			}
 
 			it = data.find("translation");
@@ -789,13 +788,14 @@ namespace glTF2 {
 		loadFile(const std::string& filename)
 	{
 		static auto error = std::make_tuple(json(), std::vector<std::vector<uint8_t>>(), "");
-		const auto& paths = Utils::GetAssetPaths();
+		const auto& paths = Utils::GetResourcePaths();
 
 		std::ifstream file;
 		std::string fullPath;
-		for (auto& p : paths) {
+		for (const auto& p : paths) {
 			fullPath = p + filename;
 
+            LogVerbose("Path: %s", p);
 			LogVerbose("Checking %s", fullPath);
 
 			file.open(fullPath.c_str(), std::ios::in | std::ios::binary);

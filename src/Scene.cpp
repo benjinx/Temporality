@@ -4,7 +4,7 @@
 #include <Camera.hpp>
 #include <Log.hpp>
 #include <Material.hpp>
-#include <Model.hpp>
+#include <MeshComponent.hpp>
 #include <Shader.hpp>
 #include <Utils.hpp>
 
@@ -57,14 +57,16 @@ bool Scene::Load(std::string filename)
 
 GameObject* Scene::AddGameObject(std::string name, std::unique_ptr<GameObject> gameObject)
 {
-    gameObject->SetName(name);
     _mChildren.push_back(std::move(gameObject));
+    _mChildren.back()->SetName(name);
+    _mChildren.back()->SetParent(this);
     return _mChildren.back().get();
 }
 
 GameObject* Scene::AddGameObject()
 {
     _mChildren.push_back(std::make_unique<GameObject>());
+    _mChildren.back()->SetParent(this);
     return _mChildren.back().get();
 }
 
@@ -72,12 +74,14 @@ GameObject* Scene::AddGameObject(std::string name)
 {
     _mChildren.push_back(std::make_unique<GameObject>());
     _mChildren.back()->SetName(name);
+    _mChildren.back()->SetParent(this);
     return _mChildren.back().get();
 }
 
 GameObject* Scene::AddGameObject(std::unique_ptr<GameObject> gobj)
 {
     _mChildren.push_back(std::move(gobj));
+    _mChildren.back()->SetParent(this);
     return _mChildren.back().get();
 }
 

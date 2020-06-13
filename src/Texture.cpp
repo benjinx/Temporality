@@ -94,42 +94,25 @@ bool Texture::Load(unsigned char* buffer, glm::ivec2 size, int comp, Options opt
 
     if (0 == _mglID)
     {
-        LogError("Failed to create GL Texture\n");
+        LogError("Failed to create GL Texture");
         return false;
     }
 
     glBindTexture(GL_TEXTURE_2D, _mglID);
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-    LogVerbose("Binding texture to id %u\n", _mglID);
-
-    stbi_set_flip_vertically_on_load(true);
-
-    stbi_uc* image_data = nullptr;
-    if (size.y == 0)
-    {
-        image_data = stbi_load_from_memory(buffer, size.x, &size.x, &size.y, &comp, STBI_rgb_alpha);
-    }
-    else
-    {
-        image_data = stbi_load_from_memory(buffer, size.x * size.y, &size.x, &size.y, &comp, STBI_rgb_alpha);
-    }
-
-    if (!image_data)
-    {
-        LogError("Image not loaded. %s\n", stbi_failure_reason());
-    }
+    LogVerbose("Binding texture to id %u", _mglID);
 
     // texture wrapping params
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, opts.WrapS);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, opts.WrapT);
 
     // texture filtering params
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, opts.MagFilter);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, opts.MinFilter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, opts.MinFilter);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, opts.MagFilter);
 
     // Create the image
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, size.x, size.y, 0, GL_RGBA, GL_UNSIGNED_BYTE, buffer);
     
     if (opts.Mipmap)
     {

@@ -11,8 +11,8 @@ class Mesh;
 
 namespace Utils
 {
-    void SetAssetPaths(const std::string& path);
-    std::string GetAssetPaths();
+    void SetAssetPath(const std::string& path);
+    std::string GetAssetPath();
     std::vector<std::string> GetResourcePaths();
     void CleanSlashes(std::string& path);
     std::string GetBasename(std::string path);

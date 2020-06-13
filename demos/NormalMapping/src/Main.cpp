@@ -4,7 +4,7 @@
 
 int main(int argc, char * argv[])
 {
-    Utils::SetAssetPaths(RESOURCE_PATH);
+    Utils::SetAssetPath(RESOURCE_PATH);
     const auto& paths = Utils::GetResourcePaths();
 
     App app;

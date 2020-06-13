@@ -28,24 +28,31 @@ GameObject::~GameObject()
 
 void GameObject::Update(const float dt)
 {
-    // Update all children
-    for (auto& gobj : _mChildren)
+    // Update
+    for (const auto& comp : _mComponents)
     {
-        gobj->Update(dt);
+        comp->Update(dt);
+    }
+
+    // Update all children
+    for (const auto& child : _mChildren)
+    {
+        child->Update(dt);
     }
 }
 
 void GameObject::Render()
 {
-    // Render all children
-    for (auto& gobj : _mChildren)
+    // Render
+    for (const auto& comp : _mComponents)
     {
-        gobj->Render();
+        comp->Render();
     }
 
-    if (_mShader && _mModel)
+    // Call render on all children
+    for (const auto& child : _mChildren)
     {
-        _mModel->Render(_mShader, GetWorldTransform());
+        child->Render();
     }
 }
 
@@ -145,6 +152,12 @@ glm::vec3 GameObject::GetWorldScale() const
     }
 
     return GetScale();
+}
+
+Component* GameObject::AddComponent(std::unique_ptr<Component> component) {
+    _mComponents.push_back(std::move(component));
+    _mComponents.back()->SetGameObject(this);
+    return _mComponents.back().get();
 }
 
 /*bool GameObject::Load(std::string filename)

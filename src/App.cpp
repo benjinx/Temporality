@@ -128,9 +128,6 @@ bool App::Start()
 
     // Register the options function into the UI
     //DevUI::RegisterOptionsFunc(&Scene::Options);
-
-    // Controller
-    _mInput.Init();
     
     return true;
 }

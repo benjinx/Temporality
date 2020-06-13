@@ -2,6 +2,7 @@
 
 #include <App.hpp>
 #include <Log.hpp>
+#include <cmath>
 
 Input::Input()
 {
@@ -18,21 +19,31 @@ Input::~Input()
 
 }
 
-void Input::Init()
+void Input::InitControllers(Sint32 controllerID)
 {
-    // Controller
     int const MAX_JOYSTICKS = SDL_NumJoysticks();
 
     for (int i = 0; i < MAX_JOYSTICKS; ++i)
     {
         if (SDL_IsGameController(i))
         {
-            _mGameControllers.push_back(SDL_GameControllerOpen(i));
+            _mGameControllers.emplace(controllerID, SDL_GameControllerOpen(i));
         }
     }
 
-    for (size_t i = 0; i < _mGameControllers.size(); ++i)
-        LogInfo("CONTROLLER: %s\n", SDL_GameControllerName(_mGameControllers[i]));
+    for (size_t j = 0; j < _mGameControllers.size(); ++j)
+        LogInfo("Controller Added: %d, %s\n", controllerID, SDL_GameControllerName(_mGameControllers[j]));
+
+}
+
+void Input::RemoveControllers(Sint32 controllerID)
+{
+    // Clear all controllers
+    _mGameControllers.clear();
+    LogInfo("All Controllers removed.\n");
+
+    // Readd all controllers
+    InitControllers(controllerID);
 }
 
 void Input::ProcessEvent(SDL_Event* event)
@@ -386,6 +397,14 @@ void Input::ProcessEvent(SDL_Event* event)
                 break;
         }
     }
+    else if (event->type == SDL_MOUSEMOTION)
+    {
+        // Add any interaction for camera movement etc here based on mouse movement
+    }
+    else if (event->type == SDL_MOUSEWHEEL)
+    {
+        // Add any interaction based on mouse wheel
+    }
     else if (event->type == SDL_MOUSEBUTTONDOWN)
     {
         // Handle Mouse
@@ -406,6 +425,18 @@ void Input::ProcessEvent(SDL_Event* event)
             LogInfo("Right Mouse Button: %d\n", event->button.button);
             break;
         }
+    }
+    else if (event->type == SDL_CONTROLLERDEVICEADDED)
+    {
+        InitControllers(event->cdevice.which);
+    }
+    else if (event->type == SDL_CONTROLLERDEVICEREMOVED)
+    {
+        RemoveControllers(event->cdevice.which);
+    }
+    else if (event->type == SDL_CONTROLLERDEVICEREMAPPED)
+    {
+        RemoveControllers(event->cdevice.which);
     }
     else if (event->type == SDL_CONTROLLERBUTTONDOWN)
     {
@@ -467,6 +498,66 @@ void Input::ProcessEvent(SDL_Event* event)
                 break;
         }
     }
+    else if (event->type == SDL_CONTROLLERAXISMOTION)
+    {
+        // Using the game controller and casting the axis we can find which one is being triggered.
+        Sint16 axis = SDL_GameControllerGetAxis(
+                    _mGameControllers[event->cdevice.which],
+                    (SDL_GameControllerAxis)event->caxis.axis);
+
+        //LogInfo("Axis value: %d\n", axis);
+        
+        // handle x motion w/ dead zone.
+        if ((SDL_GameControllerAxis)event->caxis.axis % 2 == 0)
+        {
+            // Left of the dead zone
+            if (axis < -JOYSTICK_DEAD_ZONE)
+            {
+                _mXDir = -1;
+            }
+            // Right of the dead zone
+            else if (axis > JOYSTICK_DEAD_ZONE)
+            {
+                _mXDir = 1;
+            }
+            else
+            {
+                _mXDir = 0;
+            }
+
+            LogInfo("xDir = %d\n", _mXDir);
+        }
+        // handle y motion w/ dead zone.
+        else if ((SDL_GameControllerAxis)event->caxis.axis % 2 == 1)
+        {
+            // Below the dead zone
+            if (axis < -JOYSTICK_DEAD_ZONE)
+            {
+                _mYDir = -1;
+            }
+            // Above the dead zone
+            else if (axis > JOYSTICK_DEAD_ZONE)
+            {
+                _mYDir = 1;
+            }
+            else
+            {
+                _mYDir = 0;
+            }
+
+            LogInfo("yDir = %d\n", _mYDir);
+        }
+
+        // formula: angle = atan2((double)yDir, (double)xDir) * (180/PI);
+        double angle = atan2((double)_mYDir, (double)_mXDir) * (180.0 / M_PI);
+
+        // Correct angle
+        if (_mXDir == 0 && _mYDir == 0)
+            angle = 0;
+
+        //LogInfo("Axis Angle: %d\n", angle);
+    }
+
 }
 
 Input::KeyboardKey Input::SDLKeyToMyKey(SDL_Keycode key)

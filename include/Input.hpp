@@ -12,7 +12,8 @@ public:
     ~Input();
 
     // 
-    void Init();
+    void InitControllers(Sint32 controllerID);
+    void RemoveControllers(Sint32 controllerID);
     void ProcessEvent(SDL_Event* event);
 
     // Need an event system
@@ -175,14 +176,16 @@ private:
     std::unordered_map<std::string, MouseButton> _mMouseButtonMap;
     std::unordered_map<std::string, GamepadButton> _mGamepadMap;
 
-    std::vector<SDL_GameController*> _mGameControllers;
+    std::unordered_map<Sint32, SDL_GameController*> _mGameControllers;
+
+    const int JOYSTICK_DEAD_ZONE = 8000;
+    int _mXDir = 0, _mYDir = 0;
     // So we need to map them correctly corrosponding to the SDL_KEY
     // then figure out how to connect the event occuring in SDL (when the key is pressed),
     //      to then fire our events.
     // We can "fire" an event whenever one of these things is triggered.
 
     // Still needs work:
-    // Mouse movement? If connecting to a camera or something.
     // Axis controls on the gamepad
 };
 

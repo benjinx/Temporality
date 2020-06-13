@@ -16,15 +16,6 @@ Mesh::Mesh(std::vector<Primitive>&& primitives)
 
 bool Mesh::LoadFromData(std::vector<Primitive>&& primitives)
 {
-    for (auto& p : primitives) {
-        if (!p.Shader) {
-
-            // Reconfigure this to give a shader to each one. okay.
-
-            p.Shader = App::Inst()->GetShader("defaultLighting");
-        }
-    }
-
     for (auto&& p : primitives) {
         _mPrimitives.push_back(std::move(p));
     }

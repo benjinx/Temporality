@@ -21,6 +21,7 @@ OPTION(BUILD_PACKAGES   "Build Packages"                                    OFF)
 
 OPTION(VERBOSE_LOGGING "Build Temporality with Verbose Logging enabled" OFF)
 IF(VERBOSE_LOGGING)
+    MESSAGE(STATUS "Verbose On.")
     ADD_DEFINITIONS(-DTEMPORALITY_ENABLE_VERBOSE_LOGGING)
 ENDIF()
 
