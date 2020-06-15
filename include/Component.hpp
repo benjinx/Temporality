@@ -5,7 +5,8 @@
 
 class GameObject;
 
-class Component {
+class Component 
+{
 public:
 
     DISALLOW_COPY_AND_ASSIGN(Component)

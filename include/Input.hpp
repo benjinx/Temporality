@@ -180,6 +180,8 @@ private:
 
     const int JOYSTICK_DEAD_ZONE = 8000;
     int _mXDir = 0, _mYDir = 0;
+    float _mLastMouseX = 0.0f, _mLastMouseY = 0.0f;
+    bool _mRightButtonDown = false;
     // So we need to map them correctly corrosponding to the SDL_KEY
     // then figure out how to connect the event occuring in SDL (when the key is pressed),
     //      to then fire our events.

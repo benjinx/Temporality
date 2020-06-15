@@ -19,25 +19,6 @@ void GameScene::Start()
     Light->SetName("Light");
     Light->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 
-    // Initialize Objs
-    Load("models/earth.glb");
-    Load("models/moon.glb");
-    Load("models/mars.glb");
-
-    auto Earth = FindGameObject("Earth");
-    auto Moon = FindGameObject("Moon");
-    auto Mars = FindGameObject("Mars");
-
-    Earth->SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
-    Earth->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
-    Earth->SetRotation(glm::vec3(0.0f, 180.0f, 0.0f));
-
-    Moon->SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
-    Moon->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
-
-    Mars->SetPosition(glm::vec3(10.0f, 0.0f, 0.0f));
-    Mars->SetScale(glm::vec3(1.2f, 1.2f, 1.2f));
-
     // Shaders
     printf("\nLoading Shaders\n");
 
@@ -50,12 +31,41 @@ void GameScene::Start()
         "shaders/normalMapping.vert",
         "shaders/normalMapping.frag" }));
 
-    Earth->SetShader(app->GetShader("normalMapping"));
-    Moon->SetShader(app->GetShader("normalMapping"));
-    Mars->SetShader(app->GetShader("normalMapping"));
+    // Initialize Objs
+    auto Earth = AddGameObject("Earth");
+    auto EarthMesh = (MeshComponent*)Earth->AddComponent(std::make_unique<MeshComponent>());
+    EarthMesh->SetShader(app->GetShader("normalMapping"));
+
+    auto Moon = AddGameObject("Moon");
+    auto MoonMesh = (MeshComponent*)Moon->AddComponent(std::make_unique<MeshComponent>());
+    MoonMesh->SetShader(app->GetShader("normalMapping"));
+
+    auto Mars = AddGameObject("Mars");
+    auto MarsMesh = (MeshComponent*)Mars->AddComponent(std::make_unique<MeshComponent>());
+    MarsMesh->SetShader(app->GetShader("normalMapping"));
+
+    // Scene Objs
+    if (EarthMesh->Load("models/earth.glb"))
+    {
+        Earth->SetPosition(glm::vec3(2.0f, 0.0f, 0.0f));
+        Earth->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+        Earth->SetRotation(glm::vec3(0.0f, 0.0f, 9.5f));
+    }
+
+    if (MoonMesh->Load("models/moon.glb"))
+    {
+        Moon->SetPosition(glm::vec3(-1.0f, 0.0f, 0.0f));
+        Moon->SetScale(glm::vec3(0.2f, 0.2f, 0.2f));
+    }
+
+    if (MarsMesh->Load("models/mars.glb"))
+    {
+        Mars->SetPosition(glm::vec3(10.0f, 0.0f, 0.0f));
+        Mars->SetScale(glm::vec3(1.2f, 1.2f, 1.2f));
+    }
 
     // UI
-    DevUI::Start();
+    //DevUI::Start();
 }
 
 void GameScene::Update(float dt)

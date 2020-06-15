@@ -1,6 +1,7 @@
 #include <Input.hpp>
 
 #include <App.hpp>
+#include <Camera.hpp>
 #include <Log.hpp>
 #include <cmath>
 
@@ -32,7 +33,7 @@ void Input::InitControllers(Sint32 controllerID)
     }
 
     for (size_t j = 0; j < _mGameControllers.size(); ++j)
-        LogInfo("Controller Added: %d, %s\n", controllerID, SDL_GameControllerName(_mGameControllers[j]));
+        LogInfo("Controller Added: %d, %s", controllerID, SDL_GameControllerName(_mGameControllers[j]));
 
 }
 
@@ -40,7 +41,7 @@ void Input::RemoveControllers(Sint32 controllerID)
 {
     // Clear all controllers
     _mGameControllers.clear();
-    LogInfo("All Controllers removed.\n");
+    LogInfo("All Controllers removed.");
 
     // Readd all controllers
     InitControllers(controllerID);
@@ -53,357 +54,519 @@ void Input::ProcessEvent(SDL_Event* event)
         // Handle Keyboard
         auto key = SDLKeyToMyKey(event->key.keysym.sym);
 
+        auto camera = App::Inst()->GetCurrentCamera();
+        auto dir = camera->GetDirection();
+
         // Then change the switch below to match ours
         switch (key)
         {
             case KEY_UNKNOWN:
-                LogInfo("Unknown Key: %d\n", event->key.keysym.sym);
+                //LogInfo("Unknown Key: %d", event->key.keysym.sym);
                 break;
             case KEY_RETURN:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_ESCAPE:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_BACKSPACE:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_TAB:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_SPACE:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_EXCLAIM:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_QUOTEDBL:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_HASH:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_PERCENT:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_DOLLAR:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_AMPERSAND:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_QUOTE:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_LEFTPAREN:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_RIGHTPAREN:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_ASTERISK:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_PLUS:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_COMMA:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_MINUS:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_PERIOD:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_SLASH:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_0:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_1:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_2:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_3:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_4:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_5:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_6:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_7:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_8:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_9:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_COLON:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_SEMICOLON:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_LESS:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_EQUALS:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_GREATER:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_QUESTION:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_AT:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_LEFTBRACKET:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_BACKSLASH:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_RIGHTBRACKET:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_CARET:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_UNDERSCORE:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_BACKQUOTE:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_A:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
+                camera->SetDirection({ -1, dir.y, dir.z });
                 break;
             case KEY_B:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_C:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_D:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
+                camera->SetDirection({ 1, dir.y, dir.z });
                 break;
             case KEY_E:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
+                camera->SetDirection({ dir.x, -1, dir.z });
                 break;
             case KEY_F:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_G:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_H:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_I:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_J:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_K:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_L:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_M:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_N:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_O:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_P:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_Q:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
+                camera->SetDirection({ dir.x, 1, dir.z });
                 break;
             case KEY_R:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_S:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
+                camera->SetDirection({ dir.x, dir.y, -1 });
                 break;
             case KEY_T:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_U:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_V:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_W:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
+                camera->SetDirection({ dir.x, dir.y, 1 });
                 break;
             case KEY_X:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_Y:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_Z:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_CAPSLOCK:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_F1:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_F2:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_F3:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_F4:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_F5:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
+                App::Inst()->ReloadShaders();
                 break;
             case KEY_F6:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_F7:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_F8:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_F9:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_F10:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_F11:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_F12:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_PRINTSCREEN:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
+                App::Inst()->Screenshot();
                 break;
             case KEY_SCROLLLOCK:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_PAUSE:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_INSERT:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_HOME:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_PAGEUP:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_DELETE:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_END:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_PAGEDOWN:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_RIGHT:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_LEFT:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_DOWN:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_UP:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_NUMLOCKCLEAR:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_DIVIDE:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_MULTIPLY:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_MINUS:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_PLUS:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_ENTER:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_1:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_2:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_3:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_4:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_5:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_6:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_7:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_8:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_9:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_0:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
             case KEY_KP_PERIOD:
-                LogInfo("Key: %d\n", event->key.keysym.sym);
                 break;
+        }
+    }
+    else if (event->type == SDL_KEYUP)
+    {
+        // Handle Keyboard
+        auto key = SDLKeyToMyKey(event->key.keysym.sym);
+
+        auto camera = App::Inst()->GetCurrentCamera();
+        auto dir = camera->GetDirection();
+
+        // Then change the switch below to match ours
+        switch (key)
+        {
+        case KEY_UNKNOWN:
+            //LogInfo("Unknown Key: %d", event->key.keysym.sym);
+            break;
+        case KEY_RETURN:
+            break;
+        case KEY_ESCAPE:
+            break;
+        case KEY_BACKSPACE:
+            break;
+        case KEY_TAB:
+            break;
+        case KEY_SPACE:
+            break;
+        case KEY_EXCLAIM:
+            break;
+        case KEY_QUOTEDBL:
+            break;
+        case KEY_HASH:
+            break;
+        case KEY_PERCENT:
+            break;
+        case KEY_DOLLAR:
+            break;
+        case KEY_AMPERSAND:
+            break;
+        case KEY_QUOTE:
+            break;
+        case KEY_LEFTPAREN:
+            break;
+        case KEY_RIGHTPAREN:
+            break;
+        case KEY_ASTERISK:
+            break;
+        case KEY_PLUS:
+            break;
+        case KEY_COMMA:
+            break;
+        case KEY_MINUS:
+            break;
+        case KEY_PERIOD:
+            break;
+        case KEY_SLASH:
+            break;
+        case KEY_0:
+            break;
+        case KEY_1:
+            break;
+        case KEY_2:
+            break;
+        case KEY_3:
+            break;
+        case KEY_4:
+            break;
+        case KEY_5:
+            break;
+        case KEY_6:
+            break;
+        case KEY_7:
+            break;
+        case KEY_8:
+            break;
+        case KEY_9:
+            break;
+        case KEY_COLON:
+            break;
+        case KEY_SEMICOLON:
+            break;
+        case KEY_LESS:
+            break;
+        case KEY_EQUALS:
+            break;
+        case KEY_GREATER:
+            break;
+        case KEY_QUESTION:
+            break;
+        case KEY_AT:
+            break;
+        case KEY_LEFTBRACKET:
+            break;
+        case KEY_BACKSLASH:
+            break;
+        case KEY_RIGHTBRACKET:
+            break;
+        case KEY_CARET:
+            break;
+        case KEY_UNDERSCORE:
+            break;
+        case KEY_BACKQUOTE:
+            break;
+        case KEY_A:
+            camera->SetDirection({ 0, dir.y, dir.z });
+            break;
+        case KEY_B:
+            break;
+        case KEY_C:
+            break;
+        case KEY_D:
+            camera->SetDirection({ 0, dir.y, dir.z });
+            break;
+        case KEY_E:
+            camera->SetDirection({ dir.x, 0, dir.z });
+            break;
+        case KEY_F:
+            break;
+        case KEY_G:
+            break;
+        case KEY_H:
+            break;
+        case KEY_I:
+            break;
+        case KEY_J:
+            break;
+        case KEY_K:
+            break;
+        case KEY_L:
+            break;
+        case KEY_M:
+            break;
+        case KEY_N:
+            break;
+        case KEY_O:
+            break;
+        case KEY_P:
+            break;
+        case KEY_Q:
+            camera->SetDirection({ dir.x, 0, dir.z });
+            break;
+        case KEY_R:
+            break;
+        case KEY_S:
+            camera->SetDirection({ dir.x, dir.y, 0 });
+            break;
+        case KEY_T:
+            break;
+        case KEY_U:
+            break;
+        case KEY_V:
+            break;
+        case KEY_W:
+            camera->SetDirection({ dir.x, dir.y, 0 });
+            break;
+        case KEY_X:
+            break;
+        case KEY_Y:
+            break;
+        case KEY_Z:
+            break;
+        case KEY_CAPSLOCK:
+            break;
+        case KEY_F1:
+            break;
+        case KEY_F2:
+            break;
+        case KEY_F3:
+            break;
+        case KEY_F4:
+            break;
+        case KEY_F5:
+            break;
+        case KEY_F6:
+            break;
+        case KEY_F7:
+            break;
+        case KEY_F8:
+            break;
+        case KEY_F9:
+            break;
+        case KEY_F10:
+            break;
+        case KEY_F11:
+            break;
+        case KEY_F12:
+            break;
+        case KEY_PRINTSCREEN:
+            break;
+        case KEY_SCROLLLOCK:
+            break;
+        case KEY_PAUSE:
+            break;
+        case KEY_INSERT:
+            break;
+        case KEY_HOME:
+            break;
+        case KEY_PAGEUP:
+            break;
+        case KEY_DELETE:
+            break;
+        case KEY_END:
+            break;
+        case KEY_PAGEDOWN:
+            break;
+        case KEY_RIGHT:
+            break;
+        case KEY_LEFT:
+            break;
+        case KEY_DOWN:
+            break;
+        case KEY_UP:
+            break;
+        case KEY_NUMLOCKCLEAR:
+            break;
+        case KEY_KP_DIVIDE:
+            break;
+        case KEY_KP_MULTIPLY:
+            break;
+        case KEY_KP_MINUS:
+            break;
+        case KEY_KP_PLUS:
+            break;
+        case KEY_KP_ENTER:
+            break;
+        case KEY_KP_1:
+            break;
+        case KEY_KP_2:
+            break;
+        case KEY_KP_3:
+            break;
+        case KEY_KP_4:
+            break;
+        case KEY_KP_5:
+            break;
+        case KEY_KP_6:
+            break;
+        case KEY_KP_7:
+            break;
+        case KEY_KP_8:
+            break;
+        case KEY_KP_9:
+            break;
+        case KEY_KP_0:
+            break;
+        case KEY_KP_PERIOD:
+            break;
         }
     }
     else if (event->type == SDL_MOUSEMOTION)
     {
-        // Add any interaction for camera movement etc here based on mouse movement
+        float x = (float)event->motion.x;
+        float y = (float)event->motion.y;
+
+        if (_mLastMouseX < 0 && _mLastMouseY < 0) {
+            _mLastMouseX = (float)x;
+            _mLastMouseY = (float)y;
+        }
+
+        float xoffset = (float)x - _mLastMouseX;
+        float yoffset = _mLastMouseY - (float)y;
+
+        _mLastMouseX = (float)x;
+        _mLastMouseY = (float)y;
+
+        if (_mRightButtonDown)
+            App::Inst()->GetCurrentCamera()->HandleRotation(xoffset, yoffset);
+
     }
     else if (event->type == SDL_MOUSEWHEEL)
     {
         // Add any interaction based on mouse wheel
+        //App::Inst()->GetCurrentCamera()->HandleFoV((float)xoffset, (float)yoffset);
     }
     else if (event->type == SDL_MOUSEBUTTONDOWN)
     {
@@ -413,16 +576,38 @@ void Input::ProcessEvent(SDL_Event* event)
         switch (mouse)
         {
         case MOUSE_BUTTON_UNKNOWN:
-            LogInfo("Unknown Mouse Button: %d\n", event->button.button);
+            //LogInfo("Unknown Mouse Button Down: %d", event->button.button);
             break;
         case MOUSE_BUTTON_LEFT:
-            LogInfo("Left Mouse Button: %d\n", event->button.button);
+            //LogInfo("Left Mouse Button Down: %d", event->button.button);
             break;
         case MOUSE_BUTTON_MIDDLE:
-            LogInfo("Middle Mouse Button: %d\n", event->button.button);
+            //LogInfo("Middle Mouse Button Down: %d", event->button.button);
             break;
         case MOUSE_BUTTON_RIGHT:
-            LogInfo("Right Mouse Button: %d\n", event->button.button);
+            //LogInfo("Right Mouse Button Down: %d", event->button.button);
+            _mRightButtonDown = true;
+            break;
+        }
+    }
+    else if (event->type == SDL_MOUSEBUTTONUP)
+    {
+        // Handle Mouse
+        auto mouse = SDLMouseButtonToMyButton(event->button.button);
+
+        switch (mouse)
+        {
+        case MOUSE_BUTTON_UNKNOWN:
+            break;
+        case MOUSE_BUTTON_LEFT:
+            //LogInfo("Left Mouse Button Up: %d", event->button.button);
+            break;
+        case MOUSE_BUTTON_MIDDLE:
+            //LogInfo("Middle Mouse Button Up: %d", event->button.button);
+            break;
+        case MOUSE_BUTTON_RIGHT:
+            //LogInfo("Right Mouse Button Up: %d", event->button.button);
+            _mRightButtonDown = false;
             break;
         }
     }
@@ -446,55 +631,55 @@ void Input::ProcessEvent(SDL_Event* event)
         switch (gamepad)
         {
             case GAME_CONTROLLER_BUTTON_INVALID:
-                LogInfo("Controller Button Invalid: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Invalid: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_A:
-                LogInfo("Controller Button A: %d\n", event->cbutton.button);
+                LogInfo("Controller Button A: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_B:
-                LogInfo("Controller Button B: %d\n", event->cbutton.button);
+                LogInfo("Controller Button B: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_X:
-                LogInfo("Controller Button X: %d\n", event->cbutton.button);
+                LogInfo("Controller Button X: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_Y:
-                LogInfo("Controller Button Y: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Y: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_BACK:
-                LogInfo("Controller Button Back: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Back: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_GUIDE:
-                LogInfo("Controller Button Guide: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Guide: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_START:
-                LogInfo("Controller Button Start: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Start: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_LEFTSTICK:
-                LogInfo("Controller Button Left Stick: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Left Stick: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_RIGHTSTICK:
-                LogInfo("Controller Button Right Stick: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Right Stick: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_LEFTSHOULDER:
-                LogInfo("Controller Button Left Shoulder: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Left Shoulder: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_RIGHTSHOULDER:
-                LogInfo("Controller Button Right Shoulder: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Right Shoulder: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_DPAD_UP:
-                LogInfo("Controller Button Dpad Up: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Dpad Up: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_DPAD_DOWN:
-                LogInfo("Controller Button Dpad Down: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Dpad Down: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_DPAD_LEFT:
-                LogInfo("Controller Button Dpad Left: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Dpad Left: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_DPAD_RIGHT:
-                LogInfo("Controller Button Dpad Right: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Dpad Right: %d", event->cbutton.button);
                 break;
             case GAME_CONTROLLER_BUTTON_MAX:
-                LogInfo("Controller Button Max: %d\n", event->cbutton.button);
+                LogInfo("Controller Button Max: %d", event->cbutton.button);
                 break;
         }
     }
@@ -525,7 +710,7 @@ void Input::ProcessEvent(SDL_Event* event)
                 _mXDir = 0;
             }
 
-            LogInfo("xDir = %d\n", _mXDir);
+            LogInfo("xDir = %d", _mXDir);
         }
         // handle y motion w/ dead zone.
         else if ((SDL_GameControllerAxis)event->caxis.axis % 2 == 1)
@@ -545,7 +730,7 @@ void Input::ProcessEvent(SDL_Event* event)
                 _mYDir = 0;
             }
 
-            LogInfo("yDir = %d\n", _mYDir);
+            LogInfo("yDir = %d", _mYDir);
         }
 
         // formula: angle = atan2((double)yDir, (double)xDir) * (180/PI);

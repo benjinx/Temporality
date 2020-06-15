@@ -234,6 +234,8 @@ namespace glTF2 {
 							const auto& bufferView = bufferViews[bufferViewIndex];
 							const auto& buffer = buffers[bufferView.buffer];
 
+                            stbi_set_flip_vertically_on_load(true);
+
 							image.data.reset(stbi_load_from_memory(
 								buffer.data() + bufferView.byteOffset,
 								bufferView.byteLength,
@@ -458,6 +460,7 @@ namespace glTF2 {
 							valIt = group.find("baseColorTexture");
 							if (valIt != group.end()) {
                                 material->SetMap(Material::BASE_COLOR, parseTexture(valIt.value()));
+                                material->SetMap(Material::DIFFUSE, parseTexture(valIt.value()));
 							}
 
 							valIt = group.find("metallicFactor");

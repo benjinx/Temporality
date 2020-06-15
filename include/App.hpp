@@ -59,9 +59,6 @@ private:
 
     // List of Shaders
     std::unordered_map<std::string, Shader*> _mShaders;
-    
-    float _mLastMX = -1, 
-          _mLastMY = -1;
 
     Camera* _mCurrentCamera = nullptr;
 

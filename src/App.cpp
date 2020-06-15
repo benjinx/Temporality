@@ -6,6 +6,7 @@
 #include <Shader.hpp>
 
 #include <iostream>
+#include <chrono>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_sdl.h>
@@ -34,53 +35,81 @@ App::~App() {
 
 void App::Run()
 {
-    const float targetElapsed = 1.0f / TARGET_FPS;
+    using namespace std::chrono;
+    typedef duration<double, std::milli> double_ms;
+    typedef duration<float, std::milli> float_ms;
 
-    float prevTime = 0.0f;
+    high_resolution_clock::time_point prevTime = high_resolution_clock::now();
     float frameTime = 0.0f;
+
     SDL_Window* sdlWindow = _mWindow->GetSDLWindow();
     SDL_Event event;
 
+    unsigned long frames = 0;
+
+    double_ms frameDelay = 1000ms / TARGET_FPS;
+    double_ms fpsDelay = 250ms; // Update FPS 4 times per second
+
+    double_ms frameElap = 0ms;
+    double_ms fpsElap = 0ms;
+
     while (_mRunning)
     {
-        while (SDL_PollEvent(&event)) 
+        high_resolution_clock::time_point currTime = high_resolution_clock::now();
+        auto elapsed = duration_cast<double_ms>(currTime - prevTime);
+
+        while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_QUIT)
             {
                 _mRunning = false;
             }
-            
+
             switch (event.type)
             {
-                case SDL_WINDOWEVENT:
+            case SDL_WINDOWEVENT:
+            {
+                if (event.window.event == SDL_WINDOWEVENT_RESIZED)
                 {
-                    if (event.window.event == SDL_WINDOWEVENT_RESIZED)
-                    {
-                        _mWindow->OnWindowResize({ event.window.data1, event.window.data2 });
-                    }
+                    _mWindow->OnWindowResize({ event.window.data1, event.window.data2 });
                 }
-                break;
             }
-            
+            break;
+            }
+
             // Input
             _mInput.ProcessEvent(&event);
         }
-        //float currTime = (float)glfwGetTime();
-        //float elapsed = currTime - prevTime;
-        //frameTime += elapsed;
-        //float dt = elapsed / targetElapsed;
 
-        //HandleInput(dt);
-        //Update(dt);
+        frameTime += elapsed.count();
+        float dt = duration_cast<float_ms>(elapsed / frameDelay.count()).count();
+        prevTime = currTime;
 
-        /*if (frameTime >= targetElapsed)
+        // Update
+        Update(dt);
+
+
+        // Render
+        frameElap += elapsed;
+        if (frameDelay <= frameElap)
         {
-            frameTime = 0.0f;
-            Render();
-        }*/
+            frameElap = 0ms;
+            ++frames;
 
-        Render();
-        //prevTime = currTime;
+            Render();
+
+        }
+
+        // Display FPS
+        fpsElap += elapsed;
+        if (fpsDelay <= fpsElap)
+        {
+            static char buffer[128];
+            float fps = (float)(frames / fpsElap.count()) * 1000.f;
+            sprintf(buffer, "Temporality ~ BC/DC Games - FPS: %0.2f", fps);
+            SDL_SetWindowTitle(_mWindow->GetSDLWindow(), buffer);
+        }
+
     }
 }
 
@@ -134,6 +163,7 @@ bool App::Start()
 
 void App::Update(float dt)
 {
+    _mCurrentCamera->HandleMovement(dt);
     _mCurrentScene->Update(dt);
 }
 
@@ -243,33 +273,3 @@ void App::ReloadShaders()
     for (auto s : _mShaders)
         s.second->Reload();
 }
-
-//void App::HandleInput(float dt)
-//{
-//    if (_mInputMap[GLFW_KEY_W])
-//        _mCurrentCamera->HandleMovement(Direction::FORWARD, dt);
-//    if (_mInputMap[GLFW_KEY_S])
-//        _mCurrentCamera->HandleMovement(Direction::BACKWARD, dt);
-//    if (_mInputMap[GLFW_KEY_A])
-//        _mCurrentCamera->HandleMovement(Direction::LEFT, dt);
-//    if (_mInputMap[GLFW_KEY_D])
-//        _mCurrentCamera->HandleMovement(Direction::RIGHT, dt);
-//    if (_mInputMap[GLFW_KEY_Q])
-//        _mCurrentCamera->HandleMovement(Direction::UP, dt);
-//    if (_mInputMap[GLFW_KEY_E])
-//        _mCurrentCamera->HandleMovement(Direction::DOWN, dt);
-//}
-
-//switch (key) {
-//case GLFW_KEY_F5: // Reloads shaders
-//{
-//    std::cout << "\nReloading shaders!\n";
-//    ReloadShaders();
-//    break;
-//}
-//
-//case GLFW_KEY_PRINT_SCREEN:
-//{
-//    Screenshot();
-//    break;
-//}

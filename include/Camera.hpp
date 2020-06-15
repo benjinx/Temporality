@@ -15,17 +15,7 @@ public:
         Perspective,
         Orthographic,
     };
-
-    enum Direction
-    {
-        FORWARD = 0,
-        BACKWARD,
-        LEFT,
-        RIGHT,
-        UP,
-        DOWN,
-    };
-    
+        
     Camera();
 
     virtual ~Camera() = default;
@@ -73,8 +63,13 @@ public:
 
     void SetAutoResize(bool autoResize);
 
-    void HandleMovement(Direction dir, float dt);
+    void HandleMovement(float dt);
     void HandleRotation(float xoffset, float yoffset);
+
+    //void SetCameraDirection(Direction direction);
+
+    void SetDirection(glm::vec3 dir);
+    glm::vec3& GetDirection() { return _mDirection; }
 
 private:
 
@@ -99,6 +94,8 @@ private:
     float _mRotateSpeed = 0.001f;
 
     bool _mInverse = false;
+
+    glm::vec3 _mDirection = glm::vec3(0);
 };
 
 #endif // CAMERA_H
