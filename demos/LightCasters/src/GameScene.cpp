@@ -21,45 +21,6 @@ void GameScene::Start()
     Light->SetName("Light");
     Light->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
 
-    // Scene Objs
-    Load("models/Primitives/pPlane.glb");
-    Load("models/Primitives/pSphere.glb");
-    Load("models/Primitives/pCube.glb");
-    Load("models/Primitives/pTorus.glb");
-    //_mGameObjects.emplace("Torus2", new GameObject("models/Primitives/pTorus.glb"));
-    //_mGameObjects.emplace("Torus3", new GameObject("models/Primitives/pTorus.glb"));
-
-    // Initialize Objs
-
-    auto Plane = FindGameObject("Plane");
-    auto Sphere = FindGameObject("sphere");
-    auto Cube = FindGameObject("cube");
-    auto Torus = FindGameObject("Torus");
-
-    Plane->SetPosition(glm::vec3(0.0f, -2.5f, 0.0f));
-    Plane->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
-    Plane->SetScale(glm::vec3(5.0f, 5.0f, 5.0f));
-
-    Sphere->SetPosition(glm::vec3(1.5f, 0.0f, 2.0f));
-    Sphere->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
-    Sphere->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
-
-    Cube->SetPosition(glm::vec3(-1.5f, -1.0f, 0.0f));
-    Cube->SetRotation(glm::vec3(20.0f, 0.0f, 20.0f));
-    Cube->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
-
-    Torus->SetPosition(glm::vec3(1.0f, 1.0f, -1.0f));
-    Torus->SetRotation(glm::vec3(-90.0f, -90.0f, 0.0f));
-    Torus->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
-
-    //_mGameObjects["Torus2"]->SetPosition(glm::vec3(4.0f, 1.0f, -1.0f));
-    //_mGameObjects["Torus2"]->SetRotation(glm::vec3(-90.0f, 0.0f, 90.0f));
-    //_mGameObjects["Torus2"]->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
-
-    //_mGameObjects["Torus3"]->SetPosition(glm::vec3(8.0f, 1.0f, -1.0f));
-    //_mGameObjects["Torus3"]->SetRotation(glm::vec3(-90.0f, 0.0f, 90.0f));
-    //_mGameObjects["Torus3"]->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
-
     // Shaders
     printf("\nLoading Shaders\n");
 
@@ -72,12 +33,51 @@ void GameScene::Start()
         "shaders/lightCasters.vert",
         "shaders/lightCasters.frag" }));
 
-    Plane->SetShader(app->GetShader("lightCasters"));
-    Sphere->SetShader(app->GetShader("lightCasters"));
-    Cube->SetShader(app->GetShader("lightCasters"));
-    Torus->SetShader(app->GetShader("lightCasters"));
-    //_mGameObjects["Torus2"]->SetShader(app->GetShader("lightCasters"));
-    //_mGameObjects["Torus3"]->SetShader(app->GetShader("lightCasters"));
+    // Initialize Objs
+    auto Plane = AddGameObject("Plane");
+    auto PlaneMesh = (MeshComponent*)Plane->AddComponent(std::make_unique<MeshComponent>());
+    PlaneMesh->SetShader(app->GetShader("lightCasters"));
+
+    auto Sphere = AddGameObject("Sphere");
+    auto SphereMesh = (MeshComponent*)Sphere->AddComponent(std::make_unique<MeshComponent>());
+    SphereMesh->SetShader(app->GetShader("lightCasters"));
+
+    auto Cube = AddGameObject("Cube");
+    auto CubeMesh = (MeshComponent*)Cube->AddComponent(std::make_unique<MeshComponent>());
+    CubeMesh->SetShader(app->GetShader("lightCasters"));
+
+    auto Torus = AddGameObject("Torus");
+    auto TorusMesh = (MeshComponent*)Torus->AddComponent(std::make_unique<MeshComponent>());
+    TorusMesh->SetShader(app->GetShader("lightCasters"));
+
+    // Scene Objs
+    if (PlaneMesh->Load("models/Primitives/pPlane.glb"))
+    {
+        Plane->SetPosition(glm::vec3(0.0f, -2.5f, 0.0f));
+        Plane->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+        Plane->SetScale(glm::vec3(5.0f, 5.0f, 5.0f));
+    }
+
+    if (SphereMesh->Load("models/Primitives/pSphere.glb"))
+    {
+        Sphere->SetPosition(glm::vec3(1.5f, 0.0f, 2.0f));
+        Sphere->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
+        Sphere->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+    }
+
+    if (CubeMesh->Load("models/Primitives/pCube.glb"))
+    {
+        Cube->SetPosition(glm::vec3(-1.5f, -1.0f, 0.0f));
+        Cube->SetRotation(glm::vec3(20.0f, 0.0f, 20.0f));
+        Cube->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+    }
+
+    if (TorusMesh->Load("models/Primitives/pTorus.glb"))
+    {
+        Torus->SetPosition(glm::vec3(1.0f, 1.0f, -1.0f));
+        Torus->SetRotation(glm::vec3(-90.0f, -90.0f, 0.0f));
+        Torus->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
+    }
 
     // UI
    /* DevUI::Start();
@@ -86,10 +86,6 @@ void GameScene::Start()
         ImGui::Checkbox("Enable Point Light", &_mPointLight);
         ImGui::Checkbox("Enable Spot Light", &_mSpotLight);
     });*/
-
-    // Camera
-    glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
-    glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 void GameScene::Update(float dt)
@@ -169,7 +165,7 @@ void GameScene::Update(float dt)
     // Rotate objects
     FindGameObject("Sphere")->SetRotation(FindGameObject("Sphere")->GetWorldRotation()
         * glm::angleAxis(glm::radians(-0.25f) * dt, glm::vec3(1.0f, 0.0f, 0.0f)));
-    FindGameObject("cube")->SetRotation(FindGameObject("cube")->GetWorldRotation()
+    FindGameObject("Cube")->SetRotation(FindGameObject("Cube")->GetWorldRotation()
         * glm::angleAxis(glm::radians(-0.25f) * dt, glm::vec3(0.0f, 1.0f, 0.0f)));
     FindGameObject("Torus")->SetRotation(FindGameObject("Torus")->GetWorldRotation()
         * glm::angleAxis(glm::radians(-0.25f) * dt, glm::vec3(0.0f, 0.0f, 1.0f)));
