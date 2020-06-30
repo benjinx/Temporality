@@ -37,7 +37,7 @@ private:
     std::vector<std::shared_ptr<Mesh>> _mMeshes;
 
     // Shader
-    Shader* _mShader;
+    Shader* _mShader = nullptr;
 
 };
 

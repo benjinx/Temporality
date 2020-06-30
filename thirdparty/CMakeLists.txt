@@ -7,6 +7,27 @@ INCLUDE(ExternalProject)
 
 PROJECT(thirdparty)
 
+# nlohmann_json
+
+SET(nlohmann_json_ROOT       ${CMAKE_BINARY_DIR}/nlohmann_json)
+SET(nlohmann_json_SOURCE_DIR ${CMAKE_BINARY_DIR}/nlohmann_json_src)
+
+FIND_PACKAGE(nlohmann_json CONFIG QUIET)
+
+IF(NOT nlohmann_json_FOUND)
+    ExternalProject_Add(
+        thirdparty-nlohmann_json
+        GIT_REPOSITORY      "https://github.com/nlohmann/json.git"
+        GIT_TAG             "master"
+        GIT_SHALLOW         TRUE
+        SOURCE_DIR          ${nlohmann_json_SOURCE_DIR}
+        CMAKE_ARGS          -DCMAKE_INSTALL_PREFIX=${nlohmann_json_ROOT}
+                            -DJSON_BuildTests=OFF
+        BUILD_COMMAND       ""
+        UPDATE_COMMAND      ""
+    )
+ENDIF()
+
 # glm
 
 SET(glm_ROOT       ${CMAKE_BINARY_DIR}/glm)

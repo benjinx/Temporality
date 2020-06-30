@@ -14,11 +14,17 @@
 MeshComponent::MeshComponent(std::shared_ptr<Mesh> mesh)
 {
     _mMeshes.push_back(mesh);
+
+    // This is a current default for sceneloading the actual shader should be in the glTF file later
+    _mShader = App::Inst()->GetShader("defaultLighting");
 }
 
 MeshComponent::MeshComponent(std::vector<std::shared_ptr<Mesh>> meshes)
 {
     _mMeshes = meshes;
+
+    // This is a current default for sceneloading the actual shader should be in the glTF file later
+    _mShader = App::Inst()->GetShader("defaultLighting");
 }
 
 void MeshComponent::Render()

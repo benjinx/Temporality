@@ -11,6 +11,7 @@
 #include <Log.hpp>
 #include <glm/glm.hpp>
 #include <MeshComponent.hpp>
+#include <Light.hpp>
 
 #include <cstdint>
 #include <fstream>
@@ -338,6 +339,46 @@ namespace glTF2 {
 		float zfar;
 		float znear;
 	};
+
+    struct light_t {
+        glm::vec3 color;
+        int intensity;
+        std::string type;
+
+        float innerConeAngle;
+        float outerConeAngle;
+    };
+
+    std::vector<light_t> loadLights(const json& data)
+    {
+        std::vector<light_t> lights;
+        const auto& lightData = data["extensions"]["KHR_lights_punctual"]["lights"];
+
+        if (lightData.is_array())
+        {
+            for (const auto& it : lightData)
+            {
+                lights.push_back(light_t{});
+
+                auto& light = lights.back();
+
+                light.intensity = it.value("intensity", 1);
+                light.type = it.value("type", "point");
+
+                light.color = parseVec3(it.find("color").value(), glm::vec3(1));
+                
+                auto spot = it.find("spot");
+
+                if (spot != it.end())
+                {
+                    light.innerConeAngle = spot.value().value("innerConeAngle", 0.1f);
+                    light.outerConeAngle = spot.value().value("outerConeAngle", 0.1f);
+                }
+            }
+        }
+
+        return lights;
+    }
 
 	std::vector<camera_t> loadCameras(const json& data)
 	{
@@ -687,17 +728,58 @@ namespace glTF2 {
 	std::vector<std::unique_ptr<GameObject>> loadNodes(
 		const json& data,
 		const std::vector<camera_t>& cameras,
+        const std::vector<light_t>& lights,
 		const std::vector<std::shared_ptr<Mesh>>& meshes)
 	{
 		std::vector<std::unique_ptr<GameObject>> gobjs;
 
-		auto loadNode = [cameras, meshes](const json& data) -> std::unique_ptr < GameObject > {
+		std::function<std::unique_ptr<GameObject>(const json&, const json&)>
+        loadNode = [&](const json& nodes, const json& data)
+        -> std::unique_ptr<GameObject>
+        {
             GameObject * gobj = nullptr;
 
 			auto it = data.begin();
 
-			int cameraIndex = data.value("camera", -1);
-			if (cameraIndex >= 0) {
+            int cameraIndex = data.value("camera", -1);
+
+            auto lightPath = "/extensions/KHR_lights_punctual/light"_json_pointer;
+
+            if (data.contains(lightPath))
+            {
+                auto lightIndexObject = data[lightPath];
+
+                int lightIndex = lightIndexObject.get<int>();
+
+                const auto& lightData = lights[lightIndex];
+
+                Light * light = nullptr;
+
+                if (lightData.type == "point")
+                {
+                    PointLight * pointLight = new PointLight();
+                    light = (Light*)pointLight;
+                }
+                else if (lightData.type == "directional")
+                {
+                    DirectionalLight * directionalLight = new DirectionalLight();
+                    light = (Light*)directionalLight;
+                }
+                else if (lightData.type == "spot")
+                {
+                    SpotLight * spotLight = new SpotLight();
+                    light = (Light*)spotLight;
+                    spotLight->SetCutOff(lightData.innerConeAngle);
+                    spotLight->SetOuterCutOff(lightData.outerConeAngle);
+                }
+
+                light->SetIntensity(lightData.intensity);
+                light->SetColor(lightData.color);
+
+                gobj = light;
+            }
+            else if (cameraIndex >= 0)
+            {
 				Camera * camera = new Camera();
 				const auto& c = cameras[cameraIndex];
 				if (c.type == "perspective") {
@@ -751,6 +833,14 @@ namespace glTF2 {
 				gobj->SetScale(parseVec3(it.value(), gobj->GetScale()));
 			}
 
+            it = data.find("children");
+            if (it != data.end()) {
+                for (const auto& child : it.value())
+                {
+                    gobj->AddChild(loadNode(nodes, nodes[child.get<int>()]));
+                }
+            }
+
 			return std::unique_ptr<GameObject>(gobj);
 		};
 
@@ -775,7 +865,7 @@ namespace glTF2 {
 
 					if (object.is_object()) {
 						LogVerbose("glTF node %s", object.value("name", ""));
-						auto gobj = loadNode(object);
+						auto gobj = loadNode(array, object);
 						if (gobj) {
 							gobjs.push_back(std::move(gobj));
 						}
@@ -898,11 +988,14 @@ namespace glTF2 {
 			}
 		}
 
+        // Should take both into some list then compare required to used and log an error if we don't have the right ones.
+
 		if (auto it = data.find("extensionsRequired"); it != data.end()) {
 			const auto& array = it.value();
 			if (array.is_array()) {
-				for (const auto& ext : array) {
-					LogError("Missing glTF required extension '%s'", ext);
+				for (const auto& extension : array) {
+					//LogError("Missing glTF required extension '%s'", extension);
+                    LogInfo("glTF Required Extension found: %s", extension);
 				}
 			}
 		}
@@ -910,11 +1003,14 @@ namespace glTF2 {
 		if (auto it = data.find("extensionsUsed"); it != data.end()) {
 			const auto& array = it.value();
 			if (array.is_array()) {
-				for (const auto& ext : array) {
-					LogWarn("Missing glTF extension '%s'", ext);
+				for (const auto& extension : array) {
+					//LogWarn("Missing glTF extension '%s'", extension);
+                    LogInfo("glTF Extension found: %s", extension);
 				}
 			}
 		}
+
+        ////
 
 		return std::make_tuple(data, dataChunks, dir);
 	}
@@ -935,7 +1031,8 @@ namespace glTF2 {
 		const auto& cameras = loadCameras(data);
 		const auto& materials = loadMaterials(data, textures);
 		const auto& meshes = loadMeshes(data, bufferViews, buffers, accessors, materials);
-		auto gobjs = loadNodes(data, cameras, meshes);
+        const auto& lights = loadLights(data);
+		auto gobjs = loadNodes(data, cameras, lights, meshes);
 
 		//DuskBenchEnd("glTF2::LoadSceneFromFile");
 		return gobjs;

@@ -3,6 +3,7 @@
 
 #include <Config.hpp>
 #include <Utils.hpp>
+#include <nlohmann/json.hpp>
 
 #include <cstdio> // for printf, vsnprintf
 
@@ -43,10 +44,17 @@ static auto LogWrap(const T& v) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-function"
 
-    template <> 
-    auto LogWrap<std::string>(const std::string& v) {
-        return v.c_str();
-    }
+template <> 
+auto LogWrap<std::string>(const std::string& v) {
+    return v.c_str();
+}
+
+template <>
+inline auto LogWrap<nlohmann::json>(const nlohmann::json& v) {
+    static std::string str;
+    str = v.get<std::string>();
+    return str.c_str();
+}
     
 #pragma clang diagnostic pop
 

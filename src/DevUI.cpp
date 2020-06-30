@@ -15,9 +15,9 @@ std::vector<std::function<void()>> _OptionsFuncs;
 
 void DevUI::Start()
 {
-    /*ImGui::CreateContext();
-    ImGui_ImplSDL2_InitForOpenGL(App::Inst()->GetWindow()->GetSDLWindow(), App::Inst()->GetWindow()->GetGLContext());
-    ImGui_ImplOpenGL3_Init("#version 150");*/
+    //ImGui::CreateContext();
+    //ImGui_ImplSDL2_InitForOpenGL(App::Inst()->GetWindow()->GetSDLWindow(), App::Inst()->GetWindow()->GetGLContext());
+    //ImGui_ImplOpenGL3_Init("#version 150");
 }
 
 void DevUI::Render()
@@ -81,5 +81,5 @@ void DevUI::Render()
 
 void DevUI::RegisterOptionsFunc(std::function<void()> func)
 {
-    //_OptionsFuncs.push_back(func);
+    _OptionsFuncs.push_back(func);
 }

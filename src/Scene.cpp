@@ -2,6 +2,7 @@
 
 #include <App.hpp>
 #include <Camera.hpp>
+#include <glTF2.hpp>
 #include <Log.hpp>
 #include <Material.hpp>
 #include <MeshComponent.hpp>
@@ -9,10 +10,6 @@
 #include <Utils.hpp>
 
 #include <imgui/imgui.h>
-
-#include <nlohmann/json.hpp>
-
-#include <stb/stb_image.h>
 
 bool Scene::_sShowAxis = false;
 
@@ -45,14 +42,24 @@ void Scene::Render()
     }
 }
 
-bool Scene::Load(std::string filename)
+bool Scene::LoadScene(std::string filename)
 {
-    bool loaded = false;//GameObject::Load(filename);
+    std::vector<std::unique_ptr<GameObject>> loadedGobjs = glTF2::LoadSceneFromFile(filename);
 
-    if (loaded)
-        return true;
-    
-    return false;
+    for (int i = 0; i < loadedGobjs.size(); ++i)
+    {
+        AddGameObject(std::move(loadedGobjs[i]));
+
+        // This will work if we have names from parsing.
+        //AddGameObject(loadedGobjs[i]->GetName(), std::move(loadedGobjs[i]));
+    }
+
+    if (loadedGobjs.empty())
+    {
+        return false;
+    }
+
+    return true;
 }
 
 GameObject* Scene::AddGameObject(std::string name, std::unique_ptr<GameObject> gameObject)

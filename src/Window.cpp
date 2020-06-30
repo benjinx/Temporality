@@ -17,7 +17,7 @@ Window::Window(int width, int height)
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
 
-    LogInfo("Creating SDL2 Window.\n");
+    LogInfo("Creating SDL2 Window.");
 
     _mWindow = SDL_CreateWindow(
         "Temporality ~ BC/DC Games", 
@@ -28,23 +28,23 @@ Window::Window(int width, int height)
 
     if (!_mWindow)
     {
-        LogError("Failed to create SDL2 Window.\n");
+        LogError("Failed to create SDL2 Window.");
         // I need to quit my project here
     }
 
-    LogLoad("SDL2 Window created successfully.\n\n");
+    LogLoad("SDL2 Window created successfully.");
 
-    LogLoad("Creating SDL2 GL Context.\n");
+    LogInfo("Creating SDL2 GL Context.");
 
     _mGLContext = SDL_GL_CreateContext(_mWindow);
 
     if (!_mGLContext)
     {
-        LogError("Failed to create SDL2 GL Context.\n");
+        LogError("Failed to create SDL2 GL Context.");
         // I need to quit my project here
     }
 
-    LogLoad("SDL2 GL Context created successfully.\n\n");
+    LogLoad("SDL2 GL Context created successfully.\n");
 
     gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress);
     glViewport(0, 0, width, height);

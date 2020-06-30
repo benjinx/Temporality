@@ -7,8 +7,7 @@ int main(int argc, char * argv[])
     Utils::SetAssetPath(RESOURCE_PATH);
     const auto& paths = Utils::GetResourcePaths();
     for (auto& p : paths) {
-        //printf("%s\n", p.c_str());
-        LogInfo("%s\n", p);
+        LogInfo("%s", p);
     }
 
     App app;
