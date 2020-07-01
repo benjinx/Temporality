@@ -3,6 +3,8 @@
 #include <App.hpp>
 #include <Camera.hpp>
 #include <Log.hpp>
+#include <DevUI.hpp>
+
 #include <cmath>
 
 Input::Input()
@@ -314,6 +316,7 @@ void Input::ProcessEvent(SDL_Event* event)
         case KEY_RETURN:
             break;
         case KEY_ESCAPE:
+            DevUI::settingsSelected = !DevUI::settingsSelected;
             break;
         case KEY_BACKSPACE:
             break;
@@ -460,8 +463,10 @@ void Input::ProcessEvent(SDL_Event* event)
         case KEY_F1:
             break;
         case KEY_F2:
+            DevUI::consoleSelected = !DevUI::consoleSelected;
             break;
         case KEY_F3:
+            DevUI::optionsSelected = !DevUI::optionsSelected;
             break;
         case KEY_F4:
             break;
@@ -478,6 +483,7 @@ void Input::ProcessEvent(SDL_Event* event)
         case KEY_F10:
             break;
         case KEY_F11:
+            DevUI::showDemoWindow = !DevUI::showDemoWindow;
             break;
         case KEY_F12:
             break;

@@ -17,7 +17,6 @@
 #include <ScriptHost.hpp>
 #include <Shader.hpp>
 #include <Texture.hpp>
-#include <UI.hpp> // TODO: Remove
 #include <Utils.hpp>
 #include <Window.hpp>
 

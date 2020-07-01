@@ -25,7 +25,8 @@ const float TARGET_FPS = 60.0f;
 App::~App() {
     DeleteShaders();
 
-    //ImGui_ImplSDL2_Shutdown();
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplSDL2_Shutdown();
 
     delete _mWindow;
     _mWindow = nullptr;
@@ -81,7 +82,7 @@ void App::Run()
             _mInput.ProcessEvent(&event);
         }
 
-        frameTime += elapsed.count();
+        frameTime += (float)elapsed.count();
         float dt = duration_cast<float_ms>(elapsed / frameDelay.count()).count();
         prevTime = currTime;
 
@@ -157,6 +158,9 @@ bool App::Start()
 
     // Register the options function into the UI
     DevUI::RegisterOptionsFunc(&Scene::Options);
+
+    // UI
+    DevUI::Start();
     
     return true;
 }
@@ -173,7 +177,7 @@ void App::Render()
 
     _mCurrentScene->Render();
 
-    //DevUI::Render();
+    DevUI::Render();
 
     _mWindow->Present();
 }

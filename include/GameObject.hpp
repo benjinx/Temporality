@@ -101,18 +101,5 @@ private:
 
     // Components
     std::vector<std::unique_ptr<Component>> _mComponents;
-
-   /* // Load Materials
-    std::unique_ptr<Material> processMaterial(const aiScene * scene, std::string dir, aiMaterial* material);
-
-    // Part of loading function
-    std::unique_ptr<GameObject> processNode(const aiScene * scene, std::string dir, aiNode* node, std::unordered_map<std::string, std::unique_ptr<GameObject>>& mapOfLights, std::unordered_map<std::string, std::unique_ptr<GameObject>>& mapOfCameras);
-
-    // Load Mesh
-    std::unique_ptr<Mesh> processMesh(const aiScene * scene, std::string dir, aiMesh* mesh);
-
-    // process textures
-    std::unique_ptr<Texture> processTexture(const aiScene * scene, std::string dir, const aiString& filename);
-    */
 };
 #endif // GAMEOBJECT_HPP

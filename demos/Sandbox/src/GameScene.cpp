@@ -50,9 +50,6 @@ void GameScene::Start()
     Camera * camera = (Camera *)AddGameObject("Camera", std::make_unique<Camera>());
     camera->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
     App::Inst()->SetCurrentCamera(camera);
-
-    // UI
-    DevUI::Start();
 }
 
 void GameScene::Update(float dt)

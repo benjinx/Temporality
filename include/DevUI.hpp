@@ -11,6 +11,15 @@ namespace DevUI
     void Render();
 
     void RegisterOptionsFunc(std::function<void()> func);
+
+    extern bool consoleSelected;
+    extern bool optionsSelected;
+    extern bool settingsSelected;
+    extern bool showMainMenuBar;
+    extern bool showDemoWindow;
+    extern bool showAxis;
+
+    extern float objectColor[3];
 }
 
 #endif // DEVUI_H
