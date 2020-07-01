@@ -1,8 +1,8 @@
 #ifndef GLTF2_HPP
 #define GLTF2_HPP
 
+#include <GameObject.hpp>
 #include <Mesh.hpp>
-#include <Gameobject.hpp>
 
 #include <string>
 #include <vector>

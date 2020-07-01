@@ -4,9 +4,9 @@
 #include <Utils.hpp>
 #include <nlohmann/json.hpp>
 #include <Material.hpp>
-#include <Mesh.hpp>
+//#include <Mesh.hpp>
 #include <Texture.hpp>
-#include <GameObject.hpp>
+//#include <GameObject.hpp>
 #include <Camera.hpp>
 #include <Log.hpp>
 #include <glm/glm.hpp>
