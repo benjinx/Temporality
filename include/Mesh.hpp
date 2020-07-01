@@ -23,8 +23,7 @@ public:
         GLenum      Type;
         GLsizei     Offset;
 
-        std::shared_ptr<Material> Material;
-        Shader* Shader;
+        std::shared_ptr<Material> _Material;
     };
 
 

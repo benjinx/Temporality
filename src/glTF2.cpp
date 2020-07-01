@@ -662,7 +662,6 @@ namespace glTF2 {
 							(GLenum)indexAccessor.componentType,
 							(GLsizei)indexAccessor.byteOffset,
 							material,
-							nullptr,
 						});
 					}
 				}

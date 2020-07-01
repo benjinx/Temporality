@@ -43,9 +43,9 @@ void Mesh::Render(Shader * shader, glm::mat4 modelMat)
 
     for (const auto& p : _mPrimitives)
     {
-        if (p.Material != nullptr)
+        if (p._Material != nullptr)
         {
-            p.Material->Bind(shader);
+            p._Material->Bind(shader);
         }
 
         glBindVertexArray(p.VAO);
