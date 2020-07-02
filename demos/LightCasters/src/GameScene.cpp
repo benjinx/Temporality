@@ -16,11 +16,6 @@ void GameScene::Start()
     camera->SetPosition(glm::vec3(0.0f, 0.0f, 5.0f));
     App::Inst()->SetCurrentCamera(camera);
 
-    // Light Source
-    auto Light = AddGameObject();
-    Light->SetName("Light");
-    Light->SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-
     // Shaders
     printf("\nLoading Shaders\n");
 
@@ -78,14 +73,34 @@ void GameScene::Start()
         Torus->SetRotation(glm::vec3(-90.0f, -90.0f, 0.0f));
         Torus->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
     }
+    
+    // Lights
+
+    auto dirLight = AddGameObject("dLight", std::make_unique<DirectionalLight>());
+    dirLight->SetPosition(glm::vec3(0.0f));
+    dirLight->SetRotation(glm::vec3(-0.2f, -1.0f, -0.3f));
+
+    auto pLight = AddGameObject("pLight",
+        std::make_unique<PointLight>(
+            glm::vec3(0.0f, 0.0f, 0.0f),
+            1.0f,
+            0.09f,
+            0.032f
+        ));
+    
+    auto sLight = AddGameObject("sLight",
+        std::make_unique<SpotLight>(
+            App::Inst()->GetCurrentCamera()->GetPosition(),
+            glm::cos(glm::radians(12.5f)),
+            glm::cos(glm::radians(17.5f))
+        ));
 
     // UI
-   /* DevUI::Start();
     DevUI::RegisterOptionsFunc([this]() {
         ImGui::Checkbox("Enable Directional Light", &_mDirLight);
         ImGui::Checkbox("Enable Point Light", &_mPointLight);
         ImGui::Checkbox("Enable Spot Light", &_mSpotLight);
-    });*/
+    });
 }
 
 void GameScene::Update(float dt)
@@ -112,52 +127,45 @@ void GameScene::Update(float dt)
 
     // Directional Lighting
     // Set Directional Light Position
-    DirectionalLight dirLight(glm::vec3(-0.2f, -1.0f, -0.3f));
     if (_mDirLight)
     {
         lightCasters->SetBool("lightCheck.Directional", true);
-        lightCasters->SetVec4("dirLight.direction", glm::vec4(dirLight.GetDirection(), 0.0f));
+                
+        glm::vec3 dir = FindGameObject("dLight")->GetWorldRotation() * Utils::GetWorldForward();
+        lightCasters->SetVec4("dirLight.direction", glm::vec4(dir, 0.0f));
     }
     else
         lightCasters->SetBool("lightCheck.Directional", false);
 
     // Point Lighting
-    // Set attenuation values
-    PointLight pointLight(FindGameObject("Light")->GetPosition(),
-                        1.0f,
-                        0.09f,
-                        0.032f);
     if (_mPointLight)
     {
+        auto pLight = (PointLight*)FindGameObject("pLight");
+
         lightCasters->SetBool("lightCheck.Point", true);
-        lightCasters->SetFloat("pointLight.constant", pointLight.GetConstant());
-        lightCasters->SetFloat("pointLight.linear", pointLight.GetLinear());
-        lightCasters->SetFloat("pointLight.quadratic", pointLight.GetQuadratic());
+        lightCasters->SetFloat("pointLight.constant", pLight->GetConstant());
+        lightCasters->SetFloat("pointLight.linear", pLight->GetLinear());
+        lightCasters->SetFloat("pointLight.quadratic", pLight->GetQuadratic());
 
-        lightCasters->SetVec4("pointLight.position", glm::vec4(pointLight.GetPosition(), 1.0f));
-
-        //lightDir = glm::vec4(-0.2f, -1.0f, -0.3f, 1.0f);
-        //lightCasters->SetVec4("pointLight.direction", lightDir);
+        lightCasters->SetVec4("pointLight.position", glm::vec4(pLight->GetPosition(), 1.0f));
     }
     else
         lightCasters->SetBool("lightCheck.Point", false);
 
     // Spotlight Lighting
-    SpotLight spotLight(App::Inst()->GetCurrentCamera()->GetPosition(),
-                        App::Inst()->GetCurrentCamera()->GetForward(), 
-                        glm::cos(glm::radians(12.5f)),
-                        glm::cos(glm::radians(17.5f)));
     if (_mSpotLight)
     {
+        auto sLight = (SpotLight*)FindGameObject("sLight");
+
         lightCasters->SetBool("lightCheck.Spot", true);
-        lightCasters->SetVec3("spotlight.position", spotLight.GetPosition());
+        lightCasters->SetVec3("spotlight.position", sLight->GetPosition());
 
         // Change 0.0f to 1.0f to just enable spotlight
-        glm::vec4 camFront = glm::vec4(spotLight.GetDirection(), 1.0f);
+        glm::vec4 camFront = glm::vec4(App::Inst()->GetCurrentCamera()->GetForward(), 1.0f);
         lightCasters->SetVec4("spotlight.direction", camFront);
 
-        lightCasters->SetFloat("spotlight.cutoff", spotLight.GetCutOff());
-        lightCasters->SetFloat("spotlight.outerCutoff", spotLight.GetOuterCutOff());
+        lightCasters->SetFloat("spotlight.cutoff", sLight->GetCutOff());
+        lightCasters->SetFloat("spotlight.outerCutoff", sLight->GetOuterCutOff());
     }
     else
         lightCasters->SetBool("lightCheck.Spot", false);
@@ -168,5 +176,5 @@ void GameScene::Update(float dt)
     FindGameObject("Cube")->SetRotation(FindGameObject("Cube")->GetWorldRotation()
         * glm::angleAxis(glm::radians(-0.25f) * dt, glm::vec3(0.0f, 1.0f, 0.0f)));
     FindGameObject("Torus")->SetRotation(FindGameObject("Torus")->GetWorldRotation()
-        * glm::angleAxis(glm::radians(-0.25f) * dt, glm::vec3(0.0f, 0.0f, 1.0f)));
+        * glm::angleAxis(glm::radians(-0.25f) * dt, glm::vec3(0.0f, 1.0f, 1.0f)));
 }

@@ -32,9 +32,6 @@ void GameScene::Start()
         logo->SetPosition(glm::vec3(0.0f, 0.0f, 3.0f));
         logo->SetRotation(glm::angleAxis(glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
     }
-
-    // UI
-    //DevUI::Start();
 }
 
 void GameScene::Update(float dt)

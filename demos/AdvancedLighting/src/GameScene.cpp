@@ -73,9 +73,6 @@ void GameScene::Start()
         Torus->SetRotation(glm::vec3(-90.0f, -90.0f, 0.0f));
         Torus->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
     }
-
-    // UI
-    //DevUI::Start();
 }
 
 void GameScene::Update(float dt)

@@ -73,9 +73,6 @@ void GameScene::Start()
         Torus->SetRotation(glm::vec3(-90.0f, -90.0f, 0.0f));
         Torus->SetScale(glm::vec3(0.5f, 0.5f, 0.5f));
     }
-    
-    // UI
-    //DevUI::Start();
 }
 
 void GameScene::Update(float dt)
@@ -104,7 +101,7 @@ void GameScene::Update(float dt)
     glm::vec4 lightPos = glm::vec4(FindGameObject("Light")->GetPosition(), 1.0f);
     basicLighting->SetVec4("lightVec", lightPos);
 
-    glm::vec3 objColor = glm::vec3(UI::objectColor[0], UI::objectColor[1], UI::objectColor[2]);
+    glm::vec3 objColor = glm::vec3(DevUI::objectColor[0], DevUI::objectColor[1], DevUI::objectColor[2]);
     basicLighting->SetVec3("objectColor", objColor);
 
     // Rotate objects

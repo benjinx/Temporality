@@ -1,7 +1,5 @@
 #include "GameScene.hpp"
 
-#include "UI.hpp"
-
 void GameScene::Start()
 {
     Scene::Start();
@@ -63,9 +61,6 @@ void GameScene::Start()
         Mars->SetPosition(glm::vec3(10.0f, 0.0f, 0.0f));
         Mars->SetScale(glm::vec3(1.2f, 1.2f, 1.2f));
     }
-
-    // UI
-    //DevUI::Start();
 }
 
 void GameScene::Update(float dt)
@@ -123,7 +118,7 @@ void GameScene::Update(float dt)
     glm::vec3 newPos = glm::vec3(x, 0.0f, -z);
     
     FindGameObject("Moon")->SetPosition(newPos);
-
+    
     _mMarsAngle += 0.5f * dt;
 
     if (_mMarsAngle > 360.0f)
