@@ -73,7 +73,9 @@ void DevUI::Render()
         ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing(); ImGui::Spacing();
 
         if (ImGui::Button("Quit"))
+        {
             App::Inst()->Quit();
+        }
         ImGui::End();
     }
 

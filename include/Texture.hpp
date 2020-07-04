@@ -28,18 +28,18 @@ public:
     };
 
     Texture() = default;
-    Texture(const std::string& filename, Options = Options());
-    Texture(unsigned char* data, glm::ivec2 size, int comp = 4, Options = Options());
+    Texture(const std::string& filename, Options opts = Options());
+    Texture(unsigned char* data, glm::ivec2 size, int comp = 4, Options opts = Options());
     Texture(GLuint&& id, glm::ivec2 size);
     Texture(Texture&& rhs);
 
     ~Texture();
 
     // Load from a file
-    bool Load(const std::string& filename, Options = Options());
+    bool Load(const std::string& filename, Options opts = Options());
 
     // Load from a buffer
-    bool Load(unsigned char* buffer, glm::ivec2 size, int comp = 4, Options = Options());
+    bool Load(unsigned char* buffer, glm::ivec2 size, int comp = 4, Options opts = Options());
 
     void Bind();
 
