@@ -73,6 +73,7 @@ void App::Run()
                 if (event.window.event == SDL_WINDOWEVENT_RESIZED)
                 {
                     _mWindow->OnWindowResize({ event.window.data1, event.window.data2 });
+                    _mCurrentCamera->SetAspect({ event.window.data1, event.window.data2 });
                 }
             }
             break;

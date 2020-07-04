@@ -86,15 +86,41 @@ void GameScene::Start()
         "images/skyboxes/demo/top.jpg",
         "images/skyboxes/demo/bottom.jpg",
         "images/skyboxes/demo/front.jpg",
-        "images/skyboxes/demo/back.jpg",};
+        "images/skyboxes/demo/back.jpg",
+    };
+
+    std::vector<std::string> faces2 = {
+        "images/skyboxes/hw_lagoon/right.tga",
+        "images/skyboxes/hw_lagoon/left.tga",
+        "images/skyboxes/hw_lagoon/top.tga",
+        "images/skyboxes/hw_lagoon/bottom.tga",
+        "images/skyboxes/hw_lagoon/front.tga",
+        "images/skyboxes/hw_lagoon/back.tga",
+    };
+
+    std::vector<std::string> faces3 = {
+        "images/skyboxes/ame_nebula/right.tga",
+        "images/skyboxes/ame_nebula/left.tga",
+        "images/skyboxes/ame_nebula/top.tga",
+        "images/skyboxes/ame_nebula/bottom.tga",
+        "images/skyboxes/ame_nebula/front.tga",
+        "images/skyboxes/ame_nebula/back.tga",
+    };
 
     cubemapTexture = LoadCubemap(faces);
 
     ////////////////////////////////////////////////
 
-    auto cube = Load("models/Primitives/pCube.glb");
+    auto Cube = AddGameObject("Cube");
+    auto CubeMesh = (MeshComponent*)Cube->AddComponent(std::make_unique<MeshComponent>());
+    CubeMesh->SetShader(app->GetShader("defaultLighting"));
 
-
+    if (CubeMesh->Load("models/Primitives/pCube.glb"))
+    {
+        //Cube->SetPosition(glm::vec3(-1.5f, -1.0f, 0.0f));
+        //Cube->SetRotation(glm::vec3(20.0f, 0.0f, 20.0f));
+        //Cube->SetScale(glm::vec3(1.0f, 1.0f, 1.0f));
+    }
 
     // UI
     DevUI::Start();
@@ -160,12 +186,12 @@ unsigned int GameScene::LoadCubemap(std::vector<std::string> faces)
             {
                 glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
                 stbi_image_free(data);
-                LogLoad("Cubemap texture Loaded at path: %s\n", fullFilename.c_str());
+                LogLoad("Cubemap texture Loaded at path: %s", fullFilename.c_str());
                 break;
             }
             else
             {
-                LogWarn("Cubemap texture failed to load at path: %s\n", fullFilename.c_str());
+                LogWarn("Cubemap texture failed to load at path: %s", fullFilename.c_str());
                 stbi_image_free(data);
             }
         }
