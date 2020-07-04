@@ -109,8 +109,6 @@ void GameScene::Start()
 
     cubemapTexture = LoadCubemap(faces);
 
-    ////////////////////////////////////////////////
-
     auto Cube = AddGameObject("Cube");
     auto CubeMesh = (MeshComponent*)Cube->AddComponent(std::make_unique<MeshComponent>());
     CubeMesh->SetShader(app->GetShader("defaultLighting"));
