@@ -37,8 +37,6 @@ public:
     void CreateSkybox(std::vector<std::string> faces);
 
 private:
-    static bool _sShowAxis;
-
     glm::mat4 _mSceneTransform = glm::mat4(1);
 
     Skybox* _mSkybox;

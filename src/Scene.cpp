@@ -2,6 +2,7 @@
 
 #include <App.hpp>
 #include <Camera.hpp>
+#include <DevUI.hpp>
 #include <glTF2.hpp>
 #include <Log.hpp>
 #include <Material.hpp>
@@ -10,8 +11,6 @@
 #include <Utils.hpp>
 
 #include <imgui/imgui.h>
-
-bool Scene::_sShowAxis = false;
 
 void Scene::Update(float dt)
 {
@@ -33,7 +32,7 @@ void Scene::Render()
 {
     GameObject::Render();
 
-    if (_sShowAxis)
+    if (DevUI::showAxis)
     {
         RenderAxis();
 
@@ -109,5 +108,5 @@ void Scene::CreateSkybox(std::vector<std::string> faces)
 
 void Scene::Options()
 {
-    ImGui::Checkbox("Show GameObject Axis", &_sShowAxis);
+    ImGui::Checkbox("Show GameObject Axis", &DevUI::showAxis);
 }

@@ -15,7 +15,7 @@ bool DevUI::optionsSelected = false;
 bool DevUI::settingsSelected = false;
 bool DevUI::showMainMenuBar = true;
 bool DevUI::showDemoWindow = false;
-bool DevUI::showAxis = true;
+bool DevUI::showAxis = false;
 float DevUI::objectColor[3] = { 1.0f, 1.0f, 1.0f };
 
 void DevUI::Start()
