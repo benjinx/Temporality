@@ -35,6 +35,9 @@ void Scene::Render()
 
     if (_sShowAxis)
     {
+        RenderAxis();
+
+        // Render the childrens
         for (auto& gameObject : _mChildren)
         {
             RenderAxis();
@@ -92,7 +95,19 @@ GameObject* Scene::AddGameObject(std::unique_ptr<GameObject> gobj)
     return _mChildren.back().get();
 }
 
+
+void Scene::CreateSkybox(std::vector<std::string> faces)
+{
+    auto skybox = std::make_unique<Skybox>();
+
+    skybox->LoadCubemap(faces);
+
+    _mSkybox = skybox.get();
+
+    AddGameObject(std::move(skybox));
+}
+
 void Scene::Options()
 {
-    //ImGui::Checkbox("Show GameObject Axis", &_sShowAxis);
+    ImGui::Checkbox("Show GameObject Axis", &_sShowAxis);
 }

@@ -55,7 +55,9 @@ void GameObject::Render()
 void GameObject::RenderAxis()
 {
     if (_mSceneAxis == nullptr)
+    {
         _mSceneAxis = new Axis();
+    }
 
     // Render the gobjs axis
     _mSceneAxis->Render(GetWorldTransform());

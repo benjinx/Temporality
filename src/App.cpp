@@ -143,6 +143,10 @@ bool App::Start()
         "shaders/defaultLighting.vert",
         "shaders/defaultLighting.frag" }));
 
+    AddShader("skybox", new Shader({
+        "shaders/skybox.vert",
+        "shaders/skybox.frag" }));
+
     // Clear Window
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
