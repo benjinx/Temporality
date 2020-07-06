@@ -39,7 +39,7 @@ public:
 private:
     glm::mat4 _mSceneTransform = glm::mat4(1);
 
-    Skybox* _mSkybox;
+    std::unique_ptr<Skybox> _mSkybox;
 };
 
 #endif // SCENE_H

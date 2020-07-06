@@ -42,6 +42,11 @@ void Scene::Render()
             RenderAxis();
         }
     }
+
+    if (_mSkybox != nullptr)
+    {
+        _mSkybox->Render();
+    }
 }
 
 bool Scene::LoadScene(std::string filename)
@@ -97,13 +102,11 @@ GameObject* Scene::AddGameObject(std::unique_ptr<GameObject> gobj)
 
 void Scene::CreateSkybox(std::vector<std::string> faces)
 {
-    auto skybox = std::make_unique<Skybox>();
+    _mSkybox = std::make_unique<Skybox>();
 
-    skybox->LoadCubemap(faces);
+    _mSkybox->LoadCubemap(faces);
 
-    _mSkybox = skybox.get();
-
-    AddGameObject(std::move(skybox));
+    //AddGameObject(std::move(skybox));
 }
 
 void Scene::Options()
