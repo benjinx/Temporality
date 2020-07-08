@@ -6,6 +6,7 @@
 #include <GameObject.hpp>
 #include <Mesh.hpp>
 #include <Skybox.hpp>
+#include <Shader.hpp>
 
 #include <memory>
 #include <unordered_map>
@@ -35,6 +36,7 @@ public:
     GameObject* AddGameObject(std::unique_ptr<GameObject> gobj);
 
     void CreateSkybox(std::vector<std::string> faces);
+    Skybox* GetSkybox() { return _mSkybox.get(); }
 
 private:
     glm::mat4 _mSceneTransform = glm::mat4(1);

@@ -152,7 +152,7 @@ bool App::Start()
 
     // Depth
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LEQUAL);
+    glDepthFunc(GL_LESS);
 
     // Blend
     glEnable(GL_BLEND);

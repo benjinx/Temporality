@@ -21,7 +21,7 @@ void Material::Bind(Shader* shader)
     {
         shader->SetBool("material." + GetHasMapVariableName(tex.first), true);
         shader->SetInt("material." + GetMapVariableName(tex.first), tex.first);
-        glActiveTexture(GL_TEXTURE0 + tex.first);
+        glActiveTexture(GL_TEXTURE1 + tex.first);
         tex.second->Bind();
     }
 }

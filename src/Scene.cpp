@@ -56,9 +56,6 @@ bool Scene::LoadScene(std::string filename)
     for (int i = 0; i < loadedGobjs.size(); ++i)
     {
         AddGameObject(std::move(loadedGobjs[i]));
-
-        // This will work if we have names from parsing.
-        //AddGameObject(loadedGobjs[i]->GetName(), std::move(loadedGobjs[i]));
     }
 
     if (loadedGobjs.empty())

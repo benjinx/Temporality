@@ -61,6 +61,8 @@ Skybox::Skybox()
     glBufferData(GL_ARRAY_BUFFER, sizeof(skyboxVertices), &skyboxVertices, GL_STATIC_DRAW);
     glEnableVertexAttribArray(0); // Pass in position at loc 0
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+
+    _mShader = App::Inst()->GetShader("skybox");
 }
 
 Skybox::~Skybox()
@@ -68,11 +70,10 @@ Skybox::~Skybox()
 
 }
 
-unsigned int Skybox::LoadCubemap(std::vector<std::string> faces)
+void Skybox::LoadCubemap(std::vector<std::string> faces)
 {
-    unsigned int textureID;
-    glGenTextures(1, &textureID);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+    glGenTextures(1, &_mTexture);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, _mTexture);
 
     // This will iterate through all cube map targets by doing + i, normally they are
     // GL_TEXTURE_CUBE_MAP_POSITIVE_X	Right
@@ -115,8 +116,15 @@ unsigned int Skybox::LoadCubemap(std::vector<std::string> faces)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+}
 
-    return textureID;
+void Skybox::PreRender()
+{
+    // Skybox related here
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, _mTexture);
 }
 
 void Skybox::Render()
@@ -125,19 +133,27 @@ void Skybox::Render()
     App* app = App::Inst();
 
     //glDepthMask(GL_FALSE);
-    auto skybox = app->GetShader("skybox");
-    skybox->Use();
+    //auto skybox = app->GetShader("skybox");
+    glDepthFunc(GL_LEQUAL);
+    _mShader->Use();
     glm::mat4 view = glm::mat3(app->GetCurrentCamera()->GetView());
     glm::mat4 proj = app->GetCurrentCamera()->GetProjection();
-    skybox->SetMat4("viewMat", view);
-    skybox->SetMat4("projMat", proj);
+    _mShader->SetMat4("viewMat", view);
+    _mShader->SetMat4("projMat", proj);
 
     glBindVertexArray(_mVAO);
+    glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, _mTexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
+    
+    // Cleanup
+    glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
     glBindVertexArray(0);
     //glDepthMask(GL_TRUE);
+
     glClear(GL_DEPTH_BUFFER_BIT);
+
+    glDepthFunc(GL_LESS);
 
     // Render the rest
     //GameObject::Render();
