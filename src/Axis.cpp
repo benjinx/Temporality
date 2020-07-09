@@ -71,6 +71,7 @@ Axis::Axis()
 void Axis::Render(glm::mat4 transform)
 {
     Shader* shader = App::Inst()->GetShader("axis");
-    glClear(GL_DEPTH_BUFFER_BIT);
+
     _mMesh->Render(shader, transform);
+    //glClear(GL_DEPTH_BUFFER_BIT);
 }

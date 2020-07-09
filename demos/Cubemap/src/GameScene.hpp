@@ -3,6 +3,12 @@
 
 #include <Temporality.hpp>
 
+enum class Mode : int
+{
+    REFLECTION,
+    REFRACTION,
+};
+
 class GameScene : public Scene
 {
 public:
@@ -13,8 +19,7 @@ public:
     void Render() override;
 
 private:
-    bool _mReflection = false,
-         _mRefraction = false;
+    Mode _mMode = Mode::REFLECTION;
 };
 
 #endif // GAMESCENE_H

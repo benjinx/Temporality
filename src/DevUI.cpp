@@ -61,7 +61,7 @@ void DevUI::Render()
     if (DevUI::settingsSelected)
     {
         ImGui::SetNextWindowSize(ImVec2(300, 400), ImGuiCond_FirstUseEver);
-        ImGui::SetNextWindowPos(ImVec2((App::Inst()->GetWindow()->GetWidth() / 2) - 150, (App::Inst()->GetWindow()->GetHeight() / 2) - 100));
+        ImGui::SetNextWindowPos(ImVec2((float)((App::Inst()->GetWindow()->GetWidth() / 2) - 150), (float)((App::Inst()->GetWindow()->GetHeight() / 2) - 100)));
         ImGui::Begin("Settings", NULL, ImGuiWindowFlags_NoCollapse + ImGuiWindowFlags_AlwaysAutoResize);
         ImGui::Text("Credits\n");
         ImGui::TextColored(Green, "Created by BC/DC Games:\n");

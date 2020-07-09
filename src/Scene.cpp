@@ -32,6 +32,11 @@ void Scene::Render()
 {
     GameObject::Render();
 
+    if (_mSkybox != nullptr)
+    {
+        _mSkybox->Render();
+    }
+
     if (DevUI::showAxis)
     {
         RenderAxis();
@@ -42,18 +47,13 @@ void Scene::Render()
             RenderAxis();
         }
     }
-
-    if (_mSkybox != nullptr)
-    {
-        _mSkybox->Render();
-    }
 }
 
 bool Scene::LoadScene(std::string filename)
 {
     std::vector<std::unique_ptr<GameObject>> loadedGobjs = glTF2::LoadSceneFromFile(filename);
 
-    for (int i = 0; i < loadedGobjs.size(); ++i)
+    for (unsigned int i = 0; i < loadedGobjs.size(); ++i)
     {
         AddGameObject(std::move(loadedGobjs[i]));
     }
@@ -96,14 +96,11 @@ GameObject* Scene::AddGameObject(std::unique_ptr<GameObject> gobj)
     return _mChildren.back().get();
 }
 
-
 void Scene::CreateSkybox(std::vector<std::string> faces)
 {
     _mSkybox = std::make_unique<Skybox>();
 
     _mSkybox->LoadCubemap(faces);
-
-    //AddGameObject(std::move(skybox));
 }
 
 void Scene::Options()
