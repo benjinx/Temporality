@@ -55,7 +55,7 @@ IF(BUILD_THIRDPARTY)
 
     FILE(MAKE_DIRECTORY ${THIRDPARTY_BINARY_DIR})
 
-    SET(glm_ROOT            ${THIRDPARTY_BINARY_DIR}/glm)
+    SET(glm_ROOT            ${THIRDPARTY_BINARY_DIR}/glm/cmake)
     SET(nlohmann_json_ROOT  ${THIRDPARTY_BINARY_DIR}/nlohmann_json)
     SET(SDL2_ROOT           ${THIRDPARTY_BINARY_DIR}/SDL2)
     

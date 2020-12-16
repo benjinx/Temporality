@@ -155,6 +155,13 @@ bool App::Start()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    // Backface culling
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    // GL_CCW is on by default.
+    //glFrontFace(GL_CCW);
+    //glFrontFace(GL_CW);
+
     // Setup Scene
     _mCurrentScene->Start();
 

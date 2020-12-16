@@ -52,10 +52,10 @@ void GameScene::Start()
     //     _mCube->SetPosition(glm::vec3(-2.0f, 0.0f, 1.0f));
     // }
 
-    if (!LoadScene("models/LowPolyMale_Rigging_AnimationStomp2.glb"))
+ /*   if (!LoadScene("models/LowPolyMale_Rigging_AnimationStomp2.glb"))
     {
        LogWarn("Could not load scene!");
-    }
+    }*/
     
     // if (!LoadScene("models/Donut_Texture_Displacement.glb"))
     // {
