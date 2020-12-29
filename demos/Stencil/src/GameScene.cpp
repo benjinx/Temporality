@@ -78,6 +78,11 @@ void GameScene::Update(float dt)
 void GameScene::Render()
 {
 
+    // To fix the overlaying issue (where you'd want the stencil and the object laid over the next object)
+    // To do this you'd need to render the object (as done in the first group), then
+    // Render the outline/stenciled part, then repeat this for each object.
+    // Need to be able to also do some funky things with the stencil buffers
+
     //glStencilMask(0xFF); // each bit is written to the stencil buffer as is 
     //glStencilMask(0x00); // each bit ends up as 0 in the stencil buffer (disabling writes)
 
@@ -89,8 +94,6 @@ void GameScene::Render()
     glStencilMask(0xFF);
     _mPlaneMesh->SetShader(app->GetShader("defaultLighting"));
     _mPlane->SetScale(glm::vec3(5.0f));
-    //_mPlane->Render();
-    //_mPlane->RenderAxis();
     _mSphereMesh->SetShader(app->GetShader("defaultLighting"));
     _mSphere->SetScale(glm::vec3(0.5f));
     _mCubeMesh->SetShader(app->GetShader("defaultLighting"));
@@ -103,8 +106,6 @@ void GameScene::Render()
     glStencilFunc(GL_NOTEQUAL, 1, 0xFF);
     glStencilMask(0x00);
     glDisable(GL_DEPTH_TEST);
-    _mPlaneMesh->SetShader(app->GetShader("stencil"));
-    _mPlane->SetScale(glm::vec3(5.05f));
     _mSphereMesh->SetShader(app->GetShader("stencil"));
     _mSphere->SetScale(glm::vec3(0.55f));
     _mCubeMesh->SetShader(app->GetShader("stencil"));
